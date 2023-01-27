@@ -1,21 +1,29 @@
 package gameobjects;
 
-import java.security.cert.PolicyQualifierInfo;
 
 public class Personnage extends GameObject implements Moveable{
     
-    double dx,dy; 
+    private double dx,dy; 
 
-    public Personnage(double x, double y, double w, double h) {
+    public Personnage(double x, double y, double w, double h,double dy) {
         super(x, y, w, h);
+        this.dy=dy;
     }
 
     @Override
     public void move(double deltaT) {
-        double g=-9.81;
-        dy+=-g*deltaT;
-        this.setY((-g/2)*deltaT*deltaT+dy*deltaT+this.getY());
+        // partie gravite
+        double g=9.81;
+        double newX,newY;
+        dy= dy>-g? (-g*deltaT+dy) :-g ;//chute libre ;
         
+        this.setY((-g/2)*(deltaT*deltaT)+dy*deltaT+this.getY());
+
+        //partie horizental
+        newX=dx*deltaT+this.getX();
+        // if(newX+this.getHeight()/2>)
+        this.setX(newX);
+
     }
 
     public boolean collides(GameObject go) {
@@ -37,8 +45,11 @@ public class Personnage extends GameObject implements Moveable{
                     ||
                     (this.getX() + this.getWidth()>=plateforme.getX() && this.getX()+this.getWidth()<= plateforme.getX()+plateforme.getWidth())
                 )&&
-                // condition vertical depends du type
-                Math.abs(this.getY() - plateforme.getY()+plateforme.getHeight())<epsilone;
+                // condition vertical depends du type 
+                Math.abs(this.getY() - plateforme.getY()+plateforme.getHeight())<epsilone
+                && 
+                dy<=0 // le personnage decends
+                ;
             }
         return val;
     }
