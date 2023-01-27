@@ -1,4 +1,4 @@
-package src.gameobjects;
+package gameobjects;
 
 // PlateformeBase est un type de plateforme (basique)
 public class PlateformeBase extends Plateforme {

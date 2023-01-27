@@ -1,4 +1,4 @@
-package src.gameobjects;
+package gameobjects;
 
 public class Terrain {
 

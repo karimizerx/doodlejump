@@ -1,4 +1,4 @@
-package src.gameobjects;
+package gameobjects;
 
 // Import de packages java
 
