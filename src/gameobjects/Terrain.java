@@ -1,7 +1,16 @@
 package gameobjects;
 
+import java.util.ArrayList;
+
 public class Terrain {
 
-    Plateforme[] pl;
+    ArrayList<GameObject> objetcs;
+    Joueur joueur;
+    
+ 
+
+    void update(double deltaT){
+        
+    }
 
 }

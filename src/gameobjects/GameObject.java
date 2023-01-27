@@ -8,14 +8,11 @@ package gameobjects;
 public abstract class GameObject { // C'est une classe abstraite
 
     private double x, y; // Coordonnées position x,y (au centre)
-    private double dx, dy; // Vitesse en x (horizontale), vitesse en y (verticale)
     private double w, h; // Largeur et hauteur de l'objet
 
-    public GameObject(double x, double y, double w, double h, double dx, double dy) {
+    public GameObject(double x, double y, double w, double h) {
         this.x = x;
         this.y = y;
-        this.dx = dx;
-        this.dy = dy;
         this.w = w;
         this.h = h;
     }
@@ -36,14 +33,6 @@ public abstract class GameObject { // C'est une classe abstraite
 
     public final double getY() {
         return y;
-    }
-
-    public final double getDx() {
-        return dx;
-    }
-
-    public final double getDy() {
-        return dy;
     }
 
     public final double getLeft() {
@@ -88,5 +77,5 @@ public abstract class GameObject { // C'est une classe abstraite
 
     // Méthodes de la classe GameObject
 
-    // public final boolean collides(GameObject go) {}
+
 }
