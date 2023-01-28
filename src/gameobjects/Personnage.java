@@ -4,11 +4,13 @@ package gameobjects;
 public class Personnage extends GameObject implements Moveable{
     
     private double dx,dy; 
-
-    public Personnage(double x, double y, double w, double h,double dy) {
+    final private double dy_i;//vitesse initiale
+    public Personnage(double x, double y, double w, double h,double dy,double dy_i) {
         super(x, y, w, h);
         this.dy=dy;
+        this.dy_i=dy_i;
     }
+    
 
     @Override
     public void move(double deltaT) {
@@ -37,7 +39,9 @@ public class Personnage extends GameObject implements Moveable{
                 )&&
                 // condition vertical depends du type
                 Math.abs(this.getY() - item.getY())<epsilone;
-
+            if(val){
+                item.runEffect(this);
+            }
 
         }else if(go instanceof Plateforme plateforme){
             val =(// on test si ils se chevauchent horizentalement  
@@ -50,9 +54,38 @@ public class Personnage extends GameObject implements Moveable{
                 && 
                 dy<=0 // le personnage decends
                 ;
+                if(val){
+                    dy=dy_i;
+                }
             }
         return val;
     }
+
+
+    public double getDx() {
+        return dx;
+    }
+
+
+    public void setDx(double dx) {
+        this.dx = dx;
+    }
+
+
+    public double getDy() {
+        return dy;
+    }
+
+
+    public void setDy(double dy) {
+        this.dy = dy;
+    }
+
+
+    public double getDy_i() {
+        return dy_i;
+    }
+
 
 
 
