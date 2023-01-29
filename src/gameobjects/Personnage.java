@@ -1,5 +1,7 @@
 package gameobjects;
 
+import gameobjects.*;
+
 public class Personnage extends GameObject implements Moveable {
 
     private double dx, dy;
@@ -28,7 +30,8 @@ public class Personnage extends GameObject implements Moveable {
     public boolean collides(GameObject go) {
         double epsilone = 0.0; // marge d'erreur qu'on se donne
         boolean val = false;
-        if () {
+        if (go.getClass().getName().equals("Items")) {
+            Items item = (Items) go;
             val = (// on test si ils se chevauchent horizentalement
             (this.getX() >= item.getX() && this.getX() <= item.getX() + item.getWidth())
                     ||

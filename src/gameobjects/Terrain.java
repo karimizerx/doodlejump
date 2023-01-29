@@ -3,7 +3,7 @@ package gameobjects;
 import java.util.ArrayList;
 import java.util.Random;
 
-import gameobjects.MovingPlateforme;
+import gameobjects.*;
 
 public class Terrain {
 
@@ -84,8 +84,9 @@ public class Terrain {
             y = height * advancement;
         }
         for (GameObject gameObject : objetcs) {
-            if (gameObject instanceof MovingPlateforme a) {// jsp s'il ya un meilleur moyen pour voir si l'objet est
-                                                           // moveable
+            if (gameObject.getClass().getName() == "MovingPlateforme") {
+                // jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
+                MovingPlateforme a = (MovingPlateforme) gameObject;
                 a.move(deltaT);
                 limite(a);
             }
