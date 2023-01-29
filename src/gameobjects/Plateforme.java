@@ -22,4 +22,13 @@ public abstract class Plateforme extends GameObject { // C'est un GameObject
         this.saut = saut;
     }
 
+    private static String id = "pl0"; // Identifiant de l'image correspondante.
+    // Getter & Setter
+    public static String getId() {
+        return id;
+    }
+
+    
+    
+
 }

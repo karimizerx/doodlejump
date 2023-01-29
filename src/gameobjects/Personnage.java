@@ -4,11 +4,9 @@ package gameobjects;
 public class Personnage extends GameObject implements Moveable{
     
     private double dx,dy; 
-    final private double dy_i;//vitesse initiale
     public Personnage(double x, double y, double w, double h,double dy,double dy_i) {
         super(x, y, w, h);
         this.dy=dy;
-        this.dy_i=dy_i;
     }
     
 
@@ -55,7 +53,7 @@ public class Personnage extends GameObject implements Moveable{
                 dy<=0 // le personnage decends
                 ;
                 if(val){
-                    dy=dy_i;
+                    dy=plateforme.saut;
                 }
             }
         return val;
@@ -82,9 +80,6 @@ public class Personnage extends GameObject implements Moveable{
     }
 
 
-    public double getDy_i() {
-        return dy_i;
-    }
 
 
 
