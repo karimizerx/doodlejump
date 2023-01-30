@@ -10,7 +10,7 @@ import gameobjects.*;
 public class App extends JFrame {
 
     static int w = 500;
-    static int h = 733;
+    static int h = 1000;
 
     public App() {
         // Création de la fenêtre
@@ -19,13 +19,15 @@ public class App extends JFrame {
         // Ici, revient à exécuter "this.dispose()" (ne ferme que la fenêtre actuelle )
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(w, h); // Définition de la taille part défaut
+        // this.setExtendedState(JFrame.MAXIMIZED_VERT);
         // Positionne la fenêre au centre du conteneur null
         // (la fenêtre de l'ordinateur, le bureau en quelques sortes)
         this.setLocationRelativeTo(null);
-
         this.setLayout(new FlowLayout());
 
         JPanel win = (JPanel) this.getContentPane();
+        win.setBackground(Color.BLACK);
+        win.setOpaque(true);
 
         // win.add(new JLabel("ALOOOOOOO"));
         JPanel view = new Vue();
@@ -44,6 +46,7 @@ public class App extends JFrame {
         // Démarrer la fenêtre.
         App mw = new App();
         mw.setVisible(true);
+        System.out.println(mw.getHeight());
         System.out.println("Alooooooooooooooooooooo");
     }
 }
