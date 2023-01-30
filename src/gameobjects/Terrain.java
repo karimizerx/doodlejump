@@ -46,8 +46,7 @@ public class Terrain {
         nb = (int) (nb * difficulty);
         for (int i = 0; i < nb; i++) {
             Random rand = new Random();
-            objetcs.add(new PlateformeBase(rand.nextDouble(this.width), rand.nextDouble(this.height + y),
-                    -1, -1, -1));
+            objetcs.add(new PlateformeBase(rand.nextDouble(this.width), rand.nextDouble(this.height + y), -1, -1, -1));
             // TODO: combien pour saut? height et width
         }
 

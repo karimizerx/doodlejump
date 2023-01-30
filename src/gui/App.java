@@ -8,8 +8,9 @@ import gameobjects.Fusee;
 public class App extends JFrame {
 
     public static void main(String[] args) {
-        Fusee fus = new Fusee(0, 0, 0, 0, 0);
+        System.out.println("Alooo");
 
+        Fusee fus = new Fusee(0, 0, 0, 0, 0);
         System.out.println("Le nom de la classe Items est : " + fus.getClass().getName());
     }
 }
