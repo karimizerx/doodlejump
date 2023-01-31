@@ -1,35 +1,33 @@
 package gameobjects;
 
+// Import de packages java
 import java.util.ArrayList;
 import java.util.Random;
 
+// Import d'autres dossiers
 import gameobjects.*;
 
 public class Terrain {
 
-    ArrayList<Plateforme> plateformesListe;
-    Joueur joueur;
-    final double height, width;// dimensions du terrain
-    double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
+    private ArrayList<Plateforme> plateformesListe;
+    private Joueur joueur;
+    private final double height, width;// dimensions du terrain
+    private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
+
+    // Entre 0 et 1, indique de combien on fais monter le jeu
+    private double advancement = 0.3;
+
+    // Hauteur maximal que peut atteindre le personnage, maxHeight*height,
+    // avant de faire monter le jeu.
+    private double maxHeight = 0.8;
 
     /**
-     * entre 0 et 1, indique de combien on fais monter le jeu
-     */
-    double advancement = 0.3;
-
-    /**
-     * Hauteur maximal que peut attendre le personnage, maxHeight*height, avant de
-     * faire monter le jeu.
-     */
-    double maxHeight = 0.8;
-
-    /**
-     * baisse le plus le score monte, affecte la densite des plateformes et la proba
-     * qu'un heli ou fusee apare,
-     * inversement affacte la proba d'apparition des monstres, surement on inverse
+     * Baisse plus le score monte, affecte la densite des plateformes et la proba
+     * qu'un helicoptere ou fusee apparaisse.
+     * Inversement, affecte la proba d'apparition des monstres, sûrement on inverse
      * 1/difficulte
      */
-    double difficulty = 1.0;
+    private double difficulty = 1.0;
 
     public Terrain(Joueur joueur, double height, double width) {
         this.plateformesListe = new ArrayList<Plateforme>();
@@ -39,18 +37,17 @@ public class Terrain {
     }
 
     /**
-     * @param nb nombres d'obstacles a generer
+     * @param nb nombres d'obstacles à générer
      * 
      */
-    void generateObstacles(int nb) {
+    private void generateObstacles(int nb) {
         nb = (int) (nb * difficulty);
         for (int i = 0; i < nb; i++) {
             int pfx = new Random().nextInt((int) this.width);
             int pfy = new Random().nextInt((int) this.height);
-            Plateforme pf = new PlateformeBase(pfx, pfy, -1, -1, -1);
+            Plateforme pf = new PlateformeBase(pfx, pfy, 100, 100, 0);
             plateformesListe.add(pf);
         }
-
     }
 
     /**
@@ -73,7 +70,7 @@ public class Terrain {
     void endGame() {
     }
 
-    void update(double deltaT) {
+    public void update(double deltaT) {
         joueur.perso.move(deltaT);
         limite(joueur.perso);
 

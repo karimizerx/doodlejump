@@ -7,7 +7,7 @@ package gameobjects;
 // La classe GameObject représente les différents types d'objets du jeu.
 public abstract class GameObject { // C'est une classe abstraite
 
-    private double x, y; // Coordonnées position x,y (au centre)
+    private double x, y; // Coordonnées position x,y
     private double w, h; // Largeur et hauteur de l'objet
 
     public GameObject(double x, double y, double w, double h) {
@@ -76,6 +76,4 @@ public abstract class GameObject { // C'est une classe abstraite
     }
 
     // Méthodes de la classe GameObject
-
-
 }

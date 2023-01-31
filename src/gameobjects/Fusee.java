@@ -7,6 +7,7 @@ public class Fusee extends Items {
 
     public Fusee(double x, double y, double w, double h, int t) {
         super(x, y, w, h, t);
+        this.setId("fusee.png");
     }
 
     @Override
@@ -20,7 +21,7 @@ public class Fusee extends Items {
                 p.setDy(V);
             }
         };
-        timer.schedule(task, time);
+        timer.schedule(task, this.getTime());
         p.setDy(0);
     }
 

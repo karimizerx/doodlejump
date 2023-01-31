@@ -1,9 +1,6 @@
 package gui;
 
 import javax.swing.*;
-import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.*;
 import javax.swing.plaf.nimbus.*;
 
@@ -28,17 +25,22 @@ public class App extends JFrame {
         this.setLocationRelativeTo(null);
 
         // Empêche la fenetre d'être redimensionée
-        this.setResizable(false);
+        // this.setResizable(false);
         this.setLayout(new FlowLayout());
 
         JPanel win = (JPanel) this.getContentPane();
-        win.setBackground(Color.BLACK);
-        win.setOpaque(true);
+        // win.setBackground(Color.BLACK);
+        // win.setOpaque(true);
 
         // win.add(new JLabel("ALOOOOOOO"));
-        view.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
-        win.add(view);
 
+        Personnage doodle = new Personnage(100, 100, 100, 100, 0);
+        Joueur j = new Joueur(doodle);
+        Terrain leRainT = new Terrain(j, h, w);
+
+        JPanel lavue = new Vue(leRainT);
+        lavue.setPreferredSize(new Dimension(w, h));
+        win.add(lavue);
     }
 
     public static void main(String[] args) {
@@ -52,7 +54,6 @@ public class App extends JFrame {
         // Démarrer la fenêtre.
         App mw = new App();
         mw.setVisible(true);
-        System.out.println(mw.getHeight());
         System.out.println("Alooooooooooooooooooooo");
     }
 }

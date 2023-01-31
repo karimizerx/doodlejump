@@ -1,10 +1,13 @@
 package gameobjects;
 
+// Interface qui gère la mobilité 
 public interface Moveable {
 
     /**
-     * @param deltaT temps passé
-     * Modifie les champs x et y
+     * @param deltaT
+     *               Temps passé
+     *               Modifie les coordonnées x et y
      */
+
     public void move(double deltaT);
 }

@@ -4,11 +4,11 @@ package gameobjects;
 
 // Import de packages projet
 
-// La classe Plateforme représente une plateforme (qui peut être de différents types).
-public abstract class Plateforme extends GameObject { // C'est un GameObject
+// Représente une plateforme (qui peut être de différents types).
+public abstract class Plateforme extends GameObject {
 
-    double saut; // Constante de saut, différente en fonction de la plateforme
-
+    private double saut; // Constante de saut, différente en fonction de la plateforme
+    private String id; // Identifiant de l'image correspondante
 
     /**
      * @param x
@@ -16,19 +16,28 @@ public abstract class Plateforme extends GameObject { // C'est un GameObject
      * @param w
      * @param h
      * @param saut
+     * @param id
      */
     public Plateforme(double x, double y, double w, double h, double saut) {
-        super(x, y, 50, 10);
+        super(x, y, w, h);
         this.saut = saut;
+        this.id = "plateforme.png";
     }
 
-    private static String id = "pl0"; // Identifiant de l'image correspondante.
     // Getter & Setter
-    public static String getId() {
+    public String getId() {
         return id;
     }
 
-    
-    
+    public double getSaut() {
+        return saut;
+    }
 
+    public void setSaut(double saut) {
+        this.saut = saut;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

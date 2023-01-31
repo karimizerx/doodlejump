@@ -2,12 +2,15 @@ package gameobjects;
 
 public class Joueur {
 
-    int score;
-    Personnage perso;
+    private int score;
+    private Personnage perso;
 
-    public Joueur(double x, double y, double w, double h, double dy) {
-
+    public Joueur(Personnage p) {
+        this.perso = p;
+        this.score = 0;
     }
+
+    // Getter & Setter
 
     public int getScore() {
         return score;

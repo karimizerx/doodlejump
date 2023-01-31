@@ -64,6 +64,7 @@ public class Vue extends JPanel implements KeyListener {
             rainT.getJoueur().getPerso().setX(rainT.getJoueur().getPerso().getX() - 5);
         }
 
+        rainT.update(0.03);
     }
 
     @Override

@@ -1,16 +1,17 @@
 package gameobjects;
 
-import gameobjects.*;
-
+// Représente un personnage. C'est un objet, avec vitesse
 public class Personnage extends GameObject implements Moveable {
 
     private double dx, dy;
 
-    public Personnage(double x, double y, double w, double h, double dy, double dy_i) {
+    public Personnage(double x, double y, double w, double h, double dy) {
         super(x, y, w, h);
         this.dy = dy;
+        this.dx = 0;
     }
 
+    // Méthodes de la classe
     @Override
     public void move(double deltaT) {
         // partie gravite
@@ -58,11 +59,13 @@ public class Personnage extends GameObject implements Moveable {
                     dy <= 0 // le personnage decends
             ;
             if (val) {
-                dy = plateforme.saut;
+                dy = plateforme.getSaut();
             }
         }
         return val;
     }
+
+    // Getter & Setter
 
     public double getDx() {
         return dx;
