@@ -1,50 +1,92 @@
 package gui;
 
 //Import de packages
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.*;
-import java.awt.image.BufferedImage;
+
 import java.io.*;
+import java.util.ArrayList;
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.imageio.*;
 
-public class Vue extends JPanel {
+// Import des autres dossiers
+import gameobjects.*;
 
-    int w = 500;
-    int h = 733;
-    BufferedImage bi, perso;
-    static String chemin = (new File("gui/ressources/")).getAbsolutePath();
-    int ppx, ppy;
+public class Vue extends JPanel implements KeyListener {
 
-    public Vue(int posPersoX, int posPersoY) {
-        this.ppx = posPersoX;
-        this.ppy = posPersoY;
+    int w = 600;
+    int h = 933;
+    BufferedImage view, terrainView, platformeView, persoView;
+    static String chemin = (new File("gui/images/")).getAbsolutePath();
+    boolean isRight, isLeft;
+    Terrain rainT;
+
+    public Vue(Terrain t) {
+        this.rainT = t;
         this.setSize(w, h);
-        System.out.println(chemin);
+        this.addKeyListener(this);
+
         try {
-            bi = ImageIO.read(new File(chemin + "/" + "terrain.jpg"));
-            perso = ImageIO.read(new File(chemin + "/" + "iliou.png"));
+            view = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+
+            terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
+            platformeView = ImageIO.read(new File(chemin + "/" + "plateforme.png"));
+            persoView = ImageIO.read(new File(chemin + "/" + "doodle.png"));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) bi.getGraphics();
-        g2.drawImage(perso, ppx, ppy, 100, 100, null);
-        g.drawImage(bi, 0, 0, this.getWidth(), this.getHeight(), null);
+        int ppx = (int) rainT.getJoueur().getPerso().getX();
+        int ppy = (int) rainT.getJoueur().getPerso().getY();
+        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        g2.drawImage(terrainView, 0, 0, WIDTH, HEIGHT, null);
+        g2.drawImage(persoView, ppx, ppy, 100, 100, null);
+
+        ArrayList<Plateforme> pf = rainT.getPlateformesListe();
+        for (Plateforme p : pf) {
+            g2.drawImage(platformeView, (int) p.getX(), (int) p.getY(), 60, 20, null);
+        }
+
+        g.drawImage(view, 0, 0, this.w, this.h, null);
+        g.dispose();
+
     }
 
-    public Vue update() {
-        System.out.println("Oe oe oe je vais update");
-        System.out.println("Tout est supp");
-        ppx += 50;
-        ppy += 200;
-        System.out.println("Jé mi à jour les valeurs");
-        Vue v = new Vue(ppx, ppy);
-        System.out.println("Petite vue recrée");
-        repaint();
-        System.out.println("Je pains comme Picasso");
-        return v;
+    public void update() {
+
+        if (isRight) {
+            rainT.getJoueur().getPerso().setX(rainT.getJoueur().getPerso().getX() + 5);
+        } else if (isLeft) {
+            rainT.getJoueur().getPerso().setX(rainT.getJoueur().getPerso().getX() - 5);
+        }
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            isRight = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            isLeft = true;
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            isRight = false;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            isLeft = false;
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
     }
 }

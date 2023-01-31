@@ -7,7 +7,7 @@ import gameobjects.*;
 
 public class Terrain {
 
-    ArrayList<GameObject> objetcs;
+    ArrayList<Plateforme> plateformesListe;
     Joueur joueur;
     final double height, width;// dimensions du terrain
     double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
@@ -32,7 +32,7 @@ public class Terrain {
     double difficulty = 1.0;
 
     public Terrain(Joueur joueur, double height, double width) {
-        this.objetcs = new ArrayList<GameObject>();
+        this.plateformesListe = new ArrayList<Plateforme>();
         this.joueur = joueur;
         this.height = height;
         this.width = width;
@@ -45,9 +45,10 @@ public class Terrain {
     void generateObstacles(int nb) {
         nb = (int) (nb * difficulty);
         for (int i = 0; i < nb; i++) {
-            Random rand = new Random();
-            objetcs.add(new PlateformeBase(rand.nextDouble(this.width), rand.nextDouble(this.height + y), -1, -1, -1));
-            // TODO: combien pour saut? height et width
+            int pfx = new Random().nextInt((int) this.width);
+            int pfy = new Random().nextInt((int) this.height);
+            Plateforme pf = new PlateformeBase(pfx, pfy, -1, -1, -1);
+            plateformesListe.add(pf);
         }
 
     }
@@ -59,9 +60,9 @@ public class Terrain {
      */
     void removeObstacles(double minY) {
         int c = 0;// compte le nombres d'obstacles qu'on enleve
-        for (GameObject gameObject : objetcs) {
+        for (GameObject gameObject : plateformesListe) {
             if (gameObject.getY() <= minY) {
-                objetcs.remove(gameObject);
+                plateformesListe.remove(gameObject);
                 ++c;
             }
         }
@@ -70,7 +71,6 @@ public class Terrain {
     }
 
     void endGame() {
-        // TODO: gerer la fin du jeu
     }
 
     void update(double deltaT) {
@@ -82,7 +82,7 @@ public class Terrain {
         } else if (joueur.perso.getY() + joueur.perso.getHeight() > maxHeight * height) {
             y = height * advancement;
         }
-        for (GameObject gameObject : objetcs) {
+        for (GameObject gameObject : plateformesListe) {
             if (gameObject.getClass().getName() == "MovingPlateforme") {
                 // jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
                 MovingPlateforme a = (MovingPlateforme) gameObject;
@@ -98,6 +98,62 @@ public class Terrain {
             object.setX(width - object.getWidth() / 2);
         else if (object.getX() + object.getWidth() / 2 >= width) // bord a gauche, on le mets a gauche
             object.setX(object.getWidth() / 2);
+    }
+
+    public ArrayList<Plateforme> getPlateformesListe() {
+        return plateformesListe;
+    }
+
+    public void setPlateformesListe(ArrayList<Plateforme> plateformesListe) {
+        this.plateformesListe = plateformesListe;
+    }
+
+    public Joueur getJoueur() {
+        return joueur;
+    }
+
+    public void setJoueur(Joueur joueur) {
+        this.joueur = joueur;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public double getWidth() {
+        return width;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double getAdvancement() {
+        return advancement;
+    }
+
+    public void setAdvancement(double advancement) {
+        this.advancement = advancement;
+    }
+
+    public double getMaxHeight() {
+        return maxHeight;
+    }
+
+    public void setMaxHeight(double maxHeight) {
+        this.maxHeight = maxHeight;
+    }
+
+    public double getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(double difficulty) {
+        this.difficulty = difficulty;
     }
 
 }

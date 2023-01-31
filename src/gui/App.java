@@ -1,7 +1,6 @@
 package gui;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -23,10 +22,13 @@ public class App extends JFrame {
         // Ici, revient à exécuter "this.dispose()" (ne ferme que la fenêtre actuelle )
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         this.setSize(w, h); // Définition de la taille part défaut
-        // this.setExtendedState(JFrame.MAXIMIZED_VERT);
+
         // Positionne la fenêre au centre du conteneur null
         // (la fenêtre de l'ordinateur, le bureau en quelques sortes)
         this.setLocationRelativeTo(null);
+
+        // Empêche la fenetre d'être redimensionée
+        this.setResizable(false);
         this.setLayout(new FlowLayout());
 
         JPanel win = (JPanel) this.getContentPane();
@@ -34,28 +36,9 @@ public class App extends JFrame {
         win.setOpaque(true);
 
         // win.add(new JLabel("ALOOOOOOO"));
-        this.view = new Vue(this.getWidth() / 2, this.getHeight() / 2);
         view.setPreferredSize(new Dimension(this.getWidth(), this.getHeight()));
         win.add(view);
 
-        sijicliki();
-    }
-
-    public void sijicliki() {
-        JComponent j = (JComponent) this.getContentPane();
-        j.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                j.remove(view);
-                repaint();
-                System.out.println("Hop hop hop ça va update sale comme Feu");
-                view = view.update();
-                view.setPreferredSize(new Dimension(w, h));
-                j.add(view);
-                System.out.println("Et voilà le travail !");
-            }
-        });
     }
 
     public static void main(String[] args) {
