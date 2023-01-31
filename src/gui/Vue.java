@@ -68,7 +68,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         } catch (Exception e) {
         }
         System.out.println("on est sorti du try");
+        System.out.println("on va dessiner le perso");
         g2.drawImage(persoView, ppx, ppy, 100, 100, null);
+        System.out.println("on a dessiné le perso");
         g2.drawRect(100, 100, 100, 100);
 
         Graphics g = getGraphics();
