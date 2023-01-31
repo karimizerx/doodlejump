@@ -33,30 +33,31 @@ public class Vue extends JPanel implements KeyListener {
             terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
             platformeView = ImageIO.read(new File(chemin + "/" + "plateforme.png"));
             persoView = ImageIO.read(new File(chemin + "/" + "doodle.png"));
-
+            System.out.println("J'ai lu toutes les image");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void paintComponent(Graphics g) {
+        System.out.println("Paint component");
         int ppx = (int) rainT.getJoueur().getPerso().getX();
         int ppy = (int) rainT.getJoueur().getPerso().getY();
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         g2.drawImage(terrainView, 0, 0, WIDTH, HEIGHT, null);
-        g2.drawImage(persoView, ppx, ppy, 100, 100, null);
 
         ArrayList<Plateforme> pf = rainT.getPlateformesListe();
         for (Plateforme p : pf) {
-            g2.drawImage(platformeView, (int) p.getX(), (int) p.getY(), 60, 20, null);
+            // g2.drawImage(platformeView, (int) p.getX(), (int) p.getY(), 60, 20, null);
         }
-
+        // g2.drawImage(persoView, ppx, ppy, 100, 100, null);
+        g = getGraphics();
         g.drawImage(view, 0, 0, this.w, this.h, null);
-        g.dispose();
+        // g.dispose();
 
     }
 
-    public void update() {
+    public void updateView() {
 
         if (isRight) {
             rainT.getJoueur().getPerso().setX(rainT.getJoueur().getPerso().getX() + 5);
@@ -64,7 +65,7 @@ public class Vue extends JPanel implements KeyListener {
             rainT.getJoueur().getPerso().setX(rainT.getJoueur().getPerso().getX() - 5);
         }
 
-        rainT.update(0.03);
+        // rainT.update(0.03);
     }
 
     @Override

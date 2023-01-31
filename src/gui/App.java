@@ -3,6 +3,13 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.plaf.nimbus.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.awt.*;
+import java.awt.image.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.imageio.*;
 
 import gameobjects.*;
 
@@ -33,6 +40,13 @@ public class App extends JFrame {
         // win.setOpaque(true);
 
         // win.add(new JLabel("ALOOOOOOO"));
+        String chemin = (new File("gui/images/")).getAbsolutePath();
+        try {
+            BufferedImage persoView = ImageIO.read(new File(chemin + "/" + "doodle.png"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         Personnage doodle = new Personnage(100, 100, 100, 100, 0);
         Joueur j = new Joueur(doodle);
@@ -45,15 +59,17 @@ public class App extends JFrame {
 
     public static void main(String[] args) {
         System.out.println("Aloooo");
-        // Appliquer un look'n feel
-        try {
-            UIManager.setLookAndFeel(new NimbusLookAndFeel());
-        } catch (UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
-        }
-        // Démarrer la fenêtre.
-        App mw = new App();
-        mw.setVisible(true);
+        EventQueue.invokeLater(() -> {
+            // Appliquer un look'n feel
+            try {
+                UIManager.setLookAndFeel(new NimbusLookAndFeel());
+            } catch (UnsupportedLookAndFeelException e) {
+                e.printStackTrace();
+            }
+            // Démarrer la fenêtre.
+            App mw = new App();
+            mw.setVisible(true);
+        });
         System.out.println("Alooooooooooooooooooooo");
     }
 }

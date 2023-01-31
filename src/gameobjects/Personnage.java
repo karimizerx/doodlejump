@@ -56,7 +56,7 @@ public class Personnage extends GameObject implements Moveable {
                     // condition vertical depends du type
                     Math.abs(this.getY() - plateforme.getY() + plateforme.getHeight()) < epsilone
                     &&
-                    dy <= 0 // le personnage decends
+                    dy > 0 // le personnage decends
             ;
             if (val) {
                 dy = plateforme.getSaut();

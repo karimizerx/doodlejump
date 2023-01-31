@@ -17,8 +17,10 @@ public class Terrain {
     // Entre 0 et 1, indique de combien on fais monter le jeu
     private double advancement = 0.3;
 
-    // Hauteur maximal que peut atteindre le personnage, maxHeight*height,
-    // avant de faire monter le jeu.
+    /**
+     * Hauteur maximal que peut atteindre le personnage, maxHeight*height,
+     * avant de faire monter le jeu.
+     */
     private double maxHeight = 0.8;
 
     /**
@@ -37,6 +39,8 @@ public class Terrain {
     }
 
     /**
+     * Crée la liste des plateformes
+     * 
      * @param nb nombres d'obstacles à générer
      * 
      */
@@ -52,42 +56,24 @@ public class Terrain {
 
     /**
      * 
-     * @param minY indique la coordonnee minimal y que peut avoir un objets, si en
-     *             dessous on l'enleve
+     * @param maxY indique la coordonnee maximale que peut avoir un objet en y,
+     *             si supérieur, on le retire
      */
-    void removeObstacles(double minY) {
+    private void removeObstacles(double maxY) {
         int c = 0;// compte le nombres d'obstacles qu'on enleve
         for (GameObject gameObject : plateformesListe) {
-            if (gameObject.getY() <= minY) {
+            if (gameObject.getY() >= maxY) {
                 plateformesListe.remove(gameObject);
                 ++c;
             }
         }
         // si on veut des nouveaux obstacles.
-        // generateObstacles(c);
+        generateObstacles(c);
     }
 
-    void endGame() {
-    }
-
-    public void update(double deltaT) {
-        joueur.perso.move(deltaT);
-        limite(joueur.perso);
-
-        if (joueur.perso.getY() <= 0) {
-            endGame();
-        } else if (joueur.perso.getY() + joueur.perso.getHeight() > maxHeight * height) {
-            y = height * advancement;
-        }
-        for (GameObject gameObject : plateformesListe) {
-            if (gameObject.getClass().getName() == "MovingPlateforme") {
-                // jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
-                MovingPlateforme a = (MovingPlateforme) gameObject;
-                a.move(deltaT);
-                limite(a);
-            }
-            joueur.perso.collides(gameObject);
-        }
+    private void endGame() {
+        System.out.println("J'arrete le jeu");
+        System.exit(0);
     }
 
     private void limite(GameObject object) {
@@ -96,6 +82,33 @@ public class Terrain {
         else if (object.getX() + object.getWidth() / 2 >= width) // bord a gauche, on le mets a gauche
             object.setX(object.getWidth() / 2);
     }
+
+    public void update(double deltaT) {
+        Personnage jperso = joueur.getPerso();
+        jperso.move(deltaT);
+        limite(jperso);
+
+        if (jperso.getY() <= 0) {
+            endGame();
+        } else if (jperso.getY() + jperso.getHeight() > maxHeight * height) {
+            y = height * advancement;
+        }
+        for (GameObject gameObject : plateformesListe) {
+            System.out.println("Je parcours toutes les plateformes");
+            if (gameObject.getClass().getName() == "MovingPlateforme") {
+                System.out.println("Normalement je suis pas censé arrivé là");
+                // jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
+                MovingPlateforme a = (MovingPlateforme) gameObject;
+                a.move(deltaT);
+                limite(a);
+            }
+            System.out.println("Mtn je vais faire les collisions");
+            jperso.collides(gameObject);
+            System.out.println("Et voilà le travail");
+        }
+    }
+
+    // Getter & Setter
 
     public ArrayList<Plateforme> getPlateformesListe() {
         return plateformesListe;

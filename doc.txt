@@ -29,28 +29,6 @@ contient le code source du jeu
        Gère la mobilité (en modifiant les coordonnées), avec temps passé.
 
     
-    
-        
-
-
-
--> gamemodes
-    -> Gamemode.java:une interface pour les modes de jeu: permet le startegy design pattern
-                     ne pas hésiter à ajouter des on_<event>() ou à leur rajouter des arguments si jamais c'est nécessaire:
-                     Le cas échéant, ne pas oublier de mettre à jour tous les modes de jeu.
-    -> Example.java:un exemple de mode de jeu qui ajoute une gravité variable, on l'effacera quand on aura d'autres modes de jeu
--> game-objects
-    -> Ball.java:fait la liaison entre App et Court pour les mouvements de la balle.
-    -> GameObject.java:permet de détecter la collision de deux objets (considérés comme des rectangles)
-    -> Racket.java:fait la liaison entre App et Court pour les mouvements de la raquette
--> gui
-    -> App.java: lancement du jeu et gestion des contrôles (fenêtre)
-    -> GameView.java: affiche le terrain
--> model
-    -> Court.java: tous les paramètres du jeu comme déplacement, vitesse des éléments, calcul des trajectoires, etc..
-    -> Scoreboard.java: crée le Scoreboard (affichage des résultats)
-
-
 
 src
     ├── gameobjects
