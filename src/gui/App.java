@@ -39,16 +39,7 @@ public class App extends JFrame {
         // win.setBackground(Color.BLACK);
         // win.setOpaque(true);
 
-        // win.add(new JLabel("ALOOOOOOO"));
-        String chemin = (new File("gui/images/")).getAbsolutePath();
-        try {
-            BufferedImage persoView = ImageIO.read(new File(chemin + "/" + "doodle.png"));
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        Personnage doodle = new Personnage(100, 100, 100, 100, 0);
+        Personnage doodle = new Personnage(300, 300, 100, 100, 0);
         Joueur j = new Joueur(doodle);
         Terrain leRainT = new Terrain(j, h, w);
 

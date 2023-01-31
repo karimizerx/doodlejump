@@ -24,5 +24,4 @@ public class Fusee extends Items {
         timer.schedule(task, this.getTime());
         p.setDy(0);
     }
-
 }

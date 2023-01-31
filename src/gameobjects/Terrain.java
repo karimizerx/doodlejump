@@ -6,6 +6,7 @@ import java.util.Random;
 
 // Import d'autres dossiers
 import gameobjects.*;
+import gui.Vue;
 
 public class Terrain {
 
@@ -21,7 +22,7 @@ public class Terrain {
      * Hauteur maximal que peut atteindre le personnage, maxHeight*height,
      * avant de faire monter le jeu.
      */
-    private double maxHeight = 0.8;
+    private double H = 0.3;
 
     /**
      * Baisse plus le score monte, affecte la densite des plateformes et la proba
@@ -36,6 +37,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
+        generateObstacles(10);
     }
 
     /**
@@ -72,8 +74,8 @@ public class Terrain {
     }
 
     private void endGame() {
+        Vue.setRunning(false);
         System.out.println("J'arrete le jeu");
-        System.exit(0);
     }
 
     private void limite(GameObject object) {
@@ -88,23 +90,38 @@ public class Terrain {
         jperso.move(deltaT);
         limite(jperso);
 
-        if (jperso.getY() <= 0) {
+        // Si on dépasse le bas de la fenêtre, on arrête la game
+        if (jperso.getY() > 0) {
             endGame();
-        } else if (jperso.getY() + jperso.getHeight() > maxHeight * height) {
+        } else if (jperso.getY() < H * height) {
+            // Sinon, si on a sauté jusqu'à une certaine "ligne"...
             y = height * advancement;
+
+            for (GameObject go : plateformesListe) {
+                go.setY(go.getY() - jperso.getDy()); // On fait descendre toutes les plateformes
+                // Si, une fois qu'on a fait descendre, la plateforme sort du cadre (par en bas)
+                if (go.getY() > height) {
+                    go.setY(0); // On la place tout en haut
+                    go.setX(new Random().nextInt((int) width)); // Et on la place à un endroit random
+                }
+            }
         }
+
         for (GameObject gameObject : plateformesListe) {
             System.out.println("Je parcours toutes les plateformes");
-            if (gameObject.getClass().getName() == "MovingPlateforme") {
-                System.out.println("Normalement je suis pas censé arrivé là");
-                // jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
-                MovingPlateforme a = (MovingPlateforme) gameObject;
-                a.move(deltaT);
-                limite(a);
-            }
+            /*
+             * if (gameObject.getClass().getName() == "MovingPlateforme") {
+             * System.out.println("Normalement je suis pas censé arrivé là");
+             * // jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
+             * MovingPlateforme a = (MovingPlateforme) gameObject;
+             * a.move(deltaT);
+             * limite(a);
+             * }
+             */
             System.out.println("Mtn je vais faire les collisions");
             jperso.collides(gameObject);
             System.out.println("Et voilà le travail");
+            System.out.println("Dy = " + jperso.getDy());
         }
     }
 
@@ -150,12 +167,12 @@ public class Terrain {
         this.advancement = advancement;
     }
 
-    public double getMaxHeight() {
-        return maxHeight;
+    public double getH() {
+        return H;
     }
 
-    public void setMaxHeight(double maxHeight) {
-        this.maxHeight = maxHeight;
+    public void setH(double H) {
+        this.H = H;
     }
 
     public double getDifficulty() {
