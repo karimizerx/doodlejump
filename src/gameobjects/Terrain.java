@@ -5,7 +5,9 @@ import java.util.Random;
 
 public class Terrain {
 
+    ArrayList<Plateforme> plateformes;
     ArrayList<GameObject> objetcs;
+
     Joueur joueur;
     final double height,width;// dimensions du terrain
     double y=0;// hauteur du jeu. On l'utilisera aussi pour le score
@@ -42,7 +44,7 @@ public class Terrain {
         nb = (int)(nb*difficulty);
         for (int i = 0; i < nb; i++) {
             Random rand=new Random();
-            objetcs.add(new PlateformeBase(rand.nextDouble(this.width), rand.nextDouble(this.height+y), 
+            plateformes.add(new PlateformeBase(rand.nextDouble(this.width), rand.nextDouble(this.height+y), 
                                            -1,-1,-1 ));
                                         //    TODO: combien pour saut? height et width             
         }
@@ -55,9 +57,9 @@ public class Terrain {
      */
     void removeObstacles(double minY){
         int c=0;//compte le nombres d'obstacles qu'on enleve
-        for (GameObject gameObject : objetcs) {
-            if(gameObject.getY()<=minY){
-                objetcs.remove(gameObject);
+        for (Plateforme p : plateformes) {
+            if(p.getY()<=minY){
+                plateformes.remove(p);
                 ++c;
             }
         }
@@ -79,12 +81,19 @@ public class Terrain {
         }else if(joueur.perso.getY()+joueur.perso.getHeight()>maxHeight*height){
             y=height*advancement;
         }    
-        for (GameObject gameObject : objetcs) {
-            if(gameObject instanceof MovingPlateforme a ){// jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
+        for (GameObject gameObject : plateformes) {
+            // if(gameObject instanceof Monstre m ){
+            //     m.move(deltaT);
+            //     limite(m);
+            // } // Quand il y aura des monstres on changera ca 
+            joueur.perso.collides(gameObject);
+        }
+        for (Plateforme p: plateformes) {
+            if(p instanceof MovingPlateforme a ){// jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
                 a.move(deltaT);
                 limite(a);
             }
-            joueur.perso.collides(gameObject);
+            joueur.perso.collides(p);
         }
     }
 
