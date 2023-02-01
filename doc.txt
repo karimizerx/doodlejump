@@ -1,0 +1,52 @@
+Documentation du projet de programmation : ED1A 
+
+/src/
+contient le code source du jeu
+
+/gameobjects :
+    ・GameObject [Abstract] : [Items, Personnage, Plateforme]
+        Représente les différents types d'objets, par des coordonnées et des dimensions.
+
+    ・Personnage :
+        Représente un personnage, c'est un objet avec une vitesse en x et en y.
+
+    ・Plateforme [Abstract] : [PlateformeBase,...]
+        Représente une plateforme, c'est un objet avec une constante de saut.
+
+    ・PlateformeBase :
+        Représente les plateforme de type basique.
+
+    ・MovingPlateforme :
+        Représente une plateforme qui bouge, à l'horizontale.
+
+    ・Items [Abstract] : [Fusee, Helicoptere]
+        Représente les items, ce sont des objets qui dure un certains temps.
+
+    ・Fusee & Helicoptere: 
+        Représente une fusee/helicoptere, qui est un item.
+
+    ・Moveable [Interface] : [Personnage, MovingPlateforme]
+       Gère la mobilité (en modifiant les coordonnées), avec temps passé.
+
+    
+
+src
+    ├── gameobjects
+    │   ├── Fusee.java
+    │   ├── GameObject.java
+    │   ├── Helicoptere.java
+    │   ├── Items.java
+    │   ├── Joueur.java
+    │   ├── Moveable.java
+    │   ├── MovingPlateforme.java
+    │   ├── Personnage.java
+    │   ├── PlateformeBase.java
+    │   ├── Plateforme.java
+    │   └── Terrain.java
+    └── gui
+        ├── App.java
+        ├── images
+        │   ├── background.png
+        │   ├── doodle.png
+        │   └── plateforme.png
+        └── Vue.java
