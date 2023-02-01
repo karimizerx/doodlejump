@@ -2,23 +2,23 @@ package gui;
 
 import javax.swing.*;
 import java.awt.*;
+
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.nimbus.*;
 
 import gameobjects.*;
 
 public class App extends JFrame {
 
-    static int w = 500;
-    static int h = 1000;
-    Vue view;
-
     public App() {
         // Création de la fenêtre
         super("Menu"); // Création de la fenêtre avec son titre
         // Définition de l'opération lorsqu'on ferme la fenêtre
         // Ici, revient à exécuter "this.dispose()" (ne ferme que la fenêtre actuelle )
+        int width = Toolkit.getDefaultToolkit().getScreenSize().width;      //Largeur de l'écran"
+		int height = Toolkit.getDefaultToolkit().getScreenSize().height;    //Longueur de l'écran
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setSize(w, h); // Définition de la taille part défaut
+        this.setSize(width/3, height); // Définition de la taille part défaut
 
         // Positionne la fenêre au centre du conteneur null
         // (la fenêtre de l'ordinateur, le bureau en quelques sortes)
@@ -31,17 +31,25 @@ public class App extends JFrame {
         JPanel win = (JPanel) this.getContentPane();
         // win.setBackground(Color.BLACK);
         // win.setOpaque(true);
+        JButton play = new JButton("Play");
+        JButton multi = new JButton("Multiplayer");
+        JButton leaderboard = new JButton("Leaderboard");
+        JButton exit = new JButton("Exit");
+        
+        GridLayout gd = new GridLayout(4,1);   gd.setVgap(10);
+        JPanel menu = new JPanel(); menu.setLayout(gd);
+        
+        menu.add(play); menu.add(multi); menu.add(leaderboard); menu.add(exit);
+        this.add(menu);
+        menu.setBounds(width/2, height/2, width/2, height/2);
+        
+        play.addActionListener(e -> {
+			Game game = new Game();
+			this.setContentPane(game);
+			validate();
+		});
 
-        Personnage p = new Personnage(250, 300, 100, 100, -10);
-        Joueur j = new Joueur(p);
-        Terrain rt = new Terrain(j, 933, 600);
-        JFrame w = new JFrame("Doodle Jump de J'espère");
-        setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        add(new Vue(rt));
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
+        exit.addActionListener(e -> System.exit(0));
     }
 
     public static void main(String[] args) {
