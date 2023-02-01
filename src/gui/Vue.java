@@ -19,7 +19,7 @@ import java.io.*;
 
 public class Vue extends JPanel implements Runnable, KeyListener {
 
-    boolean isRunning;
+    public static boolean isRunning;
     Thread thread;
     BufferedImage view, terrainView, platformeView, persoView;
 
@@ -51,7 +51,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         try {
             view = new BufferedImage((int) terter.getWidth(), (int) terter.getHeight(), BufferedImage.TYPE_INT_RGB);
 
-            terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
+            System.out.println(chemin.charAt(chemin.length() - 7));
+            terrainView = ImageIO
+                    .read(new File(chemin + (chemin.charAt(chemin.length() - 7)) + "background.png"));
             platformeView = ImageIO.read(new File(chemin + "/" + "plateforme.png"));
             persoView = ImageIO.read(new File(chemin + "/" + "doodle.png"));
 
@@ -67,40 +69,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         // Gère les boutons flèches
         if (right) {
-            p.setX(p.getX() + 10);
+            p.setX(p.getX() + 5);
         } else if (left) {
-            p.setX(p.getX() - 3);
+            p.setX(p.getX() - 5);
         }
 
-        p.setDy(p.getDy() + 0.2);
-        p.setY(p.getY() + p.getDy());
-
-        // Si on est tout en bas de la fenêtre, endGame()
-        if (p.getY() > 900) {
-            isRunning = false;
-        }
-
-        if (p.getY() < lll) {
-            p.setY(lll);
-            for (Plateforme pf : terter.getPlateformesListe()) {
-                pf.setY(pf.getY() - (int) p.getDy());
-                if (pf.getY() > 933) {
-                    pf.setY(0);
-                    int r = new Random().nextInt(500);
-                    pf.setX(r);
-                }
-            }
-        }
-
-        for (Plateforme pf : terter.getPlateformesListe()) {
-            if ((p.getX() + 50 > pf.getX()) &&
-                    (p.getX() + 20 < pf.getX() + 68) &&
-                    (p.getY() + 70 > pf.getY()) &&
-                    (p.getY() + 70 < pf.getY() + 14) &&
-                    (p.getDy() > 0)) {
-                p.setDy(p.getDy() - 10);
-            }
-        }
+        terter.update();
     }
 
     public void draw() {
@@ -135,8 +109,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             while (isRunning) {
                 update();
                 draw();
-                Thread.sleep(1000 / 60);
+                Thread.sleep(10 );
             }
+            removeAll();
+            repaint();
         } catch (Exception e) {
             e.printStackTrace();
         }

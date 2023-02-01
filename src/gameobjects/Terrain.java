@@ -37,7 +37,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(100);
+        generateObstacles(10);
     }
 
     /**
@@ -74,6 +74,7 @@ public class Terrain {
     }
 
     private void endGame() {
+
         System.out.println("J'arrete le jeu");
     }
 
@@ -84,43 +85,40 @@ public class Terrain {
             object.setX(object.getWidth() / 2);
     }
 
-    public void update(double deltaT) {
-        Personnage jperso = joueur.getPerso();
-        jperso.move(deltaT);
-        limite(jperso);
+    public void update() {
+        Joueur j = this.joueur;
+        Personnage p = j.getPerso();
+        System.out.println("Dy = " + p.getDy());
+        System.out.println("Y  = " + p.getY());
 
-        // Si on dépasse le bas de la fenêtre, on arrête la game
-        if (jperso.getY() > 933) {
-            endGame();
-        } else if (jperso.getY() < H * height) {
-            // Sinon, si on a sauté jusqu'à une certaine "ligne"...
-            y = height * advancement;
+        p.setDy(p.getDy() + 0.2);
+        p.setY(p.getY() + p.getDy());
 
-            for (GameObject go : plateformesListe) {
-                go.setY(go.getY() - jperso.getDy()); // On fait descendre toutes les plateformes
-                // Si, une fois qu'on a fait descendre, la plateforme sort du cadre (par en bas)
-                if (go.getY() > height) {
-                    go.setY(0); // On la place tout en haut
-                    go.setX(new Random().nextInt((int) width)); // Et on la place à un endroit random
+        // Si on est tout en bas de la fenêtre, endGame()
+        if (p.getY() > 900) {
+            Vue.isRunning = false;
+        }
+
+        if (p.getY() < this.height / 2) {
+            p.setY(this.height / 2);
+            for (Plateforme pf : plateformesListe) {
+                pf.setY(pf.getY() - (int) p.getDy());
+                if (pf.getY() > 933) {
+                    pf.setY(0);
+                    int r = new Random().nextInt(500);
+                    pf.setX(r);
                 }
             }
         }
 
-        for (GameObject gameObject : plateformesListe) {
-            System.out.println("Je parcours toutes les plateformes");
-            /*
-             * if (gameObject.getClass().getName() == "MovingPlateforme") {
-             * System.out.println("Normalement je suis pas censé arrivé là");
-             * // jsp s'il ya un meilleur moyen pour voir si l'objet est moveable
-             * MovingPlateforme a = (MovingPlateforme) gameObject;
-             * a.move(deltaT);
-             * limite(a);
-             * }
-             */
-            System.out.println("Mtn je vais faire les collisions");
-            jperso.collides(gameObject);
-            System.out.println("Et voilà le travail");
-            System.out.println("Dy = " + jperso.getDy());
+        for (Plateforme pf : plateformesListe) {
+            if ((p.getX() + 50 > pf.getX()) &&
+                    (p.getX() + 20 < pf.getX() + 68) &&
+                    (p.getY() + 70 > pf.getY()) &&
+                    (p.getY() + 70 < pf.getY() + 14) &&
+                    (p.getDy() > 0)) {
+                p.setDy(-10);
+            }
         }
     }
 
