@@ -39,13 +39,16 @@ public class App extends JFrame {
         // win.setBackground(Color.BLACK);
         // win.setOpaque(true);
 
-        Personnage doodle = new Personnage(300, 300, 100, 100, 0);
-        Joueur j = new Joueur(doodle);
-        Terrain leRainT = new Terrain(j, h, w);
-
-        JPanel lavue = new Vue(leRainT);
-        lavue.setPreferredSize(new Dimension(w, h));
-        win.add(lavue);
+        Personnage p = new Personnage(250, 300, 100, 100, 0);
+        Joueur j = new Joueur(p);
+        Terrain rt = new Terrain(j, 933, 600);
+        JFrame w = new JFrame("Doodle Jump de J'espère");
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        add(new Vue(rt));
+        pack();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     public static void main(String[] args) {

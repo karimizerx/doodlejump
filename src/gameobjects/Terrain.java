@@ -37,7 +37,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(10);
+        generateObstacles(30);
     }
 
     /**
@@ -47,12 +47,12 @@ public class Terrain {
      * 
      */
     private void generateObstacles(int nb) {
-        nb = (int) (nb * difficulty);
-        for (int i = 0; i < nb; i++) {
-            int pfx = new Random().nextInt((int) this.width);
-            int pfy = new Random().nextInt((int) this.height);
-            Plateforme pf = new PlateformeBase(pfx, pfy, 100, 100, 0);
-            plateformesListe.add(pf);
+        plateformesListe = new ArrayList<Plateforme>();
+
+        for (int i = 0; i < (nb * difficulty); i++) {
+            Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
+                    new Random().nextInt((int) this.height), 60, 20, -10);
+            plateformesListe.add(p);
         }
     }
 
@@ -74,7 +74,6 @@ public class Terrain {
     }
 
     private void endGame() {
-        Vue.setRunning(false);
         System.out.println("J'arrete le jeu");
     }
 
