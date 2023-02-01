@@ -3,13 +3,6 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 import javax.swing.plaf.nimbus.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.imageio.*;
 
 import gameobjects.*;
 
@@ -39,7 +32,7 @@ public class App extends JFrame {
         // win.setBackground(Color.BLACK);
         // win.setOpaque(true);
 
-        Personnage p = new Personnage(250, 300, 100, 100, 0);
+        Personnage p = new Personnage(250, 300, 100, 100, -10);
         Joueur j = new Joueur(p);
         Terrain rt = new Terrain(j, 933, 600);
         JFrame w = new JFrame("Doodle Jump de J'espère");

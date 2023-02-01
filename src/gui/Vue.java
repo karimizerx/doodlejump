@@ -30,7 +30,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public Vue(Terrain ter) {
         this.terter = ter;
         // lll = (int) (terter.getHeight() * terter.getAdvancement());
-        lll = 150;
+        lll = (int) (terter.getHeight() * 0.5);
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
         addKeyListener(this);
     }
@@ -65,13 +65,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         Joueur j = terter.getJoueur();
         Personnage p = j.getPerso();
 
+        // Gère les boutons flèches
         if (right) {
-            p.setX(p.getX() + 3);
+            p.setX(p.getX() + 10);
         } else if (left) {
             p.setX(p.getX() - 3);
         }
+
         p.setDy(p.getDy() + 0.2);
         p.setY(p.getY() + p.getDy());
+
+        // Si on est tout en bas de la fenêtre, endGame()
         if (p.getY() > 900) {
             isRunning = false;
         }

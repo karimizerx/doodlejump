@@ -37,7 +37,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(30);
+        generateObstacles(100);
     }
 
     /**
@@ -90,7 +90,7 @@ public class Terrain {
         limite(jperso);
 
         // Si on dépasse le bas de la fenêtre, on arrête la game
-        if (jperso.getY() > 0) {
+        if (jperso.getY() > 933) {
             endGame();
         } else if (jperso.getY() < H * height) {
             // Sinon, si on a sauté jusqu'à une certaine "ligne"...
