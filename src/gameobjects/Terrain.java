@@ -37,7 +37,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(10);
+        generateObstacles(50);
     }
 
     /**
@@ -71,11 +71,6 @@ public class Terrain {
         }
         // si on veut des nouveaux obstacles.
         generateObstacles(c);
-    }
-
-    private void endGame() {
-
-        System.out.println("J'arrete le jeu");
     }
 
     private void limite(GameObject object) {
