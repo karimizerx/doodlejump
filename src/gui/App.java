@@ -10,7 +10,7 @@ import gameobjects.*;
 public class App extends JFrame {
     JFrame DoodleJumpheur;
     JPanel menu;
-    JButton buttonPlay, buttonMulti, buttonLeaderboard, buttonExit, buttonRetourMenu;
+    JButton buttonPlay, buttonMulti, buttonLeaderboard, buttonExit;
     int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran"
     int height = Toolkit.getDefaultToolkit().getScreenSize().height; // Longueur de l'écran
 
@@ -84,16 +84,11 @@ public class App extends JFrame {
         DJ.setVisible(false);
 
         // Initialisation des éléments
-        Personnage p = new Personnage(250, 300, 100, 100, -10);
+        Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight(), 100, 100, -10);
         Joueur j = new Joueur(p);
         Terrain rt = new Terrain(j, DJ.getHeight(), DJ.getWidth());
-        buttonRetourMenu = new JButton("Menu");
-        buttonRetourMenu.setPreferredSize(new Dimension(500, 500));
 
         // Ajout des éléments à la fenêtre
-        DJ.add(buttonRetourMenu);
-        buttonRetourMenu.setBounds(150, DJ.getWidth() - 150, (int) buttonRetourMenu.getPreferredSize().getWidth(),
-                (int) buttonRetourMenu.getPreferredSize().getHeight());
         DJ.add(new Vue(rt));
 
         return DJ;

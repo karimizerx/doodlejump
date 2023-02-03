@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 // Import d'autres dossiers
-import gameobjects.*;
 import gui.Vue;
 
 public class Terrain {
@@ -37,7 +36,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(50);
+        generateObstacles(20);
     }
 
     /**
@@ -83,14 +82,12 @@ public class Terrain {
     public void update() {
         Joueur j = this.joueur;
         Personnage p = j.getPerso();
-        System.out.println("Dy = " + p.getDy());
-        System.out.println("Y  = " + p.getY());
 
         p.setDy(p.getDy() + 0.2);
         p.setY(p.getY() + p.getDy());
 
         // Si on est tout en bas de la fenêtre, endGame()
-        if (p.getY() > 900) {
+        if (p.getY() > this.height) {
             Vue.isRunning = false;
         }
 
@@ -98,7 +95,7 @@ public class Terrain {
             p.setY(this.height / 2);
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
-                if (pf.getY() > 933) {
+                if (pf.getY() > this.height) {
                     pf.setY(0);
                     int r = new Random().nextInt(500);
                     pf.setX(r);
@@ -106,15 +103,9 @@ public class Terrain {
             }
         }
 
-        for (Plateforme pf : plateformesListe) {
-            if ((p.getX() + 50 > pf.getX()) &&
-                    (p.getX() + 20 < pf.getX() + 68) &&
-                    (p.getY() + 70 > pf.getY()) &&
-                    (p.getY() + 70 < pf.getY() + 14) &&
-                    (p.getDy() > 0)) {
-                p.setDy(-10);
-            }
-        }
+        p.collides_plateforme(this);
+
+        limite(p);
     }
 
     // Getter & Setter

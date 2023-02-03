@@ -24,6 +24,8 @@ public class MenuPrincipal extends JPanel {
         Border borderb = BorderFactory.createLineBorder(Color.BLUE, 1);
         menu.setBorder(bordera);
         this.setBorder(borderb);
+
+        controlButton();
     }
 
     public JPanel createMenuRetour() {

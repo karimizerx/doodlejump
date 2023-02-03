@@ -50,26 +50,34 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         String chemin = (new File("gui/images/")).getAbsolutePath();
 
         try {
-            view = new BufferedImage((int) terter.getWidth(), (int) terter.getHeight(), BufferedImage.TYPE_INT_RGB);
+            try {
+                view = new BufferedImage((int) terter.getWidth(), (int) terter.getHeight(), BufferedImage.TYPE_INT_RGB);
 
-            System.out.println(chemin.charAt(chemin.length() - 7));
-            terrainView = ImageIO
-                    .read(new File(chemin + (chemin.charAt(chemin.length() - 7)) + "background.png"));
-            platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
-            persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
-            settingView = ImageIO.read(new File(chemin + "/" + "setting.png"));
+                terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
+                platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
+                persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
+                settingView = ImageIO.read(new File(chemin + "/" + "setting.png"));
+
+            } catch (Exception e) {
+                terrainView = ImageIO.read(new File("src/gui/images/background.png"));
+                platformeView = ImageIO.read(new File("src/gui/images/plateforme.png"));
+                persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
+                settingView = ImageIO.read(new File("src/gui/images/setting.png"));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         System.out.println(getGraphics() == null);
     }
 
     public boolean endGame() {
         isRunning = false;
-        if (terter.getJoueur().getPerso().getY() > 900) {
+        if (terter.getJoueur().getPerso().getY() + terter.getJoueur().getPerso().getHeight() > this.getHeight()) {
             return true;
         } else {
+            isRunning = true;
             return false;
         }
     }
@@ -169,7 +177,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (0 <= e.getX() && e.getX() <= 100 && 0 <= e.getY() && e.getY() <= 100) {
+                if (0 <= e.getX() && e.getX() <= 50 && 0 <= e.getY() && e.getY() <= 50) {
                     isRunning = false;
                     isMenu = true;
                 }
