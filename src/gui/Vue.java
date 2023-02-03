@@ -25,7 +25,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     Terrain terter;
     int lll;
-    boolean isRight, isLeft, isMenu, isEsc;
+    boolean isMenu, isEsc;
     boolean pause = false;
     JFrame menuPause;
 
@@ -83,20 +83,25 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         Personnage p = j.getPerso();
 
         // Gère les boutons flèches
-        if (isRight) {
+        if (p.isRight) {
             p.setX(p.getX() + 5);
-        } else if (isLeft) {
+        } else if (p.isLeft) {
             p.setX(p.getX() - 5);
         }
-        
-        
-
+        j = terter.getJoueurB();
+        if(j!=null){
+            p = j.getPerso();
+            if (p.isRight) {
+                p.setX(p.getX() + 5);
+            } else if (p.isLeft) {
+                p.setX(p.getX() - 5);
+            }
+        }
         terter.update();
     }
 
     public void draw() {
-        Joueur j = terter.getJoueurA();
-        Personnage p = j.getPerso();
+        Personnage pA = terter.getJoueurA().getPerso();
 
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         g2.drawImage(terrainView, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
@@ -110,8 +115,11 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                     (int) pf.getHeight(),
                     null);
         }
-        g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
-
+        g2.drawImage(persoView, (int) pA.getX(), (int) pA.getY(), (int) pA.getWidth(), (int) pA.getHeight(), null);
+        if(terter.getJoueurB()!=null){
+            Personnage pB = terter.getJoueurB().getPerso();
+            g2.drawImage(persoView, (int) pB.getX(), (int) pB.getY(), (int) pB.getWidth(), (int) pB.getHeight(), null);
+        }
         Graphics g = getGraphics();
         g.drawImage(view, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
         g.dispose();
@@ -154,12 +162,25 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            isRight = true;
+        if((terter.isHost && terter.multiplayer)||!terter.multiplayer){
+            Personnage pA=terter.getJoueurA().getPerso();
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                pA.isRight = true;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                pA.isLeft = true;
+            }
+            if(!terter.multiplayer){
+                Personnage pB=terter.getJoueurB().getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    pB.isRight = true;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    pB.isLeft = true;
+                }
+            }
         }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            isLeft = true;
-        }
+
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             isEsc = true;
             pause = !pause;
@@ -175,11 +196,23 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            isRight = false;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            isLeft = false;
+        if((terter.isHost && terter.multiplayer)||!terter.multiplayer){
+            Personnage pA=terter.getJoueurA().getPerso();
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                pA.isRight = false;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                pA.isLeft = false;
+            }
+            if(!terter.multiplayer){
+                Personnage pB=terter.getJoueurB().getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    pB.isRight = false;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    pB.isLeft = false;
+                }
+            }
         }
     }
 

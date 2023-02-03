@@ -1,5 +1,6 @@
 package gameobjects;
 
+import java.io.IOException;
 // Import de packages java
 import java.util.ArrayList;
 import java.util.Random;
@@ -8,6 +9,7 @@ import java.util.Random;
 import gui.Vue;
 import multiplayer.JoueurConnecte;
 import multiplayer.Serveur;
+import multiplayer.ThreadMouvement;
 
 public class Terrain{
 
@@ -31,9 +33,10 @@ public class Terrain{
      */
     private double difficulty = 1.0;
 
-    public Terrain(Joueur joueur, double height, double width) {
+    public Terrain(Joueur joueurA,Joueur joueurB, double height, double width) {
         this.plateformesListe = new ArrayList<Plateforme>();
-        this.joueurA = joueur;
+        this.joueurA = joueurA;
+        this.joueurB = joueurB;
         this.height = height;
         this.width = width;
         generateObstacles(20);
@@ -80,17 +83,22 @@ public class Terrain{
     }
 
     public void update() {
-        Joueur j = this.joueurA;
+        if((isHost && multiplayer)||!multiplayer){
+            update(joueurA);
+            if(joueurB!=null)update(joueurB);
+            if(isHost && multiplayer)host.sendTerrain(this);
+        }else client.receiveTerrain(this);
+    }
+
+    public void update(Joueur j){
         Personnage p = j.getPerso();
 
         p.setDy(p.getDy() + 0.2);
         p.setY(p.getY() + p.getDy());
-
         // Si on est tout en bas de la fenêtre, endGame()
         if (p.getY() + 0.7 * p.getHeight() >= this.height) {
             Vue.isRunning = false;
         }
-
         if (p.getY() < this.height / 2) {
             p.setY(this.height / 2);
             for (Plateforme pf : plateformesListe) {
@@ -105,7 +113,6 @@ public class Terrain{
         for (Plateforme pf : plateformesListe) {
             p.collides_plateforme(pf);
         }
-
         limite(p);
     }
 

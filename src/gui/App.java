@@ -88,8 +88,10 @@ public class App extends JFrame{
 
         // Initialisation des éléments
         Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
+        Personnage p2 = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
         Joueur j = new Joueur(p);
-        Terrain rt = new Terrain(j, DJ.getHeight(), DJ.getWidth());
+        Joueur j2=new Joueur(p2);
+        Terrain rt = new Terrain(j,j2, DJ.getHeight(), DJ.getWidth());
 
         // Ajout des éléments à la fenêtre
         DJ.add(new Vue(rt));
