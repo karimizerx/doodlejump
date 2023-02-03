@@ -68,6 +68,7 @@ public class App extends JFrame{
         m.add(buttonLeaderboard);
         m.add(buttonExit);
 
+
         return m;
     }
 
@@ -134,10 +135,8 @@ public class App extends JFrame{
         });
     }
 
-   
-
     public static void main(String[] args) {
-        System.out.println("Aloooo");
+       
         EventQueue.invokeLater(() -> {
             // Appliquer un look'n feel
             try {
@@ -149,6 +148,6 @@ public class App extends JFrame{
             App mw = new App();
             mw.setVisible(true);
         });
-        System.out.println("Alooooooooooooooooooooo");
+        
     }
 }

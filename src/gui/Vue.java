@@ -28,6 +28,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     boolean isRight, isLeft, isMenu, isEsc;
     boolean pause = false;
     JFrame menuPause;
+    JPanel menuPanel;
 
     public Vue(Terrain ter) {
         this.terter = ter;
@@ -67,7 +68,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             e.printStackTrace();
         }
 
-        System.out.println(getGraphics() == null);
+        
     }
 
     public boolean endGame() {
@@ -128,19 +129,8 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 draw();
                 Thread.sleep(10);
             }
-            /*
-             * if (isMenu) {
-             * JPanel j = new MenuPrincipal(this);
-             * // j.setSize(0, 0);
-             * this.add(j);
-             * // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
-             * j.setBounds(0, 0, 0, 0);
-             * 
-             * }
-             */
             if (endGame()) {
                 removeAll();
-                repaint();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,12 +155,29 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             isEsc = true;
             pause = !pause;
             menuPause = new JFrame();
-            menuPause.setLayout(new FlowLayout());
-            menuPause.setBounds((int)terter.getWidth()/2, (int)terter.getHeight()/2, 200, 200);
+            menuPause.setBounds((int)terter.getWidth()*3/2 -100, (int)terter.getHeight()/2 -100 , 100, 200);
+
+
             JButton cont = new JButton("Continue");
             JButton exit = new JButton("Exit");
-            menuPause.add(cont, exit);
-            menuPause.setVisible(pause);
+          
+
+            menuPause.add(cont);
+            menuPause.add(exit);
+            menuPause.setVisible(true);
+
+            cont.addActionListener(ev -> {
+                menuPause.dispose();
+                pause = !pause;
+
+                });
+            
+
+            exit.addActionListener(ev -> {
+                menuPause.dispose();
+                JFrame retourMenu = new App();
+                retourMenu.setVisible(true);
+                });
         }
     }
 
