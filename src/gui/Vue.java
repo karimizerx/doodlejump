@@ -10,8 +10,6 @@ import gameobjects.Terrain;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import java.awt.image.*;
 import javax.imageio.*;
@@ -152,11 +150,17 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             isLeft = true;
         }
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            isEsc = true;
+            pause();
+        }
+    }
+
+    void pause(){
+        isEsc = true;
             pause = !pause;
             menuPause = new JFrame();
-            menuPause.setBounds((int)terter.getWidth()*3/2 -100, (int)terter.getHeight()/2 -100 , 100, 200);
-
+            menuPause.setBounds((int)terter.getWidth()*3/2 -50, (int)terter.getHeight()/2 -60 , 100, 120);
+            menuPause.setResizable(false);
+            menuPause.setLayout(new FlowLayout());
 
             JButton cont = new JButton("Continue");
             JButton exit = new JButton("Exit");
@@ -178,7 +182,6 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 JFrame retourMenu = new App();
                 retourMenu.setVisible(true);
                 });
-        }
     }
 
     @Override
@@ -191,16 +194,4 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         }
     }
 
-    public void retournMenu() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                if (0 <= e.getX() && e.getX() <= 50 && 0 <= e.getY() && e.getY() <= 50) {
-                    isRunning = false;
-                    isMenu = true;
-                }
-            }
-        });
-    }
 }

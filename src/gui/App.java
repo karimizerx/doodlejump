@@ -2,8 +2,6 @@ package gui;
 
 import javax.swing.*;
 
-import java.awt.event.MouseAdapter;
-
 import java.awt.*;
 
 import javax.swing.plaf.nimbus.*;
