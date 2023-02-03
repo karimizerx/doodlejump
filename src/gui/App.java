@@ -8,7 +8,7 @@ import javax.swing.plaf.nimbus.*;
 
 import gameobjects.*;
 
-public class App extends JFrame{
+public class App extends JFrame {
     JFrame DoodleJumpheur;
     JPanel menu;
     JButton buttonPlay, buttonMulti, buttonLeaderboard, buttonExit;
@@ -23,7 +23,7 @@ public class App extends JFrame{
         // Action en cas de X : fermer de toutes les fenêtres + fin programme
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Définition de la taille
-        this.setSize(new Dimension(width/3, height));
+        this.setSize(new Dimension(width / 3, (int) (height * 0.95)));
         // Empêche la fenetre d'être redimensionée
         this.setResizable(false);
         // Placement de la fenêtre au centre du bureau (null)
@@ -66,7 +66,6 @@ public class App extends JFrame{
         m.add(buttonLeaderboard);
         m.add(buttonExit);
 
-
         return m;
     }
 
@@ -75,7 +74,7 @@ public class App extends JFrame{
         JFrame DJ = new JFrame();
         DJ.setTitle("Doodle Jumpheur");
         // Définition de la taille de cette fenêtre de jeu
-        DJ.setSize(width/3, height);
+        DJ.setSize(width / 3, (int) (height * 0.95));
         // Empêche la fenetre d'être redimensionée
         DJ.setResizable(false);
         // Action à effectuer en cas de fermeture : fermer uniquement de cette fenêtre
@@ -134,7 +133,7 @@ public class App extends JFrame{
     }
 
     public static void main(String[] args) {
-       
+
         EventQueue.invokeLater(() -> {
             // Appliquer un look'n feel
             try {
@@ -146,6 +145,6 @@ public class App extends JFrame{
             App mw = new App();
             mw.setVisible(true);
         });
-        
+
     }
 }

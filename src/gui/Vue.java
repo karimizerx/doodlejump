@@ -10,12 +10,13 @@ import gameobjects.Terrain;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import javax.swing.WindowConstants;
 
 import java.awt.image.*;
 import javax.imageio.*;
 import java.io.*;
 
-public class Vue extends JPanel implements Runnable, KeyListener{
+public class Vue extends JPanel implements Runnable, KeyListener {
 
     public static boolean isRunning;
     Thread thread;
@@ -66,7 +67,6 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             e.printStackTrace();
         }
 
-        
     }
 
     public boolean endGame() {
@@ -88,8 +88,6 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         } else if (isLeft) {
             p.setX(p.getX() - 5);
         }
-        
-        
 
         terter.update();
     }
@@ -123,12 +121,14 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             requestFocusInWindow();
             start();
             while (isRunning) {
-                if(!pause) update();
+                if (!pause)
+                    update();
                 draw();
                 Thread.sleep(10);
             }
             if (endGame()) {
                 removeAll();
+                repaint();
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,34 +154,33 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         }
     }
 
-    void pause(){
+    void pause() {
         isEsc = true;
+        pause = !pause;
+        menuPause = new JFrame();
+        menuPause.setBounds((int) terter.getWidth() * 3 / 2 - 50, (int) terter.getHeight() / 2 - 60, 100, 120);
+        menuPause.setResizable(false);
+        menuPause.setLayout(new FlowLayout());
+        menuPause.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+        JButton cont = new JButton("Continue");
+        JButton exit = new JButton("Exit");
+
+        menuPause.add(cont);
+        menuPause.add(exit);
+        menuPause.setVisible(true);
+
+        cont.addActionListener(ev -> {
+            menuPause.dispose();
             pause = !pause;
-            menuPause = new JFrame();
-            menuPause.setBounds((int)terter.getWidth()*3/2 -50, (int)terter.getHeight()/2 -60 , 100, 120);
-            menuPause.setResizable(false);
-            menuPause.setLayout(new FlowLayout());
 
-            JButton cont = new JButton("Continue");
-            JButton exit = new JButton("Exit");
-          
+        });
 
-            menuPause.add(cont);
-            menuPause.add(exit);
-            menuPause.setVisible(true);
-
-            cont.addActionListener(ev -> {
-                menuPause.dispose();
-                pause = !pause;
-
-                });
-            
-
-            exit.addActionListener(ev -> {
-                menuPause.dispose();
-                JFrame retourMenu = new App();
-                retourMenu.setVisible(true);
-                });
+        exit.addActionListener(ev -> {
+            menuPause.dispose();
+            JFrame retourMenu = new App();
+            retourMenu.setVisible(true);
+        });
     }
 
     @Override
