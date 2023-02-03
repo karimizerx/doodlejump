@@ -1,13 +1,16 @@
 package gui;
 
 import javax.swing.*;
+
+import java.awt.event.MouseAdapter;
+
 import java.awt.*;
 
 import javax.swing.plaf.nimbus.*;
 
 import gameobjects.*;
 
-public class App extends JFrame {
+public class App extends JFrame{
     JFrame DoodleJumpheur;
     JPanel menu;
     JButton buttonPlay, buttonMulti, buttonLeaderboard, buttonExit;
@@ -139,6 +142,8 @@ public class App extends JFrame {
             lb.setBounds(300, 300, 150, 150);
         });
     }
+
+   
 
     public static void main(String[] args) {
         System.out.println("Aloooo");

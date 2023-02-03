@@ -1,6 +1,7 @@
 package gui;
 
 import javax.swing.*;
+import javax.swing.event.MouseInputListener;
 
 import gameobjects.Joueur;
 import gameobjects.Personnage;
@@ -17,15 +18,17 @@ import java.awt.image.*;
 import javax.imageio.*;
 import java.io.*;
 
-public class Vue extends JPanel implements Runnable, KeyListener {
+public class Vue extends JPanel implements Runnable, KeyListener{
 
     public static boolean isRunning;
     Thread thread;
-    BufferedImage view, terrainView, platformeView, persoView, settingView;
+    BufferedImage view, terrainView, platformeView, persoView;
 
     Terrain terter;
     int lll;
-    boolean isRight, isLeft, isMenu;
+    boolean isRight, isLeft, isMenu, isEsc;
+    boolean pause = false;
+
 
     public Vue(Terrain ter) {
         this.terter = ter;
@@ -34,6 +37,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
         retournMenu();
         addKeyListener(this);
+        
     }
 
     @Override
@@ -56,13 +60,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
                 platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
                 persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
-                settingView = ImageIO.read(new File(chemin + "/" + "setting.png"));
 
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/background.png"));
                 platformeView = ImageIO.read(new File("src/gui/images/plateforme.png"));
                 persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
-                settingView = ImageIO.read(new File("src/gui/images/setting.png"));
             }
 
         } catch (Exception e) {
@@ -92,6 +94,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         } else if (isLeft) {
             p.setX(p.getX() - 5);
         }
+        
+        
 
         terter.update();
     }
@@ -112,7 +116,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     (int) pf.getHeight(),
                     null);
         }
-        g2.drawImage(settingView, 0, 0, 50, 50, null);
         g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
 
         Graphics g = getGraphics();
@@ -126,7 +129,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             requestFocusInWindow();
             start();
             while (isRunning) {
-                update();
+                if(!pause) update();
                 draw();
                 Thread.sleep(10);
             }
@@ -160,6 +163,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             isLeft = true;
         }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            isEsc = true;
+            pause = !pause;
+        }
     }
 
     @Override
@@ -184,4 +191,5 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             }
         });
     }
+
 }
