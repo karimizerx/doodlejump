@@ -24,9 +24,6 @@ public class Serveur implements Runnable {
          */
         serveurSocket.setSoTimeout(30000);
     }
-
-//https://stackoverflow.com/questions/22563986/understanding-getinputstream-and-getoutputstream
-
     
     public int getPos(){
         DataInputStream in;
@@ -43,7 +40,10 @@ public class Serveur implements Runnable {
         ObjectOutputStream in;
         try {
             in =  new ObjectOutputStream(serveur.client.getOutputStream());
-            in.writeObject(terrain);
+            in.writeObject(terrain.getPlateformesListe());
+            in.writeObject(terrain.getJoueurA());
+            in.writeObject(terrain.getJoueurB());
+            in.writeObject(terrain.getY());
         } catch (Exception e) {
             e.printStackTrace();
         } 

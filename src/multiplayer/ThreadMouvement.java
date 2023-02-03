@@ -11,7 +11,6 @@ public class ThreadMouvement implements Runnable {
     Serveur serveur;
     JoueurConnecte client;
     Terrain terrain;
-    BufferedReader in;
     public ThreadMouvement(Serveur serveur,JoueurConnecte client,Terrain court){
         this.serveur= serveur;
         this.client=client;
@@ -20,12 +19,11 @@ public class ThreadMouvement implements Runnable {
     public void run() {
         while(true){
             if(terrain.isHost){
-
-                terrain.setPlayerBmvt(terrain.getPlayerBmvt());
+                serveur.sendTerrain(terrain);
+                terrain.setPlayerBmvt(serveur.getPos());//recevoir ce que le mvt du client
             }else{
-                client.sendPos(terrain.getPlayerBmvt());
-                terrain.setInfo()
-                terrain=(Terrain)(new ObjectInputStream(client.client.getInputStream())).readObject();
+                client.sendPos(terrain.getPlayerBmvt());//le client envoi le mvt de son joueur
+                client.receiveTerrain(terrain);    
             }
         }
     }

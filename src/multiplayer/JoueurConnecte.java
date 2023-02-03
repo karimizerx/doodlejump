@@ -1,8 +1,13 @@
 package multiplayer;
 
 import java.net.*;
+import java.util.ArrayList;
 import java.io.*;
 import javax.swing.*;
+
+import gameobjects.Joueur;
+import gameobjects.Plateforme;
+import gameobjects.Terrain;
 
 /* On ne calcule plus rien sur la machine du joueur qui se connecte. Le host calcule tout et passe l'information.  
 * On enverra seulement l'etat de la raquette (Going_UP,Going_DOWN,IDLE)
@@ -44,29 +49,24 @@ public class JoueurConnecte {
     /**
      * @return tableau qui contient l'etat de la partie, la position de la raquette du host, coordonnées de la balle.
      */
-    public Double[] getCoordonnee(){
-        Double[] tmp=new Double[4];
-            /*tmp:
-            * 0 -> etat de la partie 0=n'est pas terminée 1=partie terminée
-            * 1 -> position de la raquetteA
-            * 2 -> position de la raquetteB
-            * 3 -> ballX
-            * 4 -> ballY
-            */
-        DataInputStream in;
+    public void receiveTerrain(Terrain terrain){
+        ObjectInputStream in;
         try {
-                in = new DataInputStream(client.getInputStream());
-                for(int i=0;i<4;i++){
-                    tmp[i]=in.readDouble();
-                }
-                
-                return tmp;
+            in = new ObjectInputStream(client.getInputStream());
+            terrain.setPlateformesListe((ArrayList<Plateforme>)in.readObject());
+            terrain.setJoueurA((Joueur)in.readObject());
+            terrain.setJoueurB((Joueur)in.readObject());
+            terrain.setY((double)in.readObject());                
         } catch (IOException e) {
             System.out.println("bug2");
             e.printStackTrace();
-            return null;
+        }catch (ClassNotFoundException c){
+            c.printStackTrace();
+            System.out.println("zebi");
         }
     }
+
+
 
     public void sendPos(double a){
         try{

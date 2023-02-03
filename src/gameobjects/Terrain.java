@@ -12,9 +12,9 @@ import multiplayer.Serveur;
 public class Terrain{
 
     private ArrayList<Plateforme> plateformesListe;
-
     private Joueur joueurA;
     private Joueur joueurB=null;
+    private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
     public boolean multiplayer=false;
     public boolean isHost=false;
@@ -22,7 +22,6 @@ public class Terrain{
     private JoueurConnecte client=null;
 
     private final double height, width;// dimensions du terrain
-    private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
     /**
      * Baisse plus le score monte, affecte la densite des plateformes et la proba
