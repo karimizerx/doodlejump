@@ -25,7 +25,7 @@ public class App extends JFrame{
         // Action en cas de X : fermer de toutes les fenêtres + fin programme
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Définition de la taille
-        this.setSize(new Dimension(600, 933));
+        this.setSize(new Dimension(width/3, height));
         // Empêche la fenetre d'être redimensionée
         this.setResizable(false);
         // Placement de la fenêtre au centre du bureau (null)
@@ -76,7 +76,7 @@ public class App extends JFrame{
         JFrame DJ = new JFrame();
         DJ.setTitle("Doodle Jumpheur");
         // Définition de la taille de cette fenêtre de jeu
-        DJ.setSize(600, 933);
+        DJ.setSize(width/3, height);
         // Empêche la fenetre d'être redimensionée
         DJ.setResizable(false);
         // Action à effectuer en cas de fermeture : fermer uniquement de cette fenêtre
