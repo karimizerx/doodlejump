@@ -17,22 +17,22 @@ import java.awt.image.*;
 import javax.imageio.*;
 import java.io.*;
 
-public class Vue extends JPanel implements Runnable, KeyListener {
+public class Vue extends JPanel implements Runnable, KeyListener{
 
     public static boolean isRunning;
     Thread thread;
-    BufferedImage view, terrainView, platformeView, persoView, settingView;
+    BufferedImage view, terrainView, platformeView, persoView;
 
     Terrain terter;
     int lll;
-    boolean isRight, isLeft, isMenu;
+    boolean isRight, isLeft, isMenu, isEsc;
+    boolean pause = false;
+    JFrame menuPause;
 
     public Vue(Terrain ter) {
         this.terter = ter;
-        // lll = (int) (terter.getHeight() * terter.getAdvancement());
-        lll = (int) (terter.getHeight() * 0.5);
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
-        retournMenu();
+        // retournMenu();
         addKeyListener(this);
     }
 
@@ -52,12 +52,15 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         try {
             view = new BufferedImage((int) terter.getWidth(), (int) terter.getHeight(), BufferedImage.TYPE_INT_RGB);
 
-            System.out.println(chemin.charAt(chemin.length() - 7));
-            terrainView = ImageIO
-                    .read(new File(chemin + (chemin.charAt(chemin.length() - 7)) + "background.png"));
-            platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
-            persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
-            settingView = ImageIO.read(new File(chemin + "/" + "setting.png"));
+                terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
+                platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
+                persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
+
+            } catch (Exception e) {
+                terrainView = ImageIO.read(new File("src/gui/images/background.png"));
+                platformeView = ImageIO.read(new File("src/gui/images/plateforme.png"));
+                persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -84,6 +87,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         } else if (isLeft) {
             p.setX(p.getX() - 5);
         }
+        
+        
 
         terter.update();
     }
@@ -104,7 +109,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     (int) pf.getHeight(),
                     null);
         }
-        g2.drawImage(settingView, 0, 0, 50, 50, null);
         g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
 
         Graphics g = getGraphics();
@@ -118,18 +122,20 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             requestFocusInWindow();
             start();
             while (isRunning) {
-                update();
+                if(!pause) update();
                 draw();
                 Thread.sleep(10);
             }
-            if (isMenu) {
-                JPanel j = new MenuPrincipal(this);
-                // j.setSize(0, 0);
-                this.add(j);
-                // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
-                j.setBounds(0, 0, 0, 0);
-
-            }
+            /*
+             * if (isMenu) {
+             * JPanel j = new MenuPrincipal(this);
+             * // j.setSize(0, 0);
+             * this.add(j);
+             * // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
+             * j.setBounds(0, 0, 0, 0);
+             * 
+             * }
+             */
             if (endGame()) {
                 removeAll();
                 repaint();
@@ -139,6 +145,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    // Gestion des boutons
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -151,6 +158,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             isLeft = true;
+        }
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            isEsc = true;
+            pause = !pause;
+            menuPause = new JFrame();
+            menuPause.setLayout(new FlowLayout());
+            menuPause.setBounds((int)terter.getWidth()/2, (int)terter.getHeight()/2, 200, 200);
+            JButton cont = new JButton("Continue");
+            JButton exit = new JButton("Exit");
+            menuPause.add(cont, exit);
+            menuPause.setVisible(pause);
         }
     }
 

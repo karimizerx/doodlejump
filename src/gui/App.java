@@ -1,13 +1,16 @@
 package gui;
 
 import javax.swing.*;
+
+import java.awt.event.MouseAdapter;
+
 import java.awt.*;
 
 import javax.swing.plaf.nimbus.*;
 
 import gameobjects.*;
 
-public class App extends JFrame {
+public class App extends JFrame{
     JFrame DoodleJumpheur;
     JPanel menu;
     JButton buttonPlay, buttonMulti, buttonLeaderboard, buttonExit;
@@ -22,7 +25,7 @@ public class App extends JFrame {
         // Action en cas de X : fermer de toutes les fenêtres + fin programme
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Définition de la taille
-        this.setSize(new Dimension(600, 933));
+        this.setSize(new Dimension(width/3, height));
         // Empêche la fenetre d'être redimensionée
         this.setResizable(false);
         // Placement de la fenêtre au centre du bureau (null)
@@ -73,7 +76,7 @@ public class App extends JFrame {
         JFrame DJ = new JFrame();
         DJ.setTitle("Doodle Jumpheur");
         // Définition de la taille de cette fenêtre de jeu
-        DJ.setSize(600, 933);
+        DJ.setSize(width/3, height);
         // Empêche la fenetre d'être redimensionée
         DJ.setResizable(false);
         // Action à effectuer en cas de fermeture : fermer uniquement de cette fenêtre
@@ -84,7 +87,7 @@ public class App extends JFrame {
         DJ.setVisible(false);
 
         // Initialisation des éléments
-        Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight(), 100, 100, -10);
+        Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
         Joueur j = new Joueur(p);
         Terrain rt = new Terrain(j, DJ.getHeight(), DJ.getWidth());
 
@@ -115,15 +118,6 @@ public class App extends JFrame {
             this.dispose();
         });
 
-        /*
-         * A METTRE DANS LE JEU !
-         * buttonExit.addActionListener(e -> {
-         * DoodleJumpheur.dispose();
-         * JFrame retourMenu = new App();
-         * retourMenu.setVisible(true);
-         * });
-         */
-
         buttonExit.addActionListener(e -> {
             System.exit(0);
 
@@ -139,6 +133,8 @@ public class App extends JFrame {
             lb.setBounds(300, 300, 150, 150);
         });
     }
+
+   
 
     public static void main(String[] args) {
         System.out.println("Aloooo");

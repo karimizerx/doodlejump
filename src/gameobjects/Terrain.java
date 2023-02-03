@@ -87,7 +87,7 @@ public class Terrain{
         p.setY(p.getY() + p.getDy());
 
         // Si on est tout en bas de la fenêtre, endGame()
-        if (p.getY() > this.height) {
+        if (p.getY() + 0.7 * p.getHeight() >= this.height) {
             Vue.isRunning = false;
         }
 
@@ -102,7 +102,10 @@ public class Terrain{
                 }
             }
         }
-        p.collides_plateforme(this);
+        for (Plateforme pf : plateformesListe) {
+            p.collides_plateforme(pf);
+        }
+
         limite(p);
     }
 
