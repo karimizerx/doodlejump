@@ -50,6 +50,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         String chemin = (new File("gui/images/")).getAbsolutePath();
 
         try {
+            try{
             view = new BufferedImage((int) terter.getWidth(), (int) terter.getHeight(), BufferedImage.TYPE_INT_RGB);
 
                 terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
@@ -62,7 +63,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
             }
 
-        } catch (Exception e) {
+        } catch(Exception e) {
             e.printStackTrace();
         }
         System.out.println(getGraphics() == null);
@@ -70,7 +71,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     public boolean endGame() {
         isRunning = false;
-        if (terter.getJoueur().getPerso().getY() > 900) {
+        if (terter.getJoueurA().getPerso().getY() > 900) {
             return true;
         } else {
             return false;
@@ -78,7 +79,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     }
 
     public void update() {
-        Joueur j = terter.getJoueur();
+        Joueur j = terter.getJoueurA();
         Personnage p = j.getPerso();
 
         // Gère les boutons flèches
@@ -94,7 +95,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     }
 
     public void draw() {
-        Joueur j = terter.getJoueur();
+        Joueur j = terter.getJoueurA();
         Personnage p = j.getPerso();
 
         Graphics2D g2 = (Graphics2D) view.getGraphics();
