@@ -25,7 +25,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     Terrain terter;
     int lll;
-    boolean isRight, isLeft, isMenu;
+    static boolean isMenu;
 
     public Vue(Terrain ter) {
         this.terter = ter;
@@ -74,7 +74,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public boolean endGame() {
         isRunning = false;
-        if (terter.getJoueur().getPerso().getY() + terter.getJoueur().getPerso().getHeight() > this.getHeight()) {
+        if (terter.getJoueurA().getPerso().getY() + terter.getJoueurA().getPerso().getHeight() > this.getHeight()) {
             return true;
         } else {
             isRunning = true;
@@ -83,22 +83,29 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     public void update() {
-        Joueur j = terter.getJoueur();
-        Personnage p = j.getPerso();
+        Personnage p = terter.getJoueurA().getPerso();
 
         // Gère les boutons flèches
-        if (isRight) {
+        if (p.isRight) {
             p.setX(p.getX() + 5);
-        } else if (isLeft) {
+        } else if (p.isLeft) {
             p.setX(p.getX() - 5);
+        }
+        if(terter.getJoueurA()!=null){
+            p = terter.getJoueurB().getPerso();
+            if (p.isRight) {
+                p.setX(p.getX() + 5);
+            } else if (p.isLeft) {
+                p.setX(p.getX() - 5);
+            }
         }
 
         terter.update();
     }
 
     public void draw() {
-        Joueur j = terter.getJoueur();
-        Personnage p = j.getPerso();
+        Personnage pA = terter.getJoueurA().getPerso();
+        Personnage pB = terter.getJoueurB()==null? null:terter.getJoueurB().getPerso();
 
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         g2.drawImage(terrainView, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
@@ -113,7 +120,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     null);
         }
         g2.drawImage(settingView, 0, 0, 50, 50, null);
-        g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+        g2.drawImage(persoView, (int) pA.getX(), (int) pA.getY(), (int) pA.getWidth(), (int) pA.getHeight(), null);
+        if(pB!=null) g2.drawImage(persoView, (int) pB.getX(), (int) pB.getY(), (int) pB.getWidth(), (int) pB.getHeight(), null);
 
         Graphics g = getGraphics();
         g.drawImage(view, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
@@ -154,34 +162,43 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            isRight = true;
+        if(terter.isHost || !terter.multiplayer){
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                terter.getJoueurA().getPerso().isRight = true;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                terter.getJoueurA().getPerso().isLeft = true;
+            }
         }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            isLeft = true;
+        if(!terter.isHost && terter.multiplayer){
+            if (e.getKeyCode() == KeyEvent.VK_D) {
+                terter.getJoueurB().getPerso().isRight = true;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_Q) {
+                terter.getJoueurA().getPerso().isLeft = true;
+            }
+        }
+    }
+
+
+    public void retournMenu() {
+        if(terter.isHost||!terter.multiplayer){
+            this.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    super.mouseClicked(e);
+                    if (0 <= e.getX() && e.getX() <= 50 && 0 <= e.getY() && e.getY() <= 50) {
+                        isRunning = false;
+                        isMenu = true;
+                    }
+                }
+            });
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            isRight = false;
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            isLeft = false;
-        }
-    }
-
-    public void retournMenu() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                if (0 <= e.getX() && e.getX() <= 50 && 0 <= e.getY() && e.getY() <= 50) {
-                    isRunning = false;
-                    isMenu = true;
-                }
-            }
-        });
+        // TODO Auto-generated method stub
+        
     }
 }

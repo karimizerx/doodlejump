@@ -6,22 +6,23 @@ import java.util.Random;
 
 // Import d'autres dossiers
 import gui.Vue;
+import multiplayer.JoueurConnecte;
+import multiplayer.Serveur;
 
-public class Terrain {
+public class Terrain{
 
     private ArrayList<Plateforme> plateformesListe;
-    private Joueur joueur;
+
+    private Joueur joueurA;
+    private Joueur joueurB=null;
+
+    public boolean multiplayer=false;
+    public boolean isHost=false;
+    private Serveur host=null;
+    private JoueurConnecte client=null;
+
     private final double height, width;// dimensions du terrain
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
-
-    // Entre 0 et 1, indique de combien on fais monter le jeu
-    private double advancement = 0.3;
-
-    /**
-     * Hauteur maximal que peut atteindre le personnage, maxHeight*height,
-     * avant de faire monter le jeu.
-     */
-    private double H = 0.3;
 
     /**
      * Baisse plus le score monte, affecte la densite des plateformes et la proba
@@ -33,7 +34,7 @@ public class Terrain {
 
     public Terrain(Joueur joueur, double height, double width) {
         this.plateformesListe = new ArrayList<Plateforme>();
-        this.joueur = joueur;
+        this.joueurA = joueur;
         this.height = height;
         this.width = width;
         generateObstacles(20);
@@ -80,7 +81,7 @@ public class Terrain {
     }
 
     public void update() {
-        Joueur j = this.joueur;
+        Joueur j = this.joueurA;
         Personnage p = j.getPerso();
 
         p.setDy(p.getDy() + 0.2);
@@ -102,9 +103,7 @@ public class Terrain {
                 }
             }
         }
-
         p.collides_plateforme(this);
-
         limite(p);
     }
 
@@ -118,12 +117,20 @@ public class Terrain {
         this.plateformesListe = plateformesListe;
     }
 
-    public Joueur getJoueur() {
-        return joueur;
+    public Joueur getJoueurA() {
+        return joueurA;
     }
 
-    public void setJoueur(Joueur joueur) {
-        this.joueur = joueur;
+    public void setJoueurA(Joueur joueur) {
+        this.joueurA = joueur;
+    }
+
+    public Joueur getJoueurB() {
+        return joueurB;
+    }
+
+    public void setJoueurB(Joueur joueur) {
+        this.joueurB = joueur;
     }
 
     public double getHeight() {
@@ -142,21 +149,7 @@ public class Terrain {
         this.y = y;
     }
 
-    public double getAdvancement() {
-        return advancement;
-    }
 
-    public void setAdvancement(double advancement) {
-        this.advancement = advancement;
-    }
-
-    public double getH() {
-        return H;
-    }
-
-    public void setH(double H) {
-        this.H = H;
-    }
 
     public double getDifficulty() {
         return difficulty;
@@ -165,5 +158,21 @@ public class Terrain {
     public void setDifficulty(double difficulty) {
         this.difficulty = difficulty;
     }
+
+    public int getPlayerBmvt() {
+        if(joueurB.getPerso().isLeft && joueurB.getPerso().isRight ||!joueurB.getPerso().isLeft && !joueurB.getPerso().isRight) return 0;
+        if(joueurB.getPerso().isRight) return 1;
+        return -1;
+    }
+
+    public void setPlayerBmvt(int i) {
+        switch(i){
+            case -1: joueurB.getPerso().isLeft=true;joueurB.getPerso().isRight=false;break;
+            case 0: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=false;break;
+            case 1: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=true;break;
+        }
+    }
+
+
 
 }
