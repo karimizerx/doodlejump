@@ -28,6 +28,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     int lll;
     boolean isRight, isLeft, isMenu, isEsc;
     boolean pause = false;
+    JFrame menuPause;
 
 
     public Vue(Terrain ter) {
@@ -37,7 +38,6 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
         retournMenu();
         addKeyListener(this);
-        
     }
 
     @Override
@@ -166,6 +166,13 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             isEsc = true;
             pause = !pause;
+            menuPause = new JFrame();
+            menuPause.setLayout(new FlowLayout());
+            menuPause.setBounds((int)terter.getWidth()/2, (int)terter.getHeight()/2, 200, 200);
+            JButton cont = new JButton("Continue");
+            JButton exit = new JButton("Exit");
+            menuPause.add(cont, exit);
+            menuPause.setVisible(pause);
         }
     }
 
