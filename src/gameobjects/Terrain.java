@@ -40,6 +40,18 @@ public class Terrain{
         this.height = height;
         this.width = width;
         generateObstacles(20);
+        if(this.multiplayer){
+            if(isHost){ 
+            try{
+            host=new Serveur();
+            }catch(IOException e){
+                e.printStackTrace();
+                System.exit(-1);
+            }
+            }else{
+                client=new JoueurConnecte();
+            }    
+        }
     }
 
     /**

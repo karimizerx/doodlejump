@@ -134,6 +134,10 @@ public class App extends JFrame{
             int lph = (int) lb.getPreferredSize().getHeight();
             lb.setBounds(300, 300, 150, 150);
         });
+
+        buttonMulti.addActionListener(e ->{
+            
+        });
     }
 
    
