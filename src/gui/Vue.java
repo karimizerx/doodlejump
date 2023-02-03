@@ -152,13 +152,22 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             pause();
         }
-        if (e.getKeyCode() == KeyEvent.VK_N) {
+        if (e.getKeyCode() == KeyEvent.VK_T) {
             String chemin = (new File("gui/images/")).getAbsolutePath();
             
             try {
-                if(!swap) persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
-                else persoView = ImageIO.read(new File(chemin + "/" + "doodleFlic.png"));
-                swap = !swap;
+                if(!swap){ 
+                    persoView = ImageIO.read(new File(chemin + "/" + "tux.png"));
+                    terrainView = ImageIO.read(new File(chemin + "/" + "backgroundTux.png"));
+                    platformeView = ImageIO.read(new File(chemin + "/" + "plateformeTux.png"));
+
+                }
+            
+                else{ persoView = ImageIO.read(new File(chemin + "/" + "doodleFlic.png"));
+                terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
+                platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
+                }
+                    swap = !swap;
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
