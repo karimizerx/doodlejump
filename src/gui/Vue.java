@@ -25,7 +25,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     Terrain terter;
     int lll;
     boolean isRight, isLeft, isMenu, isEsc;
-    boolean pause = false;
+    boolean pause, swap = false;
     JFrame menuPause;
     JPanel menuPanel;
 
@@ -55,7 +55,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
                 terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
                 platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
-                persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
+                persoView = ImageIO.read(new File(chemin + "/" + "doodleFlic.png"));
 
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/background.png"));
@@ -151,6 +151,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             pause();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_N) {
+            String chemin = (new File("gui/images/")).getAbsolutePath();
+            
+            try {
+                if(!swap) persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
+                else persoView = ImageIO.read(new File(chemin + "/" + "doodleFlic.png"));
+                swap = !swap;
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
     }
 
