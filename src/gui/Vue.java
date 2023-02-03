@@ -1,7 +1,6 @@
 package gui;
 
 import javax.swing.*;
-import javax.swing.event.MouseInputListener;
 
 import gameobjects.Joueur;
 import gameobjects.Personnage;
@@ -30,13 +29,10 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     boolean pause = false;
     JFrame menuPause;
 
-
     public Vue(Terrain ter) {
         this.terter = ter;
-        // lll = (int) (terter.getHeight() * terter.getAdvancement());
-        lll = (int) (terter.getHeight() * 0.5);
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
-        retournMenu();
+        // retournMenu();
         addKeyListener(this);
     }
 
@@ -79,7 +75,6 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         if (terter.getJoueur().getPerso().getY() + terter.getJoueur().getPerso().getHeight() > this.getHeight()) {
             return true;
         } else {
-            isRunning = true;
             return false;
         }
     }
@@ -133,14 +128,16 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 draw();
                 Thread.sleep(10);
             }
-            if (isMenu) {
-                JPanel j = new MenuPrincipal(this);
-                // j.setSize(0, 0);
-                this.add(j);
-                // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
-                j.setBounds(0, 0, 0, 0);
-
-            }
+            /*
+             * if (isMenu) {
+             * JPanel j = new MenuPrincipal(this);
+             * // j.setSize(0, 0);
+             * this.add(j);
+             * // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
+             * j.setBounds(0, 0, 0, 0);
+             * 
+             * }
+             */
             if (endGame()) {
                 removeAll();
                 repaint();
@@ -150,6 +147,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         }
     }
 
+    // Gestion des boutons
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -198,5 +196,4 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             }
         });
     }
-
 }

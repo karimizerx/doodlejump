@@ -87,7 +87,7 @@ public class App extends JFrame{
         DJ.setVisible(false);
 
         // Initialisation des éléments
-        Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight(), 100, 100, -10);
+        Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
         Joueur j = new Joueur(p);
         Terrain rt = new Terrain(j, DJ.getHeight(), DJ.getWidth());
 
@@ -117,15 +117,6 @@ public class App extends JFrame{
             DoodleJumpheur.setVisible(true);
             this.dispose();
         });
-
-        /*
-         * A METTRE DANS LE JEU !
-         * buttonExit.addActionListener(e -> {
-         * DoodleJumpheur.dispose();
-         * JFrame retourMenu = new App();
-         * retourMenu.setVisible(true);
-         * });
-         */
 
         buttonExit.addActionListener(e -> {
             System.exit(0);
