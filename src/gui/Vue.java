@@ -24,15 +24,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     BufferedImage view, terrainView, platformeView, persoView, settingView;
 
     Terrain terter;
-    int lll;
     boolean isRight, isLeft, isMenu;
 
     public Vue(Terrain ter) {
         this.terter = ter;
-        // lll = (int) (terter.getHeight() * terter.getAdvancement());
-        lll = (int) (terter.getHeight() * 0.5);
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
-        retournMenu();
+        // retournMenu();
         addKeyListener(this);
     }
 
@@ -77,7 +74,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (terter.getJoueur().getPerso().getY() + terter.getJoueur().getPerso().getHeight() > this.getHeight()) {
             return true;
         } else {
-            isRunning = true;
             return false;
         }
     }
@@ -130,14 +126,16 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 draw();
                 Thread.sleep(10);
             }
-            if (isMenu) {
-                JPanel j = new MenuPrincipal(this);
-                // j.setSize(0, 0);
-                this.add(j);
-                // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
-                j.setBounds(0, 0, 0, 0);
-
-            }
+            /*
+             * if (isMenu) {
+             * JPanel j = new MenuPrincipal(this);
+             * // j.setSize(0, 0);
+             * this.add(j);
+             * // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
+             * j.setBounds(0, 0, 0, 0);
+             * 
+             * }
+             */
             if (endGame()) {
                 removeAll();
                 repaint();
@@ -147,6 +145,21 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    public void retournMenu() {
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                if (0 <= e.getX() && e.getX() <= 50 && 0 <= e.getY() && e.getY() <= 50) {
+                    // isRunning = false;
+                    // isMenu = true;
+                    System.out.println("Désolé on a pas encore fait le menu");
+                }
+            }
+        });
+    }
+
+    // Gestion des boutons
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -170,18 +183,5 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             isLeft = false;
         }
-    }
-
-    public void retournMenu() {
-        this.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                if (0 <= e.getX() && e.getX() <= 50 && 0 <= e.getY() && e.getY() <= 50) {
-                    isRunning = false;
-                    isMenu = true;
-                }
-            }
-        });
     }
 }

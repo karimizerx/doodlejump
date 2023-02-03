@@ -10,7 +10,7 @@ import java.awt.*;
 public class MenuPrincipal extends JPanel {
 
     Vue view;
-    JButton buttonReprendre, buttonExit;
+    JButton buttonReprendre, buttonExit, buttonRetourMenu;
     JPanel menu;
 
     public MenuPrincipal(Vue v) {
@@ -39,9 +39,11 @@ public class MenuPrincipal extends JPanel {
         buttonReprendre.setPreferredSize(new Dimension(100, 50));
         buttonExit = new JButton("Quitter");
         buttonExit.setPreferredSize(new Dimension(100, 50));
-
+        buttonRetourMenu = new JButton("Quitter");
+        buttonRetourMenu.setPreferredSize(new Dimension(100, 50));
         // AJout des élements dans le panel
         m.add(buttonReprendre);
+        m.add(buttonRetourMenu);
         m.add(buttonExit);
 
         return m;
@@ -52,5 +54,13 @@ public class MenuPrincipal extends JPanel {
             view.removeAll();
             view.repaint();
         });
+
+        /*
+         * buttonRetourMenu.addActionListener(e -> {
+         * super.dispose();
+         * JFrame retourMenu = new App();
+         * retourMenu.setVisible(true);
+         * });
+         */
     }
 }
