@@ -101,8 +101,8 @@ public class Terrain{
             update(joueurA);
             if(joueurB!=null)update(joueurB);
             if(isHost && multiplayer){
-                host.sendTerrain(this);
                 setPlayerBmvt(host.getPos());
+                host.sendTerrain(this);
             }
         }else{ 
             client.receiveTerrain(this);

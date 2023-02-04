@@ -29,7 +29,9 @@ public class Serveur implements Runnable {
         DataInputStream in;
         try {
             in =  new DataInputStream(serveur.client.getInputStream());
-            return  in.read();
+            int i=in.read();
+            System.out.println(i);
+            return  i;
         } catch (IOException e) {
             e.printStackTrace();
             return 0;
