@@ -1,9 +1,8 @@
 package gameobjects;
 
-import java.io.Serializable;
 
 // Représente un personnage. C'est un objet, avec vitesse
-public class Personnage extends GameObject implements Serializable {
+public class Personnage extends GameObject{
 
     private double dy;
     public boolean isRight=false, isLeft=false;

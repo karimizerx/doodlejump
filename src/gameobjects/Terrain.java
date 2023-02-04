@@ -19,7 +19,7 @@ public class Terrain{
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
     public boolean multiplayer=true;
-    public boolean isHost=true;
+    public boolean isHost=false;
     private Serveur host=null;
     private JoueurConnecte client=null;
 
@@ -194,6 +194,22 @@ public class Terrain{
             case 0: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=false;break;
             case 1: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=true;break;
         }
+    }
+
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public Serveur getHost() {
+        return host;
+    }
+
+    public JoueurConnecte getClient() {
+        return client;
     }
 
 

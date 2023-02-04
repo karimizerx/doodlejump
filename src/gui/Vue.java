@@ -178,6 +178,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     pB.isLeft = true;
                 }
+                terter.getClient().sendPos(terter.getPlayerBmvt());
             }
         }
 
@@ -212,6 +213,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     pB.isLeft = false;
                 }
+                terter.getClient().sendPos(terter.getPlayerBmvt());
             }
         }
     }
