@@ -22,8 +22,7 @@ public class ThreadMouvement implements Runnable {
                 serveur.sendTerrain(terrain);
                 terrain.setPlayerBmvt(serveur.getPos());//recevoir ce que le mvt du client
             }else{
-                int i=terrain.getPlayerBmvt();
-                client.sendPos(i);//le client envoi le mvt de son joueur
+                client.sendPos(terrain.getPlayerBmvt());//le client envoi le mvt de son joueur
                 client.receiveTerrain(terrain);    
             }
         }
