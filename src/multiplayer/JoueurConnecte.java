@@ -68,10 +68,10 @@ public class JoueurConnecte {
 
 
 
-    public void sendPos(double a){
+    public void sendPos(int a){
         try{
         DataOutputStream output= new DataOutputStream(client.getOutputStream()) ;
-        output.writeDouble(a);
+        output.write(a);
         }catch(IOException e){
             e.printStackTrace();
         }

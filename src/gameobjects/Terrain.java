@@ -18,7 +18,7 @@ public class Terrain{
     private Joueur joueurB=null;
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
-    public boolean multiplayer=true;
+    public boolean multiplayer=false;
     public boolean isHost=true;
     private Serveur host=null;
     private JoueurConnecte client=null;
@@ -53,7 +53,7 @@ public class Terrain{
                 client=new JoueurConnecte();
                 client.connecter();
             }    
-        }
+        }else{ isHost=false;}
     }
 
     /**
@@ -189,6 +189,7 @@ public class Terrain{
     }
 
     public void setPlayerBmvt(int i) {
+        System.out.println(i);
         switch(i){
             case -1: joueurB.getPerso().isLeft=true;joueurB.getPerso().isRight=false;break;
             case 0: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=false;break;
