@@ -18,7 +18,7 @@ public class Terrain{
     private Joueur joueurB=null;
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
-    public boolean multiplayer=true;
+    public boolean multiplayer=false;
     public boolean isHost=true;
     private Serveur host=null;
     private JoueurConnecte client=null;
@@ -100,15 +100,8 @@ public class Terrain{
         if((isHost && multiplayer)||!multiplayer){
             update(joueurA);
             if(joueurB!=null)update(joueurB);
-            if(isHost && multiplayer){
-                host.sendTerrain(this);
-                setPlayerBmvt(host.getPos());
-            }
-        }else{ 
-            client.receiveTerrain(this);
-            int i=getPlayerBmvt();
-            client.sendPos(i);//le client envoi le mvt de son joueur   
-        }
+            if(isHost && multiplayer)host.sendTerrain(this);
+        }else client.receiveTerrain(this);
     }
 
     public void update(Joueur j){
