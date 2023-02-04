@@ -40,8 +40,6 @@ public class Personnage extends GameObject implements Moveable {
                 && (this.getY() + 0.7 * this.getHeight() <= pf.getY() + pf.getHeight() * 0.7)
                 && (this.getDy() > 0)) {
             dy = -10;
-            Calendar c = Calendar.getInstance();
-            c.get(Calendar.SECOND);
         }
     }
 
