@@ -1,8 +1,6 @@
 package gameobjects;
 
-import java.io.Serializable;
-
-public class Joueur implements Serializable{
+public class Joueur {
 
     private int score;
     private Personnage perso;
