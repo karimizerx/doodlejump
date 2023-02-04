@@ -19,11 +19,9 @@ public class Terrain{
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
     public boolean multiplayer=true;
-    public boolean isHost=false;
+    public boolean isHost=true;
     private Serveur host=null;
     private JoueurConnecte client=null;
-    private ThreadMouvement thread=null;
-    
 
     private final double height, width;// dimensions du terrain
 
@@ -44,21 +42,18 @@ public class Terrain{
         generateObstacles(20);
         if(this.multiplayer){
             if(isHost){ 
-                try{
-                    host=new Serveur();
-                    host.run();
-                }catch(IOException e){
-                    e.printStackTrace();
-                    System.exit(-1);
-                }
+            try{
+            host=new Serveur();
+            host.run();
+            }catch(IOException e){
+                e.printStackTrace();
+                System.exit(-1);
+            }
             }else{
                 client=new JoueurConnecte();
                 client.connecter();
             }    
-            thread=new ThreadMouvement(this);
-        }else{ 
-            isHost=false;
-        }
+        }else{ isHost=false;}
     }
 
     /**
@@ -104,12 +99,16 @@ public class Terrain{
     public void update() {
         if((isHost && multiplayer)||!multiplayer){
             update(joueurA);
-            if(joueurB!=null)
-                update(joueurB);
-        }
-            if(multiplayer){
-                thread.run();
+            if(joueurB!=null)update(joueurB);
+            if(isHost && multiplayer){
+                setPlayerBmvt(host.getPos());
+                host.sendTerrain(this);
             }
+        }else{ 
+            client.receiveTerrain(this);
+            int i=getPlayerBmvt();
+            client.sendPos(i);//le client envoi le mvt de son joueur   
+        }
     }
 
     public void update(Joueur j){
@@ -203,22 +202,6 @@ public class Terrain{
             case 0: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=false;break;
             case 1: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=true;break;
         }
-    }
-
-    public boolean isMultiplayer() {
-        return multiplayer;
-    }
-
-    public boolean isHost() {
-        return isHost;
-    }
-
-    public Serveur getHost() {
-        return host;
-    }
-
-    public JoueurConnecte getClient() {
-        return client;
     }
 
 
