@@ -37,11 +37,9 @@ public class Personnage extends GameObject implements Moveable {
                 && (this.getY() + 0.7 * this.getHeight() >= pf.getY())
                 && (this.getY() + 0.7 * this.getHeight() <= pf.getY() + pf.getHeight() * 0.7)
                 && (this.getDy() > 0)) {
-            dy = -10;
+            dy = -7;
         }
     }
-
-    
 
     public void collides_item(Terrain rainT) {
         for (Plateforme pf : rainT.getPlateformesListe()) {

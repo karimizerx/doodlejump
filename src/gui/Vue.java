@@ -20,7 +20,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public static boolean isRunning;
     Thread thread;
-    BufferedImage view, terrainView, platformeView, persoView;
+    BufferedImage view, terrainView, platformeView, persoView, vieView;
+    BufferedImage scoreView;
 
     Terrain terter;
     int lll;
@@ -28,6 +29,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     boolean pause = false;
     JFrame menuPause;
     JPanel menuPanel;
+    String chemin = (new File("gui/images/")).getAbsolutePath();
 
     public Vue(Terrain ter) {
         this.terter = ter;
@@ -47,7 +49,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     public void start() {
-        String chemin = (new File("gui/images/")).getAbsolutePath();
 
         try {
             try {
@@ -56,11 +57,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
                 platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
                 persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
+                vieView = ImageIO.read(new File(chemin + "/" + "vie.png"));
 
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/background.png"));
                 platformeView = ImageIO.read(new File("src/gui/images/plateforme.png"));
                 persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
+                vieView = ImageIO.read(new File("src/gui/images/vie.png"));
+
             }
 
         } catch (Exception e) {
@@ -84,9 +88,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         // Gère les boutons flèches
         if (isRight) {
-            p.setX(p.getX() + 5);
+            p.setX(p.getX() + 3);
         } else if (isLeft) {
-            p.setX(p.getX() - 5);
+            p.setX(p.getX() - 3);
         }
 
         terter.update();
@@ -108,6 +112,23 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     (int) pf.getHeight(),
                     null);
         }
+
+        /// Vie
+        for (int i = 1; i < 6; ++i) {
+            g2.drawImage(vieView, (int) terter.getWidth() - (40 * i) - 5, 5, 40, 30, null);
+        }
+
+        /// Score
+        int cnt = 4;
+        for (int i = 0; i < cnt; ++i) {
+            try {
+                scoreView = ImageIO.read(new File(chemin + "/ch" + i + ".png"));
+                g2.drawImage(scoreView, 5 + (25 * i), 5, 50, 50, null);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
 
         Graphics g = getGraphics();
@@ -124,7 +145,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 if (!pause)
                     update();
                 draw();
-                Thread.sleep(10);
+                Thread.sleep(1);
             }
             if (endGame()) {
                 removeAll();

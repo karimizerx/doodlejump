@@ -83,7 +83,7 @@ public class Terrain {
         Joueur j = this.joueur;
         Personnage p = j.getPerso();
 
-        p.setDy(p.getDy() + 0.2);
+        p.setDy(p.getDy() + 0.1);
         p.setY(p.getY() + p.getDy());
 
         // Si on est tout en bas de la fenêtre, endGame()
