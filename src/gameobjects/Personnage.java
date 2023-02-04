@@ -1,5 +1,7 @@
 package gameobjects;
 
+import java.util.Calendar;
+
 // Représente un personnage. C'est un objet, avec vitesse
 public class Personnage extends GameObject implements Moveable {
 
@@ -37,7 +39,9 @@ public class Personnage extends GameObject implements Moveable {
                 && (this.getY() + 0.7 * this.getHeight() >= pf.getY())
                 && (this.getY() + 0.7 * this.getHeight() <= pf.getY() + pf.getHeight() * 0.7)
                 && (this.getDy() > 0)) {
-            dy = -7;
+            dy = -10;
+            Calendar c = Calendar.getInstance();
+            c.get(Calendar.SECOND);
         }
     }
 

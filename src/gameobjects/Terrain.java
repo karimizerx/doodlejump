@@ -2,6 +2,8 @@ package gameobjects;
 
 // Import de packages java
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 // Import d'autres dossiers
@@ -82,8 +84,14 @@ public class Terrain {
     public void update() {
         Joueur j = this.joueur;
         Personnage p = j.getPerso();
-
-        p.setDy(p.getDy() + 0.1);
+        Calendar c = Calendar.getInstance();
+        c.get(Calendar.SECOND);
+        if (p.getDy() >= 0) {
+            System.out.println("DESCENTEEEE: ms, +++ : " + c.get(Calendar.MILLISECOND) + ", " + p.getDy());
+        } else {
+            System.out.println("MONTEEEE: ms, --- : " + c.get(Calendar.MILLISECOND) + ", " + p.getDy());
+        }
+        p.setDy(p.getDy() + 0.2);
         p.setY(p.getY() + p.getDy());
 
         // Si on est tout en bas de la fenêtre, endGame()
@@ -93,6 +101,7 @@ public class Terrain {
 
         if (p.getY() < this.height / 2) {
             p.setY(this.height / 2);
+
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
                 if (pf.getY() > this.height) {
