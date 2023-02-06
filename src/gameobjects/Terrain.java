@@ -36,7 +36,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(50);
+        generateObstacles(20);
     }
 
     /**
@@ -98,7 +98,7 @@ public class Terrain {
     public void update() {
         Joueur j = this.joueur;
         Personnage p = j.getPerso();
-        double next=(highestPlateforme().getY()-90);
+        double next=(highestPlateforme().getY()-85);
         p.setDy(p.getDy() + 0.2);
         p.setY(p.getY() + p.getDy());
 
@@ -112,14 +112,14 @@ public class Terrain {
             j.setScore(j.getScore() + 1); // On incrémente le score de 1
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
-                if (pf.getY() > this.height) {
+                if (pf.getY()-pf.getHeight()>= this.height*0.95) {
                     if(next<300){
                         pf.setY(0);
                     }
                     else {
                         pf.setY(next);
                     }
-                    int r = new Random().nextInt((int)width-(int)pf.getWidth())+(int)pf.getWidth();
+                    int r = new Random().nextInt(530);
                     pf.setX(r);
 
                 }
