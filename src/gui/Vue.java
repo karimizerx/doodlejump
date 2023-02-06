@@ -28,12 +28,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     boolean pause, swap = false;
     JFrame menuPause;
     JPanel menuPanel;
+    JLabel score=new JLabel("Score: ");
 
     public Vue(Terrain ter) {
         this.terter = ter;
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
         // retournMenu();
         addKeyListener(this);
+
     }
 
     @Override
@@ -109,9 +111,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     null);
         }
         g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
-
         Graphics g = getGraphics();
         g.drawImage(view, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
+        score.setLocation((int) terter.getWidth()-50,25);
+        score.setText("Score :"+terter.getJoueur().getScore());
+        this.add(score);
         g.dispose();
     }
 
