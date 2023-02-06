@@ -36,7 +36,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(20);
+        generateObstacles(15);
     }
 
     /**
@@ -46,13 +46,28 @@ public class Terrain {
      * 
      */
     private void generateObstacles(int nb) {
+        nb= (nb>50) ? 50 :(nb<7) ? 8 : nb ; 
         plateformesListe = new ArrayList<Plateforme>();
 
         for (int i = 0; i < (nb * difficulty); i++) {
             Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
-                    new Random().nextInt((int) this.height), 60, 20, -10);
+                    new Random().nextInt((int) this.height-20), 60, 20, -10);
             plateformesListe.add(p);
         }
+        nb= (nb>10) ? 10 : nb ; 
+        for(int i = 1; i < nb; i++){
+            plateformesListe.get(i).setY(height-i*90);
+        }
+    }
+
+    public Plateforme highestPlateforme(){
+        Plateforme temp=plateformesListe.get(0);
+        for (Plateforme p : plateformesListe){
+            if(p.getY()<=temp.getY()){
+                temp=p;
+            }
+        }
+        return temp;
     }
 
     /**
@@ -79,10 +94,11 @@ public class Terrain {
             object.setX(object.getWidth() / 2);
     }
 
+    public static boolean first=true;
     public void update() {
         Joueur j = this.joueur;
         Personnage p = j.getPerso();
-
+        double next=(highestPlateforme().getY()-90);
         p.setDy(p.getDy() + 0.2);
         p.setY(p.getY() + p.getDy());
 
@@ -96,9 +112,15 @@ public class Terrain {
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
                 if (pf.getY() > this.height) {
-                    pf.setY(0);
-                    int r = new Random().nextInt(500);
+                    if(next<300){
+                        pf.setY(0);
+                    }
+                    else {
+                        pf.setY(next);
+                    }
+                    int r = new Random().nextInt((int)width-(int)pf.getWidth())+(int)pf.getWidth();
                     pf.setX(r);
+
                 }
             }
         }
