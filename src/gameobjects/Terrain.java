@@ -36,7 +36,7 @@ public class Terrain {
         this.joueur = joueur;
         this.height = height;
         this.width = width;
-        generateObstacles(15);
+        generateObstacles(50);
     }
 
     /**
@@ -89,9 +89,9 @@ public class Terrain {
 
     private void limite(GameObject object) {
         if (object.getX() + object.getWidth() / 2 <= 0) // bord a droite, on le mets a gauche
-            object.setX(width - object.getWidth() / 2);
+            object.setX(width - (object.getWidth() / 2) );
         else if (object.getX() + object.getWidth() / 2 >= width) // bord a gauche, on le mets a gauche
-            object.setX(object.getWidth() / 2);
+            object.setX((object.getWidth() / 2)-60);
     }
 
     public static boolean first=true;
