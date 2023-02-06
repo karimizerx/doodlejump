@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.plaf.multi.MultiInternalFrameUI;
+
 // Import d'autres dossiers
 import gui.Vue;
 import multiplayer.JoueurConnecte;
@@ -19,7 +21,7 @@ public class Terrain{
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
     public boolean multiplayer=true;
-    public boolean isHost=false;
+    public boolean isHost=true;
     private Serveur host=null;
     private JoueurConnecte client=null;
 
@@ -53,8 +55,6 @@ public class Terrain{
                 client=new JoueurConnecte();
                 client.connecter();
             }
-            Thread t =new Thread(new ThreadMouvement(host, client, this));
-            t.start();    
         }
     }
 
@@ -102,6 +102,11 @@ public class Terrain{
         if((isHost && multiplayer)||!multiplayer){
             update(joueurA);
             if(joueurB!=null)update(joueurB);
+            if(isHost && multiplayer) {host.sendTerrain(this);setPlayerBmvt(this.host.getPos());
+            }else if(multiplayer){
+                client.receiveTerrain(this);
+                client.sendPos(getPlayerBmvt());
+            }
         }
     }
 
