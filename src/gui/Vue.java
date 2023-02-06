@@ -20,19 +20,18 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public static boolean isRunning;
     Thread thread;
-    BufferedImage view, terrainView, platformeView, persoView;
+    BufferedImage view, terrainView, platformeView, persoView, scoreView, scoreBackgroundView;
 
     Terrain terter;
-    int lll;
     boolean isRight, isLeft, isMenu, isEsc;
     boolean pause = false;
     JFrame menuPause;
     JPanel menuPanel;
+    String chemin = (new File("gui/images/")).getAbsolutePath();
 
     public Vue(Terrain ter) {
         this.terter = ter;
         setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
-        // retournMenu();
         addKeyListener(this);
     }
 
@@ -47,8 +46,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     public void start() {
-        String chemin = (new File("gui/images/")).getAbsolutePath();
-
         try {
             try {
                 view = new BufferedImage((int) terter.getWidth(), (int) terter.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -56,11 +53,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
                 platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
                 persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
+                scoreBackgroundView = ImageIO.read(new File(chemin + "/" + "scoreBackground.png"));
 
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/background.png"));
                 platformeView = ImageIO.read(new File("src/gui/images/plateforme.png"));
                 persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
+                scoreBackgroundView = ImageIO.read(new File("src/gui/images/scoreBackground.png"));
+
             }
 
         } catch (Exception e) {
@@ -95,10 +95,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public void draw() {
         Joueur j = terter.getJoueur();
         Personnage p = j.getPerso();
+        String score = String.valueOf(j.getScore());
 
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         g2.drawImage(terrainView, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
 
+        // Affichage des plateformes
         for (Plateforme pf : terter.getPlateformesListe()) {
             g2.drawImage(
                     platformeView,
@@ -108,6 +110,24 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     (int) pf.getHeight(),
                     null);
         }
+
+        /// Affichage du Score
+        g2.drawImage(scoreBackgroundView, 2, 2, 60 + (30 * (score.length() - 1)), 55, null);
+        for (int i = 0; i < score.length(); ++i) {
+            char chiffre = score.charAt(i);
+            try {
+                try {
+                    scoreView = ImageIO.read(new File(chemin + "/ch" + chiffre + ".png"));
+
+                } catch (Exception e) {
+                    scoreView = ImageIO.read(new File("src/gui/images/ch" + chiffre + ".png"));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            g2.drawImage(scoreView, 5 + (25 * i), 5, 50, 50, null);
+        }
+
         g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
 
         Graphics g = getGraphics();
