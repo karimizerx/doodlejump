@@ -100,8 +100,8 @@ public class Terrain {
         }
 
         if (p.getY() < this.height / 2) {
+            j.setScore(j.getScore() + 1);
             p.setY(this.height / 2);
-
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
                 if (pf.getY() > this.height) {

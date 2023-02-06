@@ -99,6 +99,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public void draw() {
         Joueur j = terter.getJoueur();
         Personnage p = j.getPerso();
+        System.out.println(j.getScore());
+        String score = String.valueOf(j.getScore());
+        System.out.println("SCORE = " + score);
 
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         g2.drawImage(terrainView, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
@@ -114,15 +117,13 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         /// Vie
-        for (int i = 1; i < 6; ++i) {
-            g2.drawImage(vieView, (int) terter.getWidth() - (40 * i) - 5, 5, 40, 30, null);
-        }
+        g2.drawImage(vieView, (int) terter.getWidth() - 5, 5, 40, 30, null);
 
         /// Score
-        int cnt = 4;
-        for (int i = 0; i < cnt; ++i) {
+        for (int i = 0; i < score.length(); ++i) {
+            char chiffre = score.charAt(i);
             try {
-                scoreView = ImageIO.read(new File(chemin + "/ch" + i + ".png"));
+                scoreView = ImageIO.read(new File(chemin + "/ch" + chiffre + ".png"));
                 g2.drawImage(scoreView, 5 + (25 * i), 5, 50, 50, null);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -145,7 +146,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 if (!pause)
                     update();
                 draw();
-                Thread.sleep(4);
+                Thread.sleep(90);
             }
             if (endGame()) {
                 removeAll();
