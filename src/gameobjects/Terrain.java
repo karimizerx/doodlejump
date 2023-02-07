@@ -184,16 +184,23 @@ public class Terrain{
     }
 
     public int getPlayerBmvt() {
-        if((joueurB.getPerso().isLeft && joueurB.getPerso().isRight )||(!joueurB.getPerso().isLeft && !joueurB.getPerso().isRight)) return 0;
-        if(joueurB.getPerso().isRight) return 1;
-        return -1;
+        int i=-1;
+        if(joueurB.getPerso().isRight) i=1;
+        if(joueurB.getPerso().isLeft == joueurB.getPerso().isRight ) i=0;
+        System.out.println(i);
+        return i;
     }
 
     public void setPlayerBmvt(int i) {
+        System.out.println("Terrain.setPlayerBmvt("+i+")");
+        Personnage p=joueurB.getPerso();
         switch(i){
-            case -1: joueurB.getPerso().isLeft=true;joueurB.getPerso().isRight=false;break;
-            case 0: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=false;break;
-            case 1: joueurB.getPerso().isLeft=false;joueurB.getPerso().isRight=true;break;
+            case -1: 
+                p.setX(p.getX() + 5);
+            break;
+            case 1: 
+            p.setX(p.getX() - 5);
+            ;break;
         }
     }
 

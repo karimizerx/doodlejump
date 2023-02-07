@@ -61,10 +61,11 @@ public class JoueurConnecte {
             terrain.setY((double)in.readObject());                
         }catch (ClassNotFoundException c){
             c.printStackTrace();
-            System.out.println("zebi");
+            System.out.println("classe perdu");
         } catch (IOException e) {
             System.out.println("bug2");
             e.printStackTrace();
+            System.exit(-1);
         }
     }
 
