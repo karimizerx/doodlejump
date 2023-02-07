@@ -5,12 +5,13 @@ import javax.swing.*;
 import java.awt.*;
 
 import javax.swing.plaf.nimbus.*;
+import javax.swing.text.html.HTMLDocument.RunElement;
 
 import gameobjects.*;
 
 public class App extends JFrame {
     JFrame DoodleJumpheur;
-    JPanel menu;
+    JPanel menu, menu2;
     JButton buttonPlay, buttonMulti, buttonLeaderboard, buttonExit;
     int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran"
     int height = Toolkit.getDefaultToolkit().getScreenSize().height; // Longueur de l'écran
@@ -23,25 +24,28 @@ public class App extends JFrame {
         // Action en cas de X : fermer de toutes les fenêtres + fin programme
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Définition de la taille
-        this.setSize(new Dimension(width / 3, (int) (height * 0.95)));
+        // this.setSize(new Dimension(600, 933));
         // Empêche la fenetre d'être redimensionée
         this.setResizable(false);
+        this.add(new MenuVue(600, 933));
+        this.pack();
         // Placement de la fenêtre au centre du bureau (null)
         this.setLocationRelativeTo(null);
         // Layout null : les éléments sont placés manuellement
         this.setLayout(null);
 
         /// Création des éléments
-        menu = createMenu();
+        // menu = createMenu();
 
         /// Gestion d'évenement
-        gestionEvent();
+        // gestionEvent();
 
         // Ajout des éléments à la fenêtre
-        this.add(menu);
-        int mpw = (int) menu.getPreferredSize().getWidth();
-        int mph = (int) menu.getPreferredSize().getHeight();
-        menu.setBounds((this.getWidth() / 2) - (mpw / 2), (this.getHeight() / 2) - mph, mpw, mph);
+
+        // int mpw = (int) menu.getPreferredSize().getWidth();
+        // int mph = (int) menu.getPreferredSize().getHeight();
+        // menu.setBounds((this.getWidth() / 2) - (mpw / 2), (this.getHeight() / 2) -
+        // mph, mpw, mph);
     }
 
     private JPanel createMenu() {

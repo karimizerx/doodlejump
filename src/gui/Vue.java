@@ -117,10 +117,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             char chiffre = score.charAt(i);
             try {
                 try {
-                    scoreView = ImageIO.read(new File(chemin + "/ch" + chiffre + ".png"));
+                    scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + chiffre + ".png"));
 
                 } catch (Exception e) {
-                    scoreView = ImageIO.read(new File("src/gui/images/ch" + chiffre + ".png"));
+                    scoreView = ImageIO.read(new File("src/gui/images/chiffres/ch" + chiffre + ".png"));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
