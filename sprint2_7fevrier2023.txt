@@ -1,0 +1,42 @@
+Sprint 07.02.2023 :
+
+Objectifs du sprint précédent :
+=> Proposer une première version fonctionnelle [OK] : 
+-> Control : Fares, Mohamed, Elyo
+- collisions (collides_plateforme) : Mohamed, Fares [OK]
+- cas où le joueur tombe trop bas : Mohamed, Fares [OK]
+- update() : Mohamed, Fares [OK]
+- générer les tuiles : Fares, Elyo, Mohamed [OK]
+- limites, quand on sort sur les côtés (limites) : Fares [OK]
+- plate-formes générées avec au moins une solution à chaque fois : Elyo [NON]
+- score du joueur : Necerine [OK]
+
+-> Graphique : Mohamed, Ayman
+- affichage des images (start, draw) : Mohamed [OK]
+- mise à jour de l'affichage (update, run &  Thread) : Mohamed [OK]
+- update parfaite (Thread) : Elyo [OK]
+- création d'un menu au démarrage : Ayman, Mohamed [OK]
+- menu intégré au jeu, avec pause et quitter : Ayman [OK] 
+
+
+Objectifs pour le sprint suivant :
+- modifier le menu démarrer :  Mohamed, Ayman
+  - ajout des boutons pour les modes multijoueur...
+- mode de jeu à 2 joueurs sur un pc : Fares
+- mode de jeu multijoueur en réseaux :  Fares
+-----------
+- nettoyage complet du code + refactorisation : Mohamed
+-----------
+- plates-formes qui ne se superpose pas : Elyo
+- affichage du score : Mohamed
+- ajouter les items :
+  - affichages, génération, update de tout, update, amélioration : Toute l'équipe
+-----------
+- diminution du nombre de plateformes en fonction de la distance parcourue : Elyo
+- leaderBoard : Elyo (et Mohamed ?)
+- affichage Leaderboard : Ayman
+-----------
+- Ajout des plate-forme mobiles : 
+-----------
+- Commencer le système de skin/pack de skin : Ayman (& Mohamed)
+- Création de pack de skin :  Necerine & Ayman

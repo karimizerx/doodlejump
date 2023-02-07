@@ -1,0 +1,12 @@
+Sprint 30.01.2023 :
+
+Objectifs du sprint précédent :
+  - s'accorder sur une première modélisation : Mohamed, Ayman, Fares, Eliot, Necerine [OK]
+  - créer les différentes classes : Ayman, Mohamed, Fares [OK]
+  - commencer à travailler la superposition d'images : Mohamed [OK]
+  - commencer à créer les différentes méthodes nécessaires dans Terraine, Personnage... : Fares [OK]
+
+Objectifs pour le sprint suivant :
+  - finaliser une première version fonctionnelle du jeu : Fares, Eliot, Necerine
+  - implémenter les méthodes qui assurent un affichage correct : Mohamed, Ayman
+    -> update, ...
