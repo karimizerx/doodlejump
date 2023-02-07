@@ -62,32 +62,39 @@ public class Terrain {
         return plateformeLaPlusHaute;
     }
 
+    // Gère, pour le perso, le débordement de l'écran
     private void limite(Personnage p) {
         // 0.43 est la valeur exacte de la moitié du perso
-        if (p.getX() + p.getWidth() * 0.43 <= 0) // bord a droite, on le mets a gauche
+        // Si + de la moitié du perso est sortie du côté gauche de l'écran
+        // => on place la moitié du perso au côté droit de l'écran
+        if (p.getX() + p.getWidth() * 0.43 <= 0)
             p.setX(this.width - (p.getWidth() * 0.43));
-        else if (p.getX() + p.getWidth() * 0.43 >= width) // bord a gauche, on le mets a gauche
+        else if (p.getX() + p.getWidth() * 0.43 >= width) // Et inversement
             p.setX(-(p.getWidth() * 0.43));
     }
 
-    public static boolean first = true;
-
+    // Mise à jour du jeu.
     public void update() {
+        // On effectue une mise à jour pour tous les joueurs
         for (int i = 0; i < ListeJoueurs.length; ++i) {
             Joueur j = ListeJoueurs[i];
             Personnage p = j.getPerso();
             double next = (highestPlateforme().getY() - 85);
+
+            // Ralentissement progressif après un saut
             p.setDy(p.getDy() + 0.2);
             p.setY(p.getY() + p.getDy());
 
-            // Si on est tout en bas de la fenêtre, endGame()
-            if (p.getY() + 0.7 * p.getHeight() >= this.height) {
+            // Si les piedds du perso touchent le bas de la fenêtre, on a perdu
+            if (p.getY() + 0.87 * p.getHeight() >= this.height) {
                 Vue.isRunning = false;
             }
 
+            // Si la tête du personnage dépasse la moitié de l'écran
             if (p.getY() < this.height / 2) {
                 p.setY(this.height / 2);
                 j.setScore(j.getScore() + 1); // On incrémente le score de 1
+                // On descend toutes les plateforme
                 for (Plateforme pf : plateformesListe) {
                     pf.setY(pf.getY() - (int) p.getDy());
                     if (pf.getY() - pf.getHeight() >= this.height * 0.95) {
@@ -98,10 +105,10 @@ public class Terrain {
                         }
                         int r = new Random().nextInt(530);
                         pf.setX(r);
-
                     }
                 }
             }
+            // On gère les collisions & les débordements du personnage
             for (Plateforme pf : plateformesListe) {
                 p.collides_plateforme(pf);
             }
@@ -141,14 +148,6 @@ public class Terrain {
 
     public void setListeJoueurs(Joueur[] listeJoueurs) {
         ListeJoueurs = listeJoueurs;
-    }
-
-    public static boolean isFirst() {
-        return first;
-    }
-
-    public static void setFirst(boolean first) {
-        Terrain.first = first;
     }
 
 }
