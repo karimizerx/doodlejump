@@ -20,8 +20,8 @@ public class Terrain{
 
     public boolean multiplayer=true;
     public boolean isHost=true;
-    private Serveur host=null;
-    private JoueurConnecte client=null;
+    public Serveur host=null;
+    public JoueurConnecte client=null;
 
     private final double height, width;// dimensions du terrain
 
@@ -52,7 +52,9 @@ public class Terrain{
             }else{
                 client=new JoueurConnecte();
                 client.connecter();
-            }    
+            }
+        }else { 
+            isHost=false;
         }
     }
 
@@ -100,8 +102,7 @@ public class Terrain{
         if((isHost && multiplayer)||!multiplayer){
             update(joueurA);
             if(joueurB!=null)update(joueurB);
-            if(isHost && multiplayer)host.sendTerrain(this);
-        }else client.receiveTerrain(this);
+        }
     }
 
     public void update(Joueur j){
@@ -183,7 +184,7 @@ public class Terrain{
     }
 
     public int getPlayerBmvt() {
-        if(joueurB.getPerso().isLeft && joueurB.getPerso().isRight ||!joueurB.getPerso().isLeft && !joueurB.getPerso().isRight) return 0;
+        if((joueurB.getPerso().isLeft && joueurB.getPerso().isRight )||(!joueurB.getPerso().isLeft && !joueurB.getPerso().isRight)) return 0;
         if(joueurB.getPerso().isRight) return 1;
         return -1;
     }

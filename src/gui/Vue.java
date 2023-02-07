@@ -6,6 +6,7 @@ import gameobjects.Joueur;
 import gameobjects.Personnage;
 import gameobjects.Plateforme;
 import gameobjects.Terrain;
+import multiplayer.ThreadMouvement;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -28,6 +29,8 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     boolean isMenu, isEsc;
     boolean pause = false;
     JFrame menuPause;
+    ThreadMouvement threadMvt=null;
+
 
     public Vue(Terrain ter) {
         this.terter = ter;
@@ -130,21 +133,15 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         try {
             requestFocusInWindow();
             start();
+            if(terter.multiplayer){
+                Thread t=new Thread(new ThreadMouvement(terter));
+                t.start();
+            }
             while (isRunning) {
                 if(!pause) update();
                 draw();
                 Thread.sleep(10);
             }
-            /*
-             * if (isMenu) {
-             * JPanel j = new MenuPrincipal(this);
-             * // j.setSize(0, 0);
-             * this.add(j);
-             * // j.setLocation(this.getWidth() / 2, this.getHeight() / 2);
-             * j.setBounds(0, 0, 0, 0);
-             * 
-             * }
-             */
             if (endGame()) {
                 removeAll();
                 repaint();

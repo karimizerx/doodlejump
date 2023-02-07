@@ -11,10 +11,10 @@ public class ThreadMouvement implements Runnable {
     Serveur serveur;
     JoueurConnecte client;
     Terrain terrain;
-    public ThreadMouvement(Serveur serveur,JoueurConnecte client,Terrain court){
-        this.serveur= serveur;
-        this.client=client;
+    public ThreadMouvement(Terrain court){
         this.terrain = court;
+        this.serveur= court.host;
+        this.client=court.client;
     }
     public void run() {
         while(true){

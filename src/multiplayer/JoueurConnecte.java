@@ -22,7 +22,9 @@ public class JoueurConnecte {
         this.client=null;
     }
 
-    protected void setClient(Socket a){if(null==this.client)this.client=a;}
+    protected void setClient(Socket a){
+        if(null==this.client)this.client=a;
+    }
     /**
      * @param ServerName nom du serveur
      * @param port port au quelle le socket va se connecter
@@ -57,12 +59,12 @@ public class JoueurConnecte {
             terrain.setJoueurA((Joueur)in.readObject());
             terrain.setJoueurB((Joueur)in.readObject());
             terrain.setY((double)in.readObject());                
-        } catch (IOException e) {
-            System.out.println("bug2");
-            e.printStackTrace();
         }catch (ClassNotFoundException c){
             c.printStackTrace();
             System.out.println("zebi");
+        } catch (IOException e) {
+            System.out.println("bug2");
+            e.printStackTrace();
         }
     }
 
