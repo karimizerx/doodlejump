@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.plaf.multi.MultiInternalFrameUI;
+
 // Import d'autres dossiers
 import gui.Vue;
 import multiplayer.JoueurConnecte;
@@ -52,9 +54,7 @@ public class Terrain{
             }else{
                 client=new JoueurConnecte();
                 client.connecter();
-            }
-        }else { 
-            isHost=false;
+            }    
         }
     }
 
@@ -202,6 +202,22 @@ public class Terrain{
             p.setX(p.getX() - 5);
             ;break;
         }
+    }
+
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public Serveur getHost() {
+        return host;
+    }
+
+    public JoueurConnecte getClient() {
+        return client;
     }
 
 
