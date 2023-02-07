@@ -15,13 +15,13 @@ public class Personnage extends GameObject {
 
     // Colision entre le personnage et une plateforme
     public void collides_plateforme(Plateforme pf) {
-        if ((this.getX() + (this.getWidth() * 0.5) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
-                // plateforme. + witdh*0.5 sert à ne compter que le x du dernier pied
-                && (this.getX() + (this.getWidth() * 0.3) <= pf.getX() + pf.getWidth())
+        if ((this.getX() + (this.getWidth() * 0.65) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
+                // plateforme. + witdh*0.65 sert à ne compter que le x du dernier pied
+                && (this.getX() + (this.getWidth() * 0.25) <= pf.getX() + pf.getWidth())
                 // si ça ne dépasse pas par la droite de la plateforme.
-                // + witdh*0.3 sert à ne compter que le x du premier pied
-                && (this.getY() + 0.7 * this.getHeight() >= pf.getY())
-                && (this.getY() + 0.7 * this.getHeight() <= pf.getY() + pf.getHeight() * 0.7)
+                // + witdh*0.25 sert à ne compter que le x du premier pied
+                && (this.getY() + 0.87 * this.getHeight() >= pf.getY())
+                && (this.getY() + 0.87 * this.getHeight() <= pf.getY() + pf.getHeight())
                 && (this.getDy() > 0)) { // Si le personnage descent
             dy = pf.getSaut();
         }
