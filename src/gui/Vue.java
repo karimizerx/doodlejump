@@ -71,31 +71,33 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public boolean endGame() {
         isRunning = false;
-        if (terter.getJoueur().getPerso().getY() + terter.getJoueur().getPerso().getHeight() > this.getHeight()) {
-            return true;
-        } else {
-            return false;
+        boolean isFin = false;
+        for (int i = 0; i < terter.getListeJoueurs().length; ++i) {
+            Joueur j = terter.getListeJoueurs()[i];
+            if (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) {
+                isFin = true;
+            }
         }
+        return isFin;
     }
 
     public void update() {
-        Joueur j = terter.getJoueur();
-        Personnage p = j.getPerso();
 
-        // Gère les boutons flèches
-        if (isRight) {
-            p.setX(p.getX() + 5);
-        } else if (isLeft) {
-            p.setX(p.getX() - 5);
+        for (int i = 0; i < terter.getListeJoueurs().length; ++i) {
+            Joueur j = terter.getListeJoueurs()[i];
+            Personnage p = j.getPerso();
+            // Gère les boutons flèches
+            if (isRight) {
+                p.setX(p.getX() + 5);
+            } else if (isLeft) {
+                p.setX(p.getX() - 5);
+            }
         }
 
         terter.update();
     }
 
     public void draw() {
-        Joueur j = terter.getJoueur();
-        Personnage p = j.getPerso();
-        String score = String.valueOf(j.getScore());
 
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         g2.drawImage(terrainView, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
@@ -112,23 +114,30 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         /// Affichage du Score
-        g2.drawImage(scoreBackgroundView, 2, 2, 60 + (30 * (score.length() - 1)), 55, null);
-        for (int i = 0; i < score.length(); ++i) {
-            char chiffre = score.charAt(i);
-            try {
+        if (terter.getListeJoueurs().length == 1) {
+            String score = String.valueOf(terter.getListeJoueurs()[0].getScore());
+            g2.drawImage(scoreBackgroundView, 2, 2, 60 + (30 * (score.length() - 1)), 55, null);
+            for (int i = 0; i < score.length(); ++i) {
+                char chiffre = score.charAt(i);
                 try {
-                    scoreView = ImageIO.read(new File(chemin + "/ch" + chiffre + ".png"));
+                    try {
+                        scoreView = ImageIO.read(new File(chemin + "/ch" + chiffre + ".png"));
 
-                } catch (Exception e) {
-                    scoreView = ImageIO.read(new File("src/gui/images/ch" + chiffre + ".png"));
+                    } catch (Exception e) {
+                        scoreView = ImageIO.read(new File("src/gui/images/ch" + chiffre + ".png"));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+                g2.drawImage(scoreView, 5 + (25 * i), 5, 50, 50, null);
             }
-            g2.drawImage(scoreView, 5 + (25 * i), 5, 50, 50, null);
         }
 
-        g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+        for (int i = 0; i < terter.getListeJoueurs().length; ++i) {
+            Joueur j = terter.getListeJoueurs()[i];
+            Personnage p = j.getPerso();
+            g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+        }
 
         Graphics g = getGraphics();
         g.drawImage(view, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);

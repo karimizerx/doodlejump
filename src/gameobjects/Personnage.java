@@ -1,9 +1,9 @@
 package gameobjects;
 
-// Représente un personnage. C'est un objet, avec vitesse
-public class Personnage extends GameObject implements Moveable {
+// Le personnage est un objet avec vitesse.
+public class Personnage extends GameObject {
 
-    private double dx, dy;
+    private double dx, dy; // Vitesse en x et en y
 
     public Personnage(double x, double y, double w, double h, double dy) {
         super(x, y, w, h);
@@ -12,87 +12,47 @@ public class Personnage extends GameObject implements Moveable {
     }
 
     // Méthodes de la classe
-    @Override
-    public void move(double deltaT) {
-        // partie gravite
-        double g = 9.81;
-        double newX, newY;
-        dy = dy > -g ? (-g * deltaT + dy) : -g;// chute libre ;
 
-        this.setY((-g / 2) * (deltaT * deltaT) + dy * deltaT + this.getY());
-
-        // partie horizental
-        newX = dx * deltaT + this.getX();
-        // if(newX+this.getHeight()/2>)
-        this.setX(newX);
-
-    }
-
+    // Colision entre le personnage et une plateforme
     public void collides_plateforme(Plateforme pf) {
         if ((this.getX() + (this.getWidth() * 0.5) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
                 // plateforme. + witdh*0.5 sert à ne compter que le x du dernier pied
                 && (this.getX() + (this.getWidth() * 0.3) <= pf.getX() + pf.getWidth())
                 // si ça ne dépasse pas par la droite de la plateforme.
-                // + witdh*0.5 sert à ne compter que le x du premier pied
+                // + witdh*0.3 sert à ne compter que le x du premier pied
                 && (this.getY() + 0.7 * this.getHeight() >= pf.getY())
                 && (this.getY() + 0.7 * this.getHeight() <= pf.getY() + pf.getHeight() * 0.7)
-                && (this.getDy() > 0)) {
-            dy = -10;
+                && (this.getDy() > 0)) { // Si le personnage descent
+            dy = pf.getSaut();
         }
     }
 
-    
-
-    public void collides_item(Terrain rainT) {
-        for (Plateforme pf : rainT.getPlateformesListe()) {
-            if ((this.getX() + (this.getWidth() * 0.5) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
-                    // plateforme. + witdh*0.5 sert à ne compter que le x du dernier pied
-                    && (this.getX() + (this.getWidth() * 0.3) <= pf.getX() + pf.getWidth())
-                    // si ça ne dépasse pas par la droite de la plateforme.
-                    // + witdh*0.5 sert à ne compter que le x du premier pied
-                    && (this.getY() + 0.7 * this.getHeight() >= pf.getY())
-                    && (this.getY() + 0.7 * this.getHeight() <= pf.getY() + pf.getHeight() * 0.7)
-                    && (this.getDy() > 0)) {
-                dy = -10;
+    // Colision entre le personnage et un item
+    public void collides_item(Items it) {
+        if (it.isNeedPied()) {
+            if ((this.getX() + (this.getWidth() * 0.5) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
+                    // + witdh*0.5 sert à ne compter que le x du dernier pied
+                    && (this.getX() + (this.getWidth() * 0.3) <= it.getX() + it.getWidth())
+                    // si ça ne dépasse pas par la droite de la item.
+                    // + witdh*0.3 sert à ne compter que le x du premier pied
+                    && (this.getY() + 0.7 * this.getHeight() >= it.getY())
+                    && (this.getY() + 0.7 * this.getHeight() <= it.getY() + it.getHeight())
+                    && (this.getDy() < 0)) { // Si le personnage monte
+                dy = it.getSaut();
+            }
+        } else {
+            if ((this.getX() + (this.getWidth() * 0.5) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
+                    // + witdh*0.5 sert à ne compter que le x du dernier pied
+                    && (this.getX() + (this.getWidth() * 0.3) <= it.getX() + it.getWidth())
+                    // si ça ne dépasse pas par la droite de la item.
+                    // + witdh*0.3 sert à ne compter que le x du premier pied
+                    && (this.getY() <= (it.getY() + it.getHeight()))
+                    && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))
+                    && (this.getDy() < 0)) { // Si le personnage monte
+                dy = it.getSaut();
             }
         }
-    }
 
-    public boolean collides(GameObject go) {
-        double epsilone = 0.0; // marge d'erreur qu'on se donne
-        boolean val = false;
-        if (go.getClass().getName().equals("Items")) {
-            Items item = (Items) go;
-            val = (// on test si ils se chevauchent horizentalement
-            (this.getX() >= item.getX() && this.getX() <= item.getX() + item.getWidth())
-                    ||
-                    (this.getX() + this.getWidth() >= item.getX()
-                            && this.getX() + this.getWidth() <= item.getX() + item.getWidth()))
-                    &&
-                    // condition vertical depends du type
-                    Math.abs(this.getY() - item.getY()) < epsilone;
-            if (val) {
-                item.runEffect(this);
-            }
-
-        } else if (go.getClass().equals(this)) {
-            Plateforme plateforme = (Plateforme) go;
-            val = (// on test si ils se chevauchent horizentalement
-            (this.getX() >= plateforme.getX() && this.getX() <= plateforme.getX() + plateforme.getWidth())
-                    ||
-                    (this.getX() + this.getWidth() >= plateforme.getX()
-                            && this.getX() + this.getWidth() <= plateforme.getX() + plateforme.getWidth()))
-                    &&
-                    // condition vertical depends du type
-                    Math.abs(this.getY() - plateforme.getY() + plateforme.getHeight()) < epsilone
-                    &&
-                    dy > 0 // le personnage decends
-            ;
-            if (val) {
-                dy = plateforme.getSaut();
-            }
-        }
-        return val;
     }
 
     // Getter & Setter
@@ -112,5 +72,4 @@ public class Personnage extends GameObject implements Moveable {
     public void setDy(double dy) {
         this.dy = dy;
     }
-
 }
