@@ -144,7 +144,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 if (!pause)
                     update();
                 draw();
-                Thread.sleep(10); // Temps de stop d'update, en ms
+                Thread.sleep(5); // Temps de stop d'update, en ms
             }
             if (endGame()) { // Si c'est la fin du jeu, on retire tout
                 removeAll();
