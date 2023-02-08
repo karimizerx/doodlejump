@@ -1,32 +1,32 @@
 package gameobjects;
 
+// Un item augmente la vitesse de montée (le saut)
 public abstract class Items extends GameObject {
 
-    private int time;
-    private String id; // Identifiant de l'image correspondante
+    private double saut; // Constante de saut (différente en fonction de l'item).
+    boolean isNeedPied; // Indique si l'objet doit être touché avec les pieds (ressort...)
 
-    public Items(double x, double y, double w, double h, int t) {
+    public Items(double x, double y, double w, double h, double s, boolean p) {
         super(x, y, w, h);
-        this.time = t;
+        this.saut = s;
+        this.isNeedPied = p;
     }
-
-    public abstract void runEffect(Personnage p);
 
     // Getter & Setter
-
-    public int getTime() {
-        return time;
+    public double getSaut() {
+        return saut;
     }
 
-    public void setTime(int time) {
-        this.time = time;
+    public void setSaut(double saut) {
+        this.saut = saut;
     }
 
-    public String getId() {
-        return id;
+    public boolean isNeedPied() {
+        return isNeedPied;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setNeedPied(boolean isNeedPied) {
+        this.isNeedPied = isNeedPied;
     }
+
 }

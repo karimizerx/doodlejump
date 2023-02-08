@@ -1,19 +1,21 @@
 package gui;
 
+// Import de packages java
 import javax.swing.*;
-
+import javax.swing.plaf.nimbus.*;
 import java.awt.*;
 
-import javax.swing.plaf.nimbus.*;
-
+// Import des autres dossiers
 import gameobjects.*;
 
+// App est la fenêtre du menu démarrer
 public class App extends JFrame {
-    JFrame DoodleJumpheur;
-    JPanel menu;
-    JButton buttonPlay, buttonMulti, buttonLeaderboard, buttonExit;
-    int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran"
+    JFrame DoodleJumpheur; // La fenêtre de jeu
+    JPanel menu, menu2; // Menu démarrer
+    JButton buttonSolo, button2joueur, buttonMulti, buttonLeaderboard, buttonExit, buttonPlay;
+    int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran
     int height = Toolkit.getDefaultToolkit().getScreenSize().height; // Longueur de l'écran
+    int nbj; // Nombre de joueurs
 
     public App() {
         /// Création de la fenêtre
@@ -32,7 +34,10 @@ public class App extends JFrame {
         this.setLayout(null);
 
         /// Création des éléments
-        menu = createMenu();
+        menu = createMenu(); // Choix de l'action
+        menu2 = createMenu2(); // Choix des joueurs
+        buttonPlay = new JButton("Jouer"); // Bouton jouer
+        buttonPlay.setPreferredSize(new Dimension(100, 100));
 
         /// Gestion d'évenement
         gestionEvent();
@@ -47,24 +52,43 @@ public class App extends JFrame {
     private JPanel createMenu() {
         // Initalisation du panel
         JPanel m = new JPanel();
-        m.setLayout(new GridLayout(4, 1));
+        m.setLayout(new GridLayout(5, 1));
         m.setPreferredSize(new Dimension(150, 150));
 
         // Initialisation des élements
-        buttonPlay = new JButton("Jouer Solo");
-        buttonPlay.setPreferredSize(new Dimension(100, 100));
+        buttonSolo = new JButton("Jouer Solo");
+        buttonSolo.setPreferredSize(new Dimension(100, 100));
+        button2joueur = new JButton("Jouer à 2");
+        button2joueur.setPreferredSize(new Dimension(100, 100));
         buttonMulti = new JButton("Mode Multi-Joueurs");
         buttonMulti.setPreferredSize(new Dimension(150, 100));
-        buttonLeaderboard = new JButton("Leaderboard");
+        buttonLeaderboard = new JButton("Classement");
         buttonLeaderboard.setPreferredSize(new Dimension(100, 100));
         buttonExit = new JButton("Quitter");
         buttonExit.setPreferredSize(new Dimension(100, 100));
 
         // AJout des élements dans le panel
-        m.add(buttonPlay);
+        m.add(buttonSolo);
+        m.add(button2joueur);
         m.add(buttonMulti);
         m.add(buttonLeaderboard);
         m.add(buttonExit);
+
+        return m;
+    }
+
+    private JPanel createMenu2() {
+        // Initalisation du panel
+        JPanel m = new JPanel();
+        m.setLayout(new GridLayout(nbj + 1, 0)); // +1 pour le bouton Play
+        m.setPreferredSize(new Dimension(170, 50 * nbj));
+
+        // Initialisation & ajout des élements dans le panel
+        for (int i = 0; i < nbj; ++i) {
+            JTextArea nomjoueur = new JTextArea("Entrez nom du joueur " + (i + 1));
+            nomjoueur.setPreferredSize(new Dimension(100, 100));
+            m.add(nomjoueur);
+        }
 
         return m;
     }
@@ -85,9 +109,14 @@ public class App extends JFrame {
         DJ.setVisible(false);
 
         // Initialisation des éléments
-        Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
-        Joueur j = new Joueur(p);
-        Terrain rt = new Terrain(j, DJ.getHeight(), DJ.getWidth());
+        Joueur[] ljou = new Joueur[nbj];
+        for (int i = 0; i < nbj; ++i) {
+            Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
+            JTextArea jtxt = (JTextArea) menu2.getComponent(i);
+            String nomjoueur = (jtxt.getText() == "Entrez votre nom") ? "Joueur" : jtxt.getText();
+            ljou[i] = new Joueur(p, nomjoueur);
+        }
+        Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth());
 
         // Ajout des éléments à la fenêtre
         DJ.add(new Vue(rt));
@@ -95,45 +124,50 @@ public class App extends JFrame {
         return DJ;
     }
 
-    private JPanel createLb() {
-        // Initalisation du panel
-        JPanel lb = new JPanel();
-        lb.setPreferredSize(new Dimension(150, 150));
-
-        // Initialisation des élements
-        JLabel champion = new JLabel("Elyo le Roi");
-
-        // AJout des élements dans le panel
-        lb.add(champion);
-
-        return lb;
-    }
-
     private void gestionEvent() {
-        buttonPlay.addActionListener(e -> {
-            DoodleJumpheur = createDJ();
-            DoodleJumpheur.setVisible(true);
-            this.dispose();
+        buttonSolo.addActionListener(e -> {
+            this.nbj = 1;
+            this.menu.setVisible(false);
+            this.menu2 = createMenu2();
+            this.menu2.add(this.buttonPlay);
+            this.add(this.menu2);
+            int mpw2 = (int) this.menu2.getPreferredSize().getWidth();
+            int mph2 = (int) this.menu2.getPreferredSize().getHeight();
+            this.menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
+        });
+
+        button2joueur.addActionListener(e -> {
+            /*
+             * FARES C'EST POUR TOI
+             * this.nbj = 2;
+             * menu.setVisible(false);
+             * this.menu2 = createMenu2();
+             * menu2.add(buttonPlay);
+             * this.add(this.menu2);
+             * int mpw2 = (int) menu2.getPreferredSize().getWidth();
+             * int mph2 = (int) menu2.getPreferredSize().getHeight();
+             * menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) -
+             * mph2, mpw2, mph2);
+             */
         });
 
         buttonExit.addActionListener(e -> {
             System.exit(0);
-
         });
 
         buttonLeaderboard.addActionListener(e -> {
-            JPanel lb = createLb();
-            menu = createLb();
-            repaint();
-            validate();
-            int lpw = (int) lb.getPreferredSize().getWidth();
-            int lph = (int) lb.getPreferredSize().getHeight();
-            lb.setBounds(300, 300, 150, 150);
+            System.out.println("Elyo le roi");
+        });
+
+        buttonPlay.addActionListener(e -> {
+            // On crée une nouvelle fenêtre de jeu
+            DoodleJumpheur = createDJ();
+            DoodleJumpheur.setVisible(true);
+            this.dispose();
         });
     }
 
     public static void main(String[] args) {
-
         EventQueue.invokeLater(() -> {
             // Appliquer un look'n feel
             try {

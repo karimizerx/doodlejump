@@ -7,129 +7,113 @@ import java.util.Random;
 // Import d'autres dossiers
 import gui.Vue;
 
+// Gère tous les éléments du terrain
 public class Terrain {
 
-    private ArrayList<Plateforme> plateformesListe;
-    private Joueur joueur;
-    private final double height, width;// dimensions du terrain
-    private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
-
-    // Entre 0 et 1, indique de combien on fais monter le jeu
-    private double advancement = 0.3;
-
-    /**
-     * Hauteur maximal que peut atteindre le personnage, maxHeight*height,
-     * avant de faire monter le jeu.
-     */
-    private double H = 0.3;
-
-    /**
-     * Baisse plus le score monte, affecte la densite des plateformes et la proba
-     * qu'un helicoptere ou fusee apparaisse.
-     * Inversement, affecte la proba d'apparition des monstres, sûrement on inverse
-     * 1/difficulte
-     */
+    private ArrayList<Plateforme> plateformesListe; // Liste des plateformes sur le terrain
+    private Joueur[] ListeJoueurs; // Liste des joueurs
+    private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
+    // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
+    // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
 
-    public Terrain(Joueur joueur, double height, double width) {
+    public Terrain(Joueur[] ljoueur, double height, double width) {
+        // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
-        this.joueur = joueur;
+        this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
+
+        // Création des plateformes
         generateObstacles(20);
     }
 
-    /**
-     * Crée la liste des plateformes
-     * 
-     * @param nb nombres d'obstacles à générer
-     * 
-     */
-    private void generateObstacles(int nb) {
-        nb= (nb>50) ? 50 :(nb<7) ? 8 : nb ; 
-        plateformesListe = new ArrayList<Plateforme>();
+    /// Méthodes de la classe
 
-        for (int i = 0; i < (nb * difficulty); i++) {
-            Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
-                    new Random().nextInt((int) this.height-20), 60, 20, -10);
-            plateformesListe.add(p);
+    // Crée la liste des plateformes (avec un nbPlateformes en entrée)
+    private void generateObstacles(int nbPlateformes) {
+        // Limites min/max de plateformes sur le terrain
+        nbPlateformes = (nbPlateformes > 50) ? 50 : (nbPlateformes < 7) ? 8 : nbPlateformes;
+
+        // Génère des plateformes à coord aléatoires pour la liste des plateformes
+        for (int i = 0; i < (nbPlateformes * difficulty); ++i) {
+            // On définit la largeur/hauteur des plateformes de base
+            int w = 60, h = 20;
+            int x = new Random().nextInt((int) this.width - w);
+            int y = new Random().nextInt((int) this.height - h);
+            plateformesListe.add(new PlateformeBase(x, y, w, h, -10));
         }
-        nb= (nb>10) ? 10 : nb ; 
-        for(int i = 1; i < nb; i++){
-            plateformesListe.get(i).setY(height-i*90);
+
+        // On s'assure d'aboird toujours une solution au début
+        nbPlateformes = (nbPlateformes > 10) ? 10 : nbPlateformes;
+        for (int i = 1; i < nbPlateformes; i++) {
+            plateformesListe.get(i).setY(this.height - i * 90);
         }
     }
 
-    public Plateforme highestPlateforme(){
-        Plateforme temp=plateformesListe.get(0);
-        for (Plateforme p : plateformesListe){
-            if(p.getY()<=temp.getY()){
-                temp=p;
+    // Renvoie la plateforme la plus haute sur le terrain
+    private Plateforme highestPlateforme() {
+        Plateforme plateformeLaPlusHaute = plateformesListe.get(0);
+        for (Plateforme p : plateformesListe) {
+            if (p.getY() <= plateformeLaPlusHaute.getY()) {
+                plateformeLaPlusHaute = p;
             }
         }
-        return temp;
+        return plateformeLaPlusHaute;
     }
 
-    /**
-     * 
-     * @param maxY indique la coordonnee maximale que peut avoir un objet en y,
-     *             si supérieur, on le retire
-     */
-    private void removeObstacles(double maxY) {
-        int c = 0;// compte le nombres d'obstacles qu'on enleve
-        for (GameObject gameObject : plateformesListe) {
-            if (gameObject.getY() >= maxY) {
-                plateformesListe.remove(gameObject);
-                ++c;
-            }
-        }
-        // si on veut des nouveaux obstacles.
-        generateObstacles(c);
+    // Gère, pour le perso, le débordement de l'écran
+    private void limite(Personnage p) {
+        // 0.43 est la valeur exacte de la moitié du perso
+        // Si + de la moitié du perso est sortie du côté gauche de l'écran
+        // => on place la moitié du perso au côté droit de l'écran
+        if (p.getX() + p.getWidth() * 0.43 <= 0)
+            p.setX(this.width - (p.getWidth() * 0.43));
+        else if (p.getX() + p.getWidth() * 0.43 >= width) // Et inversement
+            p.setX(-(p.getWidth() * 0.43));
     }
 
-    private void limite(GameObject object) {
-        if (object.getX() + object.getWidth() / 2 <= 0) // bord a droite, on le mets a gauche
-            object.setX(width - (object.getWidth() / 2) );
-        else if (object.getX() + object.getWidth() / 2 >= width) // bord a gauche, on le mets a gauche
-            object.setX((object.getWidth() / 2)-60);
-    }
-
-    public static boolean first=true;
+    // Mise à jour du jeu.
     public void update() {
-        Joueur j = this.joueur;
-        Personnage p = j.getPerso();
-        double next=(highestPlateforme().getY()-85);
-        p.setDy(p.getDy() + 0.2);
-        p.setY(p.getY() + p.getDy());
+        // On effectue une mise à jour pour tous les joueurs
+        for (int i = 0; i < ListeJoueurs.length; ++i) {
+            Joueur j = ListeJoueurs[i];
+            Personnage p = j.getPerso();
+            double next = (highestPlateforme().getY() - 85);
 
-        // Si on est tout en bas de la fenêtre, endGame()
-        if (p.getY() + 0.7 * p.getHeight() >= this.height) {
-            Vue.isRunning = false;
-        }
+            // Ralentissement progressif après un saut
+            p.setDy(p.getDy() + 0.2);
+            p.setY(p.getY() + p.getDy());
 
-        if (p.getY() < this.height / 2) {
-            p.setY(this.height / 2);
-            j.setScore(j.getScore() + 1); // On incrémente le score de 1
-            for (Plateforme pf : plateformesListe) {
-                pf.setY(pf.getY() - (int) p.getDy());
-                if (pf.getY()-pf.getHeight()>= this.height*0.95) {
-                    if(next<300){
-                        pf.setY(0);
+            // Si les piedds du perso touchent le bas de la fenêtre, on a perdu
+            if (p.getY() + 0.87 * p.getHeight() >= this.height) {
+                Vue.isRunning = false;
+            }
+
+            // Si la tête du personnage dépasse la moitié de l'écran
+            if (p.getY() < this.height / 2) {
+                p.setY(this.height / 2);
+                j.setScore(j.getScore() + 1); // On incrémente le score de 1
+                // On descend toutes les plateforme
+                for (Plateforme pf : plateformesListe) {
+                    pf.setY(pf.getY() - (int) p.getDy());
+                    if (pf.getY() - pf.getHeight() >= this.height * 0.95) {
+                        if (next < 300) {
+                            pf.setY(0);
+                        } else {
+                            pf.setY(next);
+                        }
+                        int r = new Random().nextInt(530);
+                        pf.setX(r);
                     }
-                    else {
-                        pf.setY(next);
-                    }
-                    int r = new Random().nextInt(530);
-                    pf.setX(r);
-
                 }
             }
+            // On gère les collisions & les débordements du personnage
+            for (Plateforme pf : plateformesListe) {
+                p.collides_plateforme(pf);
+            }
+            limite(p);
         }
-        for (Plateforme pf : plateformesListe) {
-            p.collides_plateforme(pf);
-        }
-
-        limite(p);
     }
 
     // Getter & Setter
@@ -142,14 +126,6 @@ public class Terrain {
         this.plateformesListe = plateformesListe;
     }
 
-    public Joueur getJoueur() {
-        return joueur;
-    }
-
-    public void setJoueur(Joueur joueur) {
-        this.joueur = joueur;
-    }
-
     public double getHeight() {
         return height;
     }
@@ -158,36 +134,20 @@ public class Terrain {
         return width;
     }
 
-    public double getY() {
-        return y;
-    }
-
-    public void setY(double y) {
-        this.y = y;
-    }
-
-    public double getAdvancement() {
-        return advancement;
-    }
-
-    public void setAdvancement(double advancement) {
-        this.advancement = advancement;
-    }
-
-    public double getH() {
-        return H;
-    }
-
-    public void setH(double H) {
-        this.H = H;
-    }
-
     public double getDifficulty() {
         return difficulty;
     }
 
     public void setDifficulty(double difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public Joueur[] getListeJoueurs() {
+        return ListeJoueurs;
+    }
+
+    public void setListeJoueurs(Joueur[] listeJoueurs) {
+        ListeJoueurs = listeJoueurs;
     }
 
 }
