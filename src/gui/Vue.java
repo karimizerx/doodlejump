@@ -41,10 +41,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
-                terrainView = ImageIO.read(new File(chemin + "/" + "background.png"));
-                platformeView = ImageIO.read(new File(chemin + "/" + "plateformeBase.png"));
-                persoView = ImageIO.read(new File(chemin + "/" + "doodleNinja.png"));
-                scoreBackgroundView = ImageIO.read(new File(chemin + "/" + "scoreBackground.png"));
+                terrainView = ImageIO.read(new File(chemin + "/background.png"));
+                platformeView = ImageIO.read(new File(chemin + "/plateformeBase.png"));
+                persoView = ImageIO.read(new File(chemin + "/doodleNinja.png"));
+                scoreBackgroundView = ImageIO.read(new File(chemin + "/scoreBackground.png"));
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/background.png"));
                 platformeView = ImageIO.read(new File("src/gui/images/plateforme.png"));
