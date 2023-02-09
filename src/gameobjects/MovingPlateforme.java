@@ -1,18 +1,22 @@
 package gameobjects;
 
-public class MovingPlateforme extends Plateforme implements Moveable {
+public class MovingPlateforme extends Plateforme {
 
-    private final double dx;
+    private double dx;
 
     public MovingPlateforme(double x, double y, double w, double h, double saut, double dx) {
         super(x, y, w, h, saut);
         this.dx = dx;
     }
 
-    @Override
-    public void move(double deltaT) { // Modifie la position en x
-        this.setX(this.getX() + dx * deltaT);
-    }
+    
+    /*public void move(Terrain t) { // Modifie la position en x
+        this.setX(this.getX() + dx);
+        if(this.getX() >= t.getWidth() || this.getX() <=0){
+            dx=-dx;
+        }
+
+    }*/
 
     // Getter
 
