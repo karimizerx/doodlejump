@@ -25,6 +25,7 @@ public class Classement {
         }
     }
 
+    // Sert à lire et enregistrer les données du fichier
     private void lectureFicher() throws IOException {
         /// Ajout chaque ligne du fichier à la liste ligneCSV
         // La classe BufferedReader, jumelée à FileReader, permet de lire des entrées de
@@ -103,7 +104,7 @@ public class Classement {
         for (int i = 0; i < classement.size(); ++i) {
             String nom = classement.get(i)[0];
             String score = classement.get(i)[1];
-            System.out.println(nom + " : " + score);
+            System.out.println("#" + (i + 1) + " " + nom + " : " + score);
         }
         System.out.println("################################\n");
     }
