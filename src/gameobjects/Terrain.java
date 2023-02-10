@@ -67,12 +67,12 @@ public class Terrain{
     private void generateObstacles(int nb) {
         plateformesListe = new ArrayList<Plateforme>();
         plateformesListe.add(new PlateformeBase(0,this.height-50 , width, 50, -10));
-
-        // for (int i = 0; i < (nb * difficulty); i++) {
-        //     Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
-        //             new Random().nextInt((int) this.height), 60, 20, -10);
-        //     plateformesListe.add(p);
-        // }
+        nb=nb-1;
+        for (int i = 0; i < (nb * difficulty); i++) {
+            Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
+                    new Random().nextInt((int) this.height), 60, 20, -10);
+            plateformesListe.add(p);
+        }
     }
 
     /**
