@@ -57,7 +57,6 @@ public class JoueurConnecte {
             in = new ObjectInputStream(client.getInputStream());
             terrain.setPlateformesListe((ArrayList<Plateforme>)in.readObject());
             terrain.setJoueurA((Joueur)in.readObject());
-            terrain.setJoueurB((Joueur)in.readObject());
             terrain.setY((double)in.readObject());                
         }catch (ClassNotFoundException c){
             c.printStackTrace();
@@ -71,19 +70,21 @@ public class JoueurConnecte {
 
 
 
-    public void sendPos(double a){
-        try{
-        DataOutputStream output= new DataOutputStream(client.getOutputStream()) ;
-        output.writeDouble(a);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
 
 
     protected void deconnecter() throws IOException{
         client.close();
+    }
+
+    public void sendJoueurB(Joueur joueurB) {
+        try{
+            ObjectOutputStream output= new ObjectOutputStream(client.getOutputStream()) ;
+            output.writeObject(joueurB);
+            System.out.println("JoueurConnecte.sendJoueurB() reussi");
+            }catch(IOException e){
+                e.printStackTrace();
+                System.out.println("JoueurConnecte.sendJoueurB() echoue");
+            }
     }
 
 

@@ -66,12 +66,13 @@ public class Terrain{
      */
     private void generateObstacles(int nb) {
         plateformesListe = new ArrayList<Plateforme>();
+        plateformesListe.add(new PlateformeBase(0,this.height-50 , width, 50, -10));
 
-        for (int i = 0; i < (nb * difficulty); i++) {
-            Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
-                    new Random().nextInt((int) this.height), 60, 20, -10);
-            plateformesListe.add(p);
-        }
+        // for (int i = 0; i < (nb * difficulty); i++) {
+        //     Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
+        //             new Random().nextInt((int) this.height), 60, 20, -10);
+        //     plateformesListe.add(p);
+        // }
     }
 
     /**
@@ -101,8 +102,8 @@ public class Terrain{
     public void update() {
         if((isHost && multiplayer)||!multiplayer){
             update(joueurA);
-            if(joueurB!=null)update(joueurB);
         }
+        if((!isHost && multiplayer))update(joueurB);
     }
 
     public void update(Joueur j){
@@ -114,7 +115,8 @@ public class Terrain{
         if (p.getY() + 0.7 * p.getHeight() >= this.height) {
             Vue.isRunning = false;
         }
-        if (p.getY() < this.height / 2) {
+
+        if (p.getY() < this.height / 2 && ((isHost && multiplayer)||!multiplayer)) {
             p.setY(this.height / 2);
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
@@ -200,7 +202,7 @@ public class Terrain{
             break;
             case 1: 
             p.setX(p.getX() - 5);
-            ;break;
+                break;
         }
     }
 

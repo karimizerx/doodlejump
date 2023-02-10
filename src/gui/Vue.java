@@ -140,7 +140,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             while (isRunning) {
                 if(!pause) update();
                 draw();
-                Thread.sleep(10);
+                Thread.sleep(5);
             }
             if (endGame()) {
                 removeAll();
@@ -159,24 +159,17 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if((terter.isHost && terter.multiplayer)||!terter.multiplayer){
-            Personnage pA=terter.getJoueurA().getPerso();
+        Personnage pA;
+        if((terter.isHost && terter.multiplayer)||!terter.multiplayer)
+        pA=terter.getJoueurA().getPerso();
+        else pA=terter.getJoueurB().getPerso();
+
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 pA.isRight = true;
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                 pA.isLeft = true;
             }
-            if(!terter.multiplayer){
-                Personnage pB=terter.getJoueurB().getPerso();
-                if (e.getKeyCode() == KeyEvent.VK_Q) {
-                    pB.isRight = true;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_D) {
-                    pB.isLeft = true;
-                }
-            }
-        }
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             isEsc = true;
@@ -193,24 +186,16 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     @Override
     public void keyReleased(KeyEvent e) {
-        if((terter.isHost && terter.multiplayer)||!terter.multiplayer){
-            Personnage pA=terter.getJoueurA().getPerso();
+        Personnage pA;
+        if((terter.isHost && terter.multiplayer)||!terter.multiplayer)
+        pA=terter.getJoueurA().getPerso();
+        else pA=terter.getJoueurB().getPerso();
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 pA.isRight = false;
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                 pA.isLeft = false;
             }
-            if(!terter.multiplayer){
-                Personnage pB=terter.getJoueurB().getPerso();
-                if (e.getKeyCode() == KeyEvent.VK_Q) {
-                    pB.isRight = false;
-                }
-                if (e.getKeyCode() == KeyEvent.VK_D) {
-                    pB.isLeft = false;
-                }
-            }
-        }
     }
 
     public void retournMenu() {

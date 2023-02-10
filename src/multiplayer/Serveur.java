@@ -6,6 +6,8 @@ import java.net.*;
 import java.io.*;
 import javax.swing.*;
 
+import gameobjects.Joueur;
+import gameobjects.Personnage;
 import gameobjects.Terrain;
 
 public class Serveur implements Runnable {
@@ -25,16 +27,7 @@ public class Serveur implements Runnable {
         serveurSocket.setSoTimeout(30000);
     }
     
-    public int getPos(){
-        DataInputStream in;
-        try {
-            in =  new DataInputStream(serveur.client.getInputStream());
-            return  in.read();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return 0;
-        } 
-    }
+
 
     public void sendTerrain(Terrain terrain){//envoyer les coordonnees du jeu
         ObjectOutputStream in;
@@ -42,7 +35,6 @@ public class Serveur implements Runnable {
             in =  new ObjectOutputStream(serveur.client.getOutputStream());
             in.writeObject(terrain.getPlateformesListe());
             in.writeObject(terrain.getJoueurA());
-            in.writeObject(terrain.getJoueurB());
             in.writeObject(terrain.getY());
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +52,6 @@ public class Serveur implements Runnable {
             serveur=new JoueurConnecte();
             serveur.setClient(serveurSocket.accept());
             JOptionPane.showMessageDialog(null, "Le joueur "+serveur.client.getRemoteSocketAddress() +" est connecté","Succes",JOptionPane.DEFAULT_OPTION); 
-            System.out.println("sisi"); 
         } catch (IOException e) { 
             this.serveur=null;
             JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
@@ -70,6 +61,22 @@ public class Serveur implements Runnable {
 
     JoueurConnecte getServeur(){
         return serveur;
+    }
+
+    public Joueur getJoueurB() {
+        ObjectInputStream in;
+        try {
+            in =  new ObjectInputStream(serveur.client.getInputStream());
+            Joueur i=(Joueur)in.readObject();
+            return  i;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new Joueur(new Personnage(50, 50, 100, 100, -10));
+        }catch (ClassNotFoundException c){
+            c.printStackTrace();
+        }
+        System.exit(-1);
+        return null;
     }
 
     

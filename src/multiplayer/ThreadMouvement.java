@@ -20,10 +20,12 @@ public class ThreadMouvement implements Runnable {
         while(true){
             if(terrain.isHost){
                 serveur.sendTerrain(terrain);
-                terrain.setPlayerBmvt(serveur.getPos());//recevoir ce que le mvt du client
+                terrain.setJoueurB(serveur.getJoueurB());//recevoir ce que le mvt du client
+                System.out.println("ThreadMouvement.run() done");
             }else{
-                client.sendPos(terrain.getPlayerBmvt());//le client envoi le mvt de son joueur
                 client.receiveTerrain(terrain);    
+                client.sendJoueurB(terrain.getJoueurB());//le client envoi le mvt de son joueur
+                System.out.println("ThreadMouvement.run() done");
             }
         }
     }
