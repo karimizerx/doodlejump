@@ -85,7 +85,7 @@ public class App extends JFrame {
 
         // Initialisation & ajout des élements dans le panel
         for (int i = 0; i < nbj; ++i) {
-            JTextArea nomjoueur = new JTextArea("Entrez nom du joueur " + (i + 1));
+            JTextArea nomjoueur = new JTextArea("Entrez votre nom");
             nomjoueur.setPreferredSize(new Dimension(100, 100));
             m.add(nomjoueur);
         }
@@ -113,7 +113,7 @@ public class App extends JFrame {
         for (int i = 0; i < nbj; ++i) {
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
             JTextArea jtxt = (JTextArea) menu2.getComponent(i);
-            String nomjoueur = (jtxt.getText() == "Entrez votre nom") ? "Joueur" : jtxt.getText();
+            String nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
             ljou[i] = new Joueur(p, nomjoueur);
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth());

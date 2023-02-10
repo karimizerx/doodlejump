@@ -147,6 +147,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 Thread.sleep(5); // Temps de stop d'update, en ms
             }
             if (endGame()) { // Si c'est la fin du jeu, on retire tout
+                Joueur j = terrain.getListeJoueurs()[0];
+                String score = String.valueOf(j.getScore());
+                Classement c = new Classement();
+                c.afficherClassement();
+                c.ajoutClassement(j.getNom(), score);
+                c.afficherClassement();
                 removeAll();
                 repaint();
             }

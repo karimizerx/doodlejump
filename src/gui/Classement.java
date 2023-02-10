@@ -1,14 +1,14 @@
 package gui;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+// Import de packages java
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 
+// Un classement est un objet défini par une liste de tableaux de données.
 public class Classement {
 
+    private String entete = "Nom,Score";
+    private final String separateur = ",";
     private File fichier;
     private ArrayList<String> ligneCSV;
     private ArrayList<String[]> classement;
@@ -18,10 +18,17 @@ public class Classement {
         this.fichier = new File(chemin + "/classement.csv");
         this.ligneCSV = new ArrayList<String>();
         this.classement = new ArrayList<String[]>();
+        try {
+            lectureFicher();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void lectureFicher() throws IOException {
+    private void lectureFicher() throws IOException {
         /// Ajout chaque ligne du fichier à la liste ligneCSV
+        // La classe BufferedReader, jumelée à FileReader, permet de lire des entrées de
+        // séquences de caractères
         // BufferedReader est utilisée pour sa méthode readLine
         BufferedReader lecteur = new BufferedReader(new FileReader(fichier));
         for (String ligne = lecteur.readLine(); ligne != null; ligne = lecteur.readLine()) {
@@ -36,51 +43,68 @@ public class Classement {
             String[] ligneData = ligne.split(","); // Et on place les données de chaque colonne dans un tableau
             classement.add(ligneData);
         }
-        afficherClassement();
-        afficherClassement();
-        afficherClassement();
     }
 
-    private void afficherClassement() {
-        System.out.println("########## CLASSEMENT ##########");
-        System.out.println("Nom : Score");
+    private String[] getMaxScore() {
+        String[] max = classement.get(0);
         for (String[] tab : classement) {
-            String nom = tab[0];
-            String score = tab[1];
+            max = (Integer.valueOf(tab[1]) > Integer.valueOf(max[1])) ? tab : max;
+        }
+        return max;
+    }
+
+    private int getMaxIndex() {
+        String[] max = classement.get(0);
+        int index = 0;
+        for (int i = 0; i < classement.size(); ++i) {
+            index = (Integer.valueOf(classement.get(i)[1]) > Integer.valueOf(max[1])) ? i : index;
+        }
+        return index;
+    }
+
+    // Range le classement par ordre décroissant
+    private void classer() throws IOException {
+        ArrayList<String[]> lb = new ArrayList<String[]>();
+        while (classement.size() != 0) {
+            lb.add(getMaxScore());
+            classement.remove(getMaxIndex());
+        }
+        this.classement = lb;
+    }
+
+    // Ajout d'une ligne au classement
+    public void ajoutClassement(String nom, String score) throws IOException {
+        // On ajoute un nouveau tableau de donnée à la liste
+        String[] newClassement = { nom, score };
+        classement.add(newClassement);
+
+        classer();
+
+        // La classe BufferedWriter, jumelée à FileWriter, permet d'écrire des séquences
+        // de charactères dans le fichier
+        BufferedWriter writerB = new BufferedWriter(new FileWriter(fichier));
+        /// On réécrit complètement le fichier
+        writerB.append(this.entete); // On rajoute l'en-tête
+        // On utilise la méthode de BufferedWriter newLine()
+        writerB.newLine(); // Le passage à une nouvelle ligne c'est le délimiteur
+        for (String[] tab : classement) { // Pour chaque ligne dans le classement
+            writerB.append(tab[0]); // On ajoute le nom du joueur
+            writerB.append(separateur); // Le séparateur
+            writerB.append(tab[1]); // Le Score du joueur
+            writerB.newLine(); // Puis newLine();
+        }
+
+        writerB.close(); // On libère les ressources
+    }
+
+    // Affichage dans la console
+    public void afficherClassement() throws IOException {
+        System.out.println("########## CLASSEMENT ##########");
+        for (int i = 0; i < classement.size(); ++i) {
+            String nom = classement.get(i)[0];
+            String score = classement.get(i)[1];
             System.out.println(nom + " : " + score);
         }
         System.out.println("################################\n");
-    }
-
-    public void ecritureFichier() {
-    }
-
-    public File getFichier() {
-        return fichier;
-    }
-
-    public void setFichier(File fichier) {
-        this.fichier = fichier;
-    }
-
-    public ArrayList<String> getLigneCSV() {
-        return ligneCSV;
-    }
-
-    public void setLigneCSV(ArrayList<String> ligneCSV) {
-        this.ligneCSV = ligneCSV;
-    }
-
-    public ArrayList<String[]> getClassement() {
-        return classement;
-    }
-
-    public void setClassement(ArrayList<String[]> classement) {
-        this.classement = classement;
-    }
-
-    public static void main(String[] args) throws IOException {
-        Classement lb = new Classement();
-        lb.lectureFicher();
     }
 }
