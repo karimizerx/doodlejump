@@ -86,8 +86,15 @@ public class App extends JFrame {
         m.setPreferredSize(new Dimension(170, 50 * nbj));
 
         // Initialisation & ajout des élements dans le panel
-        for (int i = 0; i < nbj; ++i) {
-            JTextArea nomjoueur = new JTextArea("Entrez votre nom");
+        for (int i = 0; i < nbj; ++i) { // Si possible, on prend par défaut le nom du meilleur joueur
+            Classement c = new Classement();
+            String n;
+            if (c.getClassement().size() > 1) {
+                n = c.getClassement().get(0)[0];
+            } else {
+                n = "Entrez votre nom";
+            }
+            JTextArea nomjoueur = new JTextArea(n);
             nomjoueur.setPreferredSize(new Dimension(100, 100));
             m.add(nomjoueur);
         }

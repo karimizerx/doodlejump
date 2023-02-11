@@ -117,4 +117,22 @@ public class Classement {
         }
         System.out.println("################################\n");
     }
+
+    // Getter & Setter
+
+    public ArrayList<String> getLigneCSV() {
+        return ligneCSV;
+    }
+
+    public void setLigneCSV(ArrayList<String> ligneCSV) {
+        this.ligneCSV = ligneCSV;
+    }
+
+    public ArrayList<String[]> getClassement() {
+        return classement;
+    }
+
+    public void setClassement(ArrayList<String[]> classement) {
+        this.classement = classement;
+    }
 }
