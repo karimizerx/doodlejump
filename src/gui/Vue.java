@@ -160,6 +160,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     @Override
     public void keyPressed(KeyEvent e) {
         Personnage pA;
+        Personnage pB;
         if((terter.isHost && terter.multiplayer)||!terter.multiplayer)
         pA=terter.getJoueurA().getPerso();
         else pA=terter.getJoueurB().getPerso();
@@ -170,6 +171,16 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                 pA.isLeft = true;
             }
+            if(terter.twoPlayer){
+                pB=terter.getJoueurB().getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    pB.isRight = true;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    pB.isLeft = true;
+                }
+            }
+        
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             isEsc = true;
@@ -187,6 +198,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     @Override
     public void keyReleased(KeyEvent e) {
         Personnage pA;
+        Personnage pB;
         if((terter.isHost && terter.multiplayer)||!terter.multiplayer)
         pA=terter.getJoueurA().getPerso();
         else pA=terter.getJoueurB().getPerso();
@@ -195,6 +207,15 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
                 pA.isLeft = false;
+            }
+            if(terter.twoPlayer){
+                pB=terter.getJoueurB().getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    pB.isRight = false;
+                }
+                if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    pB.isLeft = false;
+                }
             }
     }
 

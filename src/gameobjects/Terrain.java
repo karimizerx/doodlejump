@@ -20,9 +20,9 @@ public class Terrain{
     private Joueur joueurB=null;
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
-    public boolean multiplayer=true;
-    public boolean isHost=true;
-    public boolean twoPlayer=false;
+    public boolean multiplayer=false;
+    public boolean isHost=false;
+    public boolean twoPlayer=true;
     public Serveur host=null;
     public JoueurConnecte client=null;
 
@@ -104,7 +104,7 @@ public class Terrain{
         if((isHost && multiplayer)||!multiplayer){
             update(joueurA);
         }
-        if((!isHost && multiplayer))update(joueurB);
+        if((!isHost && multiplayer)||twoPlayer)update(joueurB);
     }
 
     public void update(Joueur j){
@@ -117,7 +117,7 @@ public class Terrain{
             Vue.isRunning = false;
         }
 
-        if (p.getY() < this.height / 2 && ((isHost && multiplayer)||!multiplayer)) {
+        if (p.getY() < this.height / 2 && (((isHost && multiplayer)||!multiplayer)||twoPlayer)) {
             p.setY(this.height / 2);
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
