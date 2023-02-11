@@ -17,7 +17,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public static boolean isRunning;
     private Thread thread;
-    private String chemin = (new File("gui/images/")).getAbsolutePath();
+    private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
     private boolean isRight, isLeft, pause = false;
