@@ -5,6 +5,7 @@ import gameobjects.*;
 
 // Import de packages java
 import java.io.*;
+import java.util.ArrayList;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -17,8 +18,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private Thread thread;
     private String chemin = (new File("gui/images/")).getAbsolutePath();
-    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, persoView, scoreView,
-            scoreBackgroundView, nomView;
+    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView;
+    private ArrayList<ArrayList<BufferedImage>> viewList;
     private boolean isRight, isLeft, pause = false;
     private Terrain terrain;
     private JFrame menuPause;
@@ -37,6 +38,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private void init() {
         // view est l'image qui contiendra toutes les autres
         view = new BufferedImage((int) terrain.getWidth(), (int) terrain.getHeight(), BufferedImage.TYPE_INT_RGB);
+        viewList = new ArrayList<ArrayList<BufferedImage>>();
 
         // Double try_catch pour gérer la différence entre windows & linux
         try {
@@ -44,14 +46,46 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 terrainView = ImageIO.read(new File(chemin + "/background/background.png"));
                 platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
-                persoView = ImageIO.read(new File(chemin + "/personnages/doodleNinja.png"));
                 scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground.png"));
+
+                for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+                    Joueur joueur = terrain.getListeJoueurs().get(i);
+                    String nom = joueur.getNom().toLowerCase();
+                    // On stock dans ListAux les images liées à chaque joueur et qui ne changent
+                    // jamais, i.e le perso et le nom, contrairement au score
+                    ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
+                    // L'élément de rang 0 contient l'image du perso
+                    viewListAux.add(ImageIO.read(new File(chemin + "/personnages/doodleNinja.png")));
+                    // Les autres contiennent les lettres du nom du joueur
+                    for (int j = 0; j < nom.length(); ++j) {
+                        BufferedImage lv = ImageIO.read(new File(chemin + "/lettres/lettre" + nom.charAt(j) + ".png"));
+                        viewListAux.add(lv);
+                    }
+                    viewList.add(viewListAux);
+                }
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/background/background.png"));
                 platformeBaseView = ImageIO.read(new File("src/gui/images/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO.read(new File("src/gui/images/plateformes/plateformeMobile.png"));
-                persoView = ImageIO.read(new File("src/gui/images/personnages/doodleNinja.png"));
                 scoreBackgroundView = ImageIO.read(new File("src/gui/images/background/scoreBackground.png"));
+
+                for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+                    Joueur joueur = terrain.getListeJoueurs().get(i);
+                    Personnage perso = joueur.getPerso();
+                    String nom = joueur.getNom().toLowerCase();
+                    // On stock dans ListAux les images liées à chaque joueur et qui ne changent
+                    // jamais, i.e le perso et le nom, contrairement au score
+                    ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
+                    // L'élément de rang 0 contient l'image du perso
+                    viewListAux.add(ImageIO.read(new File("src/gui/images/personnages/doodleNinja.png")));
+                    // Les autres contiennent les lettres du nom du joueur
+                    for (int j = 0; j < nom.length(); ++j) {
+                        BufferedImage lv = ImageIO
+                                .read(new File("src/gui/images/lettres/lettre" + nom.charAt(j) + ".png"));
+                        viewListAux.add(lv);
+                    }
+                    viewList.add(viewListAux);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,22 +125,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         // Affichage des personnages + Nom
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur joueur = terrain.getListeJoueurs().get(i);
-            Personnage p = joueur.getPerso();
-            String nom = joueur.getNom().toLowerCase();
-            g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
-            for (int j = 0; j < nom.length(); ++j) {
-                try {
-                    try {
-                        nomView = ImageIO.read(new File(chemin + "/lettres/lettre" + nom.charAt(i) + ".png"));
-
-                    } catch (Exception e) {
-                        nomView = ImageIO.read(new File("src/gui/images/lettres/lettre" + nom.charAt(i) + ".png"));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                g2.drawImage(nomView, (int) p.getX() + (5 * i), (int) p.getY() - 5, 25, 25, null);
+            ArrayList<BufferedImage> jImData = viewList.get(i); // On récupère les données liées au joueur
+            Personnage p = terrain.getListeJoueurs().get(i).getPerso();
+            g2.drawImage(jImData.get(0), (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+            int c = (int) ((15 * (jImData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
+            for (int j = 1; j < jImData.size(); ++j) {
+                g2.drawImage(jImData.get(j), (int) (p.getX() - c + (15 * (j - 1))), (int) p.getY() - 15, 15, 15, null);
             }
         }
 
