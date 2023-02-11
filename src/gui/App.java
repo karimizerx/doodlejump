@@ -1,10 +1,11 @@
 package gui;
 
 // Import de packages java
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.*;
-import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
 
 // Import des autres dossiers
 import gameobjects.*;
@@ -110,12 +111,12 @@ public class App extends JFrame {
         DJ.setVisible(false);
 
         // Initialisation des éléments
-        Joueur[] ljou = new Joueur[nbj];
+        ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
             JTextArea jtxt = (JTextArea) menu2.getComponent(i);
             String nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
-            ljou[i] = new Joueur(p, nomjoueur);
+            ljou.add(new Joueur(p, nomjoueur));
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth());
 
