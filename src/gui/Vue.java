@@ -7,8 +7,7 @@ import gameobjects.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.image.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
+import java.awt.event.*;
 import javax.swing.*;
 import javax.imageio.*;
 
@@ -18,7 +17,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private Thread thread;
     private String chemin = (new File("gui/images/")).getAbsolutePath();
-    private BufferedImage view, terrainView, platformeView, persoView, scoreView, scoreBackgroundView;
+    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, persoView, scoreView,
+            scoreBackgroundView;
     private boolean isRight, isLeft, pause = false;
     private Terrain terrain;
     private JFrame menuPause;
@@ -42,12 +42,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         try {
             try {
                 terrainView = ImageIO.read(new File(chemin + "/background.png"));
-                platformeView = ImageIO.read(new File(chemin + "/plateformeBase.png"));
+                platformeBaseView = ImageIO.read(new File(chemin + "/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File(chemin + "/plateformeMobile.png"));
                 persoView = ImageIO.read(new File(chemin + "/doodleNinja.png"));
                 scoreBackgroundView = ImageIO.read(new File(chemin + "/scoreBackground.png"));
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/background.png"));
-                platformeView = ImageIO.read(new File("src/gui/images/plateforme.png"));
+                platformeBaseView = ImageIO.read(new File("src/gui/images/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File("src/gui/images/plateformeMobile.png"));
                 persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
                 scoreBackgroundView = ImageIO.read(new File("src/gui/images/scoreBackground.png"));
             }
@@ -57,23 +59,18 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     // Dessine toutes les images
-    public void draw() {
+    public void afficheImage() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
-        g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null); // Affichage terrain
+        // Affichage terrain
+        g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
 
         // Affichage des plateformes
         for (Plateforme pf : terrain.getPlateformesListe()) {
-            g2.drawImage(
-                    platformeView,
-                    (int) pf.getX(),
-                    (int) pf.getY(),
-                    (int) pf.getWidth(),
-                    (int) pf.getHeight(),
-                    null);
+            BufferedImage pfV = (pf instanceof PlateformeBase) ? platformeBaseView : platformeMobileView;
+            g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
         }
 
-        // Affichage du Score
-        // Seulement s'il n'y a qu'un joueur
+        // Affichage du Score : seulement s'il n'y a qu'un joueur
         if (terrain.getListeJoueurs().length == 1) {
             String score = String.valueOf(terrain.getListeJoueurs()[0].getScore());
             g2.drawImage(scoreBackgroundView, 2, 2, 60 + (30 * (score.length() - 1)), 55, null);
@@ -102,19 +99,16 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Affichage final
         Graphics g = getGraphics(); // Contexte graphique
         g.drawImage(view, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
-        g.dispose();
+        g.dispose(); // On libère les ressource
     }
 
     // Gère le cas de fin du jeu
     public boolean endGame() {
-        isRunning = false;
         boolean isFin = false;
         // Si un joueur à perdu, c'est fini
         for (int i = 0; i < terrain.getListeJoueurs().length; ++i) {
             Joueur j = terrain.getListeJoueurs()[i];
-            if (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) {
-                isFin = true;
-            }
+            isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) ? true : false;
         }
         return isFin;
     }
@@ -137,32 +131,37 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Fait tourner le jeu
     @Override
     public void run() {
+        System.out.println("Run appelée");
         try {
+            // Demande à ce que ce composant obtienne le focus.
+            // Le focus est le fait qu'un composant soit sélectionné ou pas.
+            // Le composant doit être afficheable (OK grâce à addNotify())
             requestFocusInWindow();
-            init();
-            while (isRunning) {
-                if (!pause)
-                    update();
-                draw();
+            init(); // Initialisation des images
+            while (isRunning) { // Tant que le jeu tourne
+                if (!pause) // Tant qu'on appuie pas sur pause
+                    update(); // On met à jour les variables
+                afficheImage(); // On affiche les images
                 Thread.sleep(5); // Temps de stop d'update, en ms
             }
-            if (endGame()) { // Si c'est la fin du jeu, on retire tout
-                if (terrain.getListeJoueurs().length == 1) {
+            if (endGame()) { // Si c'est la fin du jeu
+                if (terrain.getListeJoueurs().length == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
                     Joueur j = terrain.getListeJoueurs()[0];
                     String score = String.valueOf(j.getScore());
+                    System.out.println("Score à cette manche : " + j.getScore());
                     Classement c = new Classement();
                     c.ajoutClassement(j.getNom(), score);
                     c.afficherClassement();
                 }
-                removeAll();
-                repaint();
+                removeAll(); // On retire tout
+                repaint(); // On met à jour l'affichage
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // ????
+    // Rend ce composant affichable en le connectant à une ressource d'écran
     @Override
     public void addNotify() {
         super.addNotify();

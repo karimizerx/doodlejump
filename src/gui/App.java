@@ -4,6 +4,7 @@ package gui;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.*;
 import java.awt.*;
+import java.io.IOException;
 
 // Import des autres dossiers
 import gameobjects.*;
@@ -156,7 +157,12 @@ public class App extends JFrame {
         });
 
         buttonLeaderboard.addActionListener(e -> {
-            System.out.println("Elyo le roi");
+            Classement c = new Classement();
+            try {
+                c.afficherClassement();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         });
 
         buttonPlay.addActionListener(e -> {

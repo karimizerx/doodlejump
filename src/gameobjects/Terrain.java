@@ -14,7 +14,7 @@ public class Terrain {
     private Joueur[] ListeJoueurs; // Liste des joueurs
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
-    private int diff_plateformes = 40; // Différence de y entre 2 plateformes 
+    private int diff_plateformes = 40; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
 
@@ -34,7 +34,7 @@ public class Terrain {
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     private void generateObstacles() {
         // Génère des plateformes à coord aléatoires pour la liste des plateformes
-        for (int i = (int)height; i > 0; i-=diff_plateformes) {
+        for (int i = (int) height; i > 0; i -= diff_plateformes) {
             // On définit la largeur/hauteur des plateformes de base
             int w = 60, h = 20;
             int x = new Random().nextInt((int) this.width - w);
@@ -85,30 +85,34 @@ public class Terrain {
 
             // Si la tête du personnage dépasse la moitié de l'écran
             if (p.getY() < this.height / 2) {
-                difficulty= (difficulty > 5) ? 5 : difficulty+0.0006;//plus la difficulté augmente plus les plateformes sont écarté jusqu'a a certain seuil qu'on a défini préalablement 
+                difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;// plus la difficulté augmente plus les
+                                                                        // plateformes sont écarté jusqu'a a certain
+                                                                        // seuil qu'on a défini préalablement
                 p.setY(this.height / 2);
                 j.setScore(j.getScore() + 1); // On incrémente le score de 1
                 // On descend toutes les plateforme
                 for (Plateforme pf : plateformesListe) {
                     pf.setY(pf.getY() - (int) p.getDy());
                     if (pf.getY() - pf.getHeight() >= this.height * 0.95) {
-                        pf.setY(highestPlateforme().getY()-(diff_plateformes*difficulty)+((new Random().nextInt(11)*(new Random().nextInt(3)-1))*difficulty/2));
+                        pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
+                                + ((new Random().nextInt(11) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                     }
                     /*
-                        if (next < 300) {
-                            pf.setY(0);
-                        } else {
-                            pf.setY(next);
-                        }
-                        int r = new Random().nextInt(530);
-                        pf.setX(r);
-                    }*/
+                     * if (next < 300) {
+                     * pf.setY(0);
+                     * } else {
+                     * pf.setY(next);
+                     * }
+                     * int r = new Random().nextInt(530);
+                     * pf.setX(r);
+                     * }
+                     */
                 }
             }
             // On gère les collisions & les débordements du personnage
             for (Plateforme pf : plateformesListe) {
                 p.collides_plateforme(pf);
-                //pf.move(this);
+                // pf.move(this);
             }
             limite(p);
         }
