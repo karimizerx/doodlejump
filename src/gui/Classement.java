@@ -15,7 +15,16 @@ public class Classement {
 
     public Classement() {
         String chemin = (new File("gui/")).getAbsolutePath();
-        this.fichier = new File(chemin + "/classement.csv");
+        // Double try_catch pour gérer la portabilité sur Windows
+        try {
+            try {
+                this.fichier = new File(chemin + "/classement.csv");
+            } catch (Exception e) {
+                this.fichier = new File("src/gui/classement.csv");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         this.ligneCSV = new ArrayList<String>();
         this.classement = new ArrayList<String[]>();
         try {

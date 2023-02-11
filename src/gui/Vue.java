@@ -41,17 +41,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
-                terrainView = ImageIO.read(new File(chemin + "/background.png"));
-                platformeBaseView = ImageIO.read(new File(chemin + "/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File(chemin + "/plateformeMobile.png"));
-                persoView = ImageIO.read(new File(chemin + "/doodleNinja.png"));
-                scoreBackgroundView = ImageIO.read(new File(chemin + "/scoreBackground.png"));
+                terrainView = ImageIO.read(new File(chemin + "/background/background.png"));
+                platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
+                persoView = ImageIO.read(new File(chemin + "/personnages/doodleNinja.png"));
+                scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground.png"));
             } catch (Exception e) {
-                terrainView = ImageIO.read(new File("src/gui/images/background.png"));
-                platformeBaseView = ImageIO.read(new File("src/gui/images/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File("src/gui/images/plateformeMobile.png"));
-                persoView = ImageIO.read(new File("src/gui/images/doodleNinja.png"));
-                scoreBackgroundView = ImageIO.read(new File("src/gui/images/scoreBackground.png"));
+                terrainView = ImageIO.read(new File("src/gui/images/background/background.png"));
+                platformeBaseView = ImageIO.read(new File("src/gui/images/plateformes/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File("src/gui/images/plateformes/plateformeMobile.png"));
+                persoView = ImageIO.read(new File("src/gui/images/personnages/doodleNinja.png"));
+                scoreBackgroundView = ImageIO.read(new File("src/gui/images/background/scoreBackground.png"));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,10 +77,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             for (int i = 0; i < score.length(); ++i) {
                 try {
                     try {
-                        scoreView = ImageIO.read(new File(chemin + "/ch" + score.charAt(i) + ".png"));
+                        scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
 
                     } catch (Exception e) {
-                        scoreView = ImageIO.read(new File("src/gui/images/ch" + score.charAt(i) + ".png"));
+                        scoreView = ImageIO.read(new File("src/gui/images/chiffres/ch" + score.charAt(i) + ".png"));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -129,20 +129,20 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     // Fait tourner le jeu
+    // Cette méthode contient les traitements
     @Override
     public void run() {
-        System.out.println("Run appelée");
         try {
             // Demande à ce que ce composant obtienne le focus.
             // Le focus est le fait qu'un composant soit sélectionné ou pas.
             // Le composant doit être afficheable (OK grâce à addNotify())
-            requestFocusInWindow();
+            this.requestFocusInWindow();
             init(); // Initialisation des images
             while (isRunning) { // Tant que le jeu tourne
                 if (!pause) // Tant qu'on appuie pas sur pause
                     update(); // On met à jour les variables
                 afficheImage(); // On affiche les images
-                Thread.sleep(5); // Temps de stop d'update, en ms
+                Thread.sleep(5); // Temps de stop de la thread, i.e d'update (en ms)
             }
             if (endGame()) { // Si c'est la fin du jeu
                 if (terrain.getListeJoueurs().length == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
@@ -153,8 +153,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     c.ajoutClassement(j.getNom(), score);
                     c.afficherClassement();
                 }
-                removeAll(); // On retire tout
-                repaint(); // On met à jour l'affichage
+                this.removeAll(); // On retire tout
+                this.repaint(); // On met à jour l'affichage
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,11 +165,13 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     @Override
     public void addNotify() {
         super.addNotify();
-        // Explication Thread --> ???
-        if (thread == null) {
-            thread = new Thread(this);
-            isRunning = true;
-            thread.start();
+        // Si on a toujours pas lancer le jeu
+        if (this.thread == null) {
+            // Créer une nouvelle instance en précisant les traitements à exécuter (run)
+            // This est l'objet qui implémente Runnable (run()), contenant les traitements
+            this.thread = new Thread(this);
+            isRunning = true; // Indique le jeu est lancé
+            this.thread.start(); // Invoque la méthode run()
         }
     }
 
