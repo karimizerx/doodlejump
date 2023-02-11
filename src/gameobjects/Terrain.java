@@ -22,6 +22,7 @@ public class Terrain{
 
     public boolean multiplayer=true;
     public boolean isHost=true;
+    public boolean twoPlayer=false;
     public Serveur host=null;
     public JoueurConnecte client=null;
 
@@ -44,18 +45,18 @@ public class Terrain{
         generateObstacles(20);
         if(this.multiplayer){
             if(isHost){ 
-            try{
-            host=new Serveur();
-            host.run();
-            }catch(IOException e){
-                e.printStackTrace();
-                System.exit(-1);
-            }
+                try{
+                host=new Serveur();
+                host.run();
+                }catch(IOException e){
+                    e.printStackTrace();
+                    System.exit(-1);
+                }
             }else{
                 client=new JoueurConnecte();
                 client.connecter();
             }    
-        }
+        }else isHost=false;
     }
 
     /**
