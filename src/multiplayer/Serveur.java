@@ -71,7 +71,7 @@ public class Serveur implements Runnable {
             return  i;
         } catch (IOException e) {
             e.printStackTrace();
-            return new Joueur(new Personnage(50, 50, 100, 100, -10));
+            return new Joueur(new Personnage(50, 50, 100, 100, -10),"Erreur");
         }catch (ClassNotFoundException c){
             c.printStackTrace();
         }

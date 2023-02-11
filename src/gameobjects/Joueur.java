@@ -6,10 +6,12 @@ public class Joueur implements Serializable{
 
     private int score;
     private Personnage perso;
+    private String nom;
 
-    public Joueur(Personnage p) {
+    public Joueur(Personnage p,String text) {
         this.perso = p;
         this.score = 0;
+        nom=text;
     }
 
     // Getter & Setter
