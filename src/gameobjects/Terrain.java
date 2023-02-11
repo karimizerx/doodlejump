@@ -72,7 +72,6 @@ public class Terrain {
         for (int i = 0; i < ListeJoueurs.length; ++i) {
             Joueur j = ListeJoueurs[i];
             Personnage p = j.getPerso();
-            double next = (highestPlateforme().getY() - 85);
 
             // Ralentissement progressif après un saut
             p.setDy(p.getDy() + 0.2);
@@ -85,9 +84,9 @@ public class Terrain {
 
             // Si la tête du personnage dépasse la moitié de l'écran
             if (p.getY() < this.height / 2) {
-                difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;// plus la difficulté augmente plus les
-                                                                        // plateformes sont écarté jusqu'a a certain
-                                                                        // seuil qu'on a défini préalablement
+                // plus la difficulté augmente plus les plateformes sont écarté jusqu'a a
+                // certain seuil qu'on a défini préalablement
+                difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;
                 p.setY(this.height / 2);
                 j.setScore(j.getScore() + 1); // On incrémente le score de 1
                 // On descend toutes les plateforme
@@ -97,16 +96,6 @@ public class Terrain {
                         pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                                 + ((new Random().nextInt(11) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                     }
-                    /*
-                     * if (next < 300) {
-                     * pf.setY(0);
-                     * } else {
-                     * pf.setY(next);
-                     * }
-                     * int r = new Random().nextInt(530);
-                     * pf.setX(r);
-                     * }
-                     */
                 }
             }
             // On gère les collisions & les débordements du personnage
