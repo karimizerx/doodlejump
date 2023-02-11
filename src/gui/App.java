@@ -1,9 +1,11 @@
 package gui;
 
 // Import de packages java
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.*;
-import java.awt.*;
+import java.io.IOException;
+import java.util.ArrayList;
 
 // Import des autres dossiers
 import gameobjects.*;
@@ -84,8 +86,15 @@ public class App extends JFrame {
         m.setPreferredSize(new Dimension(170, 50 * nbj));
 
         // Initialisation & ajout des élements dans le panel
-        for (int i = 0; i < nbj; ++i) {
-            JTextArea nomjoueur = new JTextArea("Entrez nom du joueur " + (i + 1));
+        for (int i = 0; i < nbj; ++i) { // Si possible, on prend par défaut le nom du meilleur joueur
+            Classement c = new Classement();
+            String n;
+            if (c.getClassement().size() > 1) {
+                n = c.getClassement().get(0)[0];
+            } else {
+                n = "Entrez votre nom";
+            }
+            JTextArea nomjoueur = new JTextArea(n);
             nomjoueur.setPreferredSize(new Dimension(100, 100));
             m.add(nomjoueur);
         }
@@ -109,12 +118,12 @@ public class App extends JFrame {
         DJ.setVisible(false);
 
         // Initialisation des éléments
-        Joueur[] ljou = new Joueur[nbj];
+        ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
             JTextArea jtxt = (JTextArea) menu2.getComponent(i);
-            String nomjoueur = (jtxt.getText() == "Entrez votre nom") ? "Joueur" : jtxt.getText();
-            ljou[i] = new Joueur(p, nomjoueur);
+            String nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
+            ljou.add(new Joueur(p, nomjoueur));
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth());
 
@@ -156,7 +165,12 @@ public class App extends JFrame {
         });
 
         buttonLeaderboard.addActionListener(e -> {
-            System.out.println("Elyo le roi");
+            Classement c = new Classement();
+            try {
+                c.afficherClassement();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         });
 
         buttonPlay.addActionListener(e -> {

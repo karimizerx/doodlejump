@@ -10,7 +10,7 @@ public class Joueur {
     public Joueur(Personnage p, String name) {
         this.perso = p;
         this.score = 0;
-        this.nom = name;
+        this.nom = name; // Nom par défaut est Mizer
     }
 
     // Getter & Setter
