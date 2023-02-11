@@ -11,14 +11,14 @@ import gui.Vue;
 public class Terrain {
 
     private ArrayList<Plateforme> plateformesListe; // Liste des plateformes sur le terrain
-    private Joueur[] ListeJoueurs; // Liste des joueurs
+    private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
     private int diff_plateformes = 40; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
 
-    public Terrain(Joueur[] ljoueur, double height, double width) {
+    public Terrain(ArrayList<Joueur> ljoueur, double height, double width) {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
@@ -69,8 +69,8 @@ public class Terrain {
     // Mise à jour du jeu.
     public void update() {
         // On effectue une mise à jour pour tous les joueurs
-        for (int i = 0; i < ListeJoueurs.length; ++i) {
-            Joueur j = ListeJoueurs[i];
+        for (int i = 0; i < ListeJoueurs.size(); ++i) {
+            Joueur j = ListeJoueurs.get(i);
             Personnage p = j.getPerso();
 
             // Ralentissement progressif après un saut
@@ -133,12 +133,19 @@ public class Terrain {
         this.difficulty = difficulty;
     }
 
-    public Joueur[] getListeJoueurs() {
+    public ArrayList<Joueur> getListeJoueurs() {
         return ListeJoueurs;
     }
 
-    public void setListeJoueurs(Joueur[] listeJoueurs) {
+    public void setListeJoueurs(ArrayList<Joueur> listeJoueurs) {
         ListeJoueurs = listeJoueurs;
     }
 
+    public int getDiff_plateformes() {
+        return diff_plateformes;
+    }
+
+    public void setDiff_plateformes(int diff_plateformes) {
+        this.diff_plateformes = diff_plateformes;
+    }
 }

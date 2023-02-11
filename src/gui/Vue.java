@@ -71,8 +71,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur
-        if (terrain.getListeJoueurs().length == 1) {
-            String score = String.valueOf(terrain.getListeJoueurs()[0].getScore());
+        if (terrain.getListeJoueurs().size() == 1) {
+            String score = String.valueOf(terrain.getListeJoueurs().get(0).getScore());
             g2.drawImage(scoreBackgroundView, 2, 2, 60 + (30 * (score.length() - 1)), 55, null);
             for (int i = 0; i < score.length(); ++i) {
                 try {
@@ -90,8 +90,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         // Affichage des personnages
-        for (int i = 0; i < terrain.getListeJoueurs().length; ++i) {
-            Joueur j = terrain.getListeJoueurs()[i];
+        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+            Joueur j = terrain.getListeJoueurs().get(i);
             Personnage p = j.getPerso();
             g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
         }
@@ -106,8 +106,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public boolean endGame() {
         boolean isFin = false;
         // Si un joueur à perdu, c'est fini
-        for (int i = 0; i < terrain.getListeJoueurs().length; ++i) {
-            Joueur j = terrain.getListeJoueurs()[i];
+        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+            Joueur j = terrain.getListeJoueurs().get(i);
             isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) ? true : false;
         }
         return isFin;
@@ -115,8 +115,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Met à jour l'affichage
     public void update() {
-        for (int i = 0; i < terrain.getListeJoueurs().length; ++i) {
-            Joueur j = terrain.getListeJoueurs()[i];
+        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+            Joueur j = terrain.getListeJoueurs().get(i);
             Personnage p = j.getPerso();
             // Gère les boutons flèches
             if (isRight) {
@@ -145,8 +145,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 Thread.sleep(5); // Temps de stop de la thread, i.e d'update (en ms)
             }
             if (endGame()) { // Si c'est la fin du jeu
-                if (terrain.getListeJoueurs().length == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
-                    Joueur j = terrain.getListeJoueurs()[0];
+                if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
+                    Joueur j = terrain.getListeJoueurs().get(0);
                     String score = String.valueOf(j.getScore());
                     System.out.println("Score à cette manche : " + j.getScore());
                     Classement c = new Classement();
