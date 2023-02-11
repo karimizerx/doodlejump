@@ -18,7 +18,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private Thread thread;
     private String chemin = (new File("gui/images/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, persoView, scoreView,
-            scoreBackgroundView;
+            scoreBackgroundView, nomView;
     private boolean isRight, isLeft, pause = false;
     private Terrain terrain;
     private JFrame menuPause;
@@ -89,11 +89,25 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             }
         }
 
-        // Affichage des personnages
+        // Affichage des personnages + Nom
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur j = terrain.getListeJoueurs().get(i);
-            Personnage p = j.getPerso();
+            Joueur joueur = terrain.getListeJoueurs().get(i);
+            Personnage p = joueur.getPerso();
+            String nom = joueur.getNom().toLowerCase();
             g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+            for (int j = 0; j < nom.length(); ++j) {
+                try {
+                    try {
+                        nomView = ImageIO.read(new File(chemin + "/lettres/lettre" + nom.charAt(i) + ".png"));
+
+                    } catch (Exception e) {
+                        nomView = ImageIO.read(new File("src/gui/images/lettres/lettre" + nom.charAt(i) + ".png"));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                g2.drawImage(nomView, (int) p.getX() + (5 * i), (int) p.getY() - 5, 25, 25, null);
+            }
         }
 
         // Affichage final
