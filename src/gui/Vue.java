@@ -165,6 +165,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     @Override
     public void addNotify() {
         super.addNotify();
+        // Explication Thread --> ???
         if (thread == null) {
             thread = new Thread(this);
             isRunning = true;
