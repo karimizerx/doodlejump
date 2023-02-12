@@ -58,7 +58,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     viewListAux.add(ImageIO.read(new File(chemin + "/personnages/doodleNinja.png")));
                     // Les autres contiennent les lettres du nom du joueur
                     for (int j = 0; j < nom.length(); ++j) {
-                        BufferedImage lv = ImageIO.read(new File(chemin + "/lettres/lettre" + nom.charAt(j) + ".png"));
+                        char c = (nom.charAt(j) == ' ') ? '0' : nom.charAt(j);
+                        BufferedImage lv = ImageIO.read(new File(chemin + "/lettres/lettre" + c + ".png"));
                         viewListAux.add(lv);
                     }
                     viewList.add(viewListAux);
