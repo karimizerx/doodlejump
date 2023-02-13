@@ -16,11 +16,12 @@ import javax.imageio.*;
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     public static boolean isRunning;
-    private Thread thread;
+    private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
     private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
-    private boolean isRight, isLeft, pause = false;
+    // isRight/Left gère les boutons appuyés, isInert gère le relâchement
+    private boolean isRight, isInertRight, isLeft, isInertLeft, pause;
     private Terrain terrain;
     private JFrame menuPause;
 
@@ -30,6 +31,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.setPreferredSize(new Dimension((int) terrain.getWidth(), (int) terrain.getHeight()));
         // Gestion d'évènements boutons
         this.addKeyListener(this);
+        this.pause = false;
     }
 
     // Méthodes de la classe
@@ -157,11 +159,23 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
             Joueur j = terrain.getListeJoueurs().get(i);
             Personnage p = j.getPerso();
-            // Gère les boutons flèches
+            // Gère les boutons flèches, avec inertie
+            // Dans qu'on appuie, on set la vitesse à ± 4, et on avance de cette distance
             if (isRight) {
-                p.setX(p.getX() + 5);
+                p.setDx(+4);
+                p.setX(p.getX() + p.getDx());
             } else if (isLeft) {
-                p.setX(p.getX() - 5);
+                p.setDx(-4);
+                p.setX(p.getX() + p.getDx());
+            } else if (isInertRight && p.getDx() > 0) { // Si on arrête d'appuyer,
+                p.setDx(p.getDx() - 0.15); // la vitesse ralentie petit à petit jusqu'à devenir nulle
+                p.setX(p.getX() + p.getDx());
+            } else if (isInertLeft && p.getDx() < 0) {
+                p.setDx(p.getDx() + 0.15);
+                p.setX(p.getX() + p.getDx());
+            } else {
+                this.isInertLeft = false;
+                this.isInertRight = false;
             }
         }
         terrain.update();
@@ -244,12 +258,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) {
+    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             this.isRight = true;
+            this.isInertRight = false;
         }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             this.isLeft = true;
+            this.isInertLeft = false;
         }
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             pause();
@@ -257,12 +273,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {
+    public void keyReleased(KeyEvent e) { // On relâche les boutons
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             this.isRight = false;
+            this.isInertRight = true;
         }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             this.isLeft = false;
+            this.isInertLeft = true;
         }
     }
 
