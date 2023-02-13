@@ -162,20 +162,21 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // Gère les boutons flèches, avec inertie
             // Dans qu'on appuie, on set la vitesse à ± 4, et on avance de cette distance
             if (isRight) {
-                p.setDx(+4);
+                p.setDx(+5);
                 p.setX(p.getX() + p.getDx());
             } else if (isLeft) {
-                p.setDx(-4);
+                p.setDx(-5);
                 p.setX(p.getX() + p.getDx());
             } else if (isInertRight && p.getDx() > 0) { // Si on arrête d'appuyer,
-                p.setDx(p.getDx() - 0.15); // la vitesse ralentie petit à petit jusqu'à devenir nulle
+                p.setDx(p.getDx() - 0.24); // la vitesse ralentie petit à petit jusqu'à devenir nulle
                 p.setX(p.getX() + p.getDx());
             } else if (isInertLeft && p.getDx() < 0) {
-                p.setDx(p.getDx() + 0.15);
+                p.setDx(p.getDx() + 0.24);
                 p.setX(p.getX() + p.getDx());
             } else {
                 this.isInertLeft = false;
                 this.isInertRight = false;
+                p.setDx(0);
             }
         }
         terrain.update();
