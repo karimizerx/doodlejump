@@ -20,8 +20,6 @@ public abstract class Plateforme extends GameObject {
         this.saut = saut;
     }
 
-    public void move(Terrain t) {
-        return;
-    }
+
 
 }
