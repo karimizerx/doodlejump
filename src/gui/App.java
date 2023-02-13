@@ -18,6 +18,7 @@ public class App extends JFrame {
     int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran
     int height = Toolkit.getDefaultToolkit().getScreenSize().height; // Longueur de l'écran
     int nbj; // Nombre de joueurs
+    boolean multiplayer=false,host=false;
 
     public App() {
         /// Création de la fenêtre
@@ -105,23 +106,38 @@ public class App extends JFrame {
     private JPanel createMenuMulti() {
         // Initalisation du panel
         JPanel m = new JPanel();
-        m.setLayout(new GridLayout(nbj + 1, 0)); // +1 pour le bouton Play
+        m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
         m.setPreferredSize(new Dimension(170, 50 * nbj));
 
         // Initialisation & ajout des élements dans le panel
-        for (int i = 0; i < nbj; ++i) { // Si possible, on prend par défaut le nom du meilleur joueur
-            Classement c = new Classement();
+        for (int i = 0; i < nbj; ++i) { 
+            // Classement c = new Classement();
             String n;
-            if (c.getClassement().size() > 1) {
-                n = c.getClassement().get(0)[0];
-            } else {
+            // if (c.getClassement().size() > 1) {
+            //     n = c.getClassement().get(0)[0];
+            // } else {
                 n = "Entrez votre nom";
-            }
+            // }
             JTextArea nomjoueur = new JTextArea(n);
             nomjoueur.setPreferredSize(new Dimension(100, 100));
             m.add(nomjoueur);
         }
+        JButton h=new JButton("Host");
+        JButton c=new JButton("Connecter-vous");
+        h.addActionListener(e ->{
+            host=true;
 
+        });
+        m.add(h);
+        m.add(c);
+
+        return m;
+    }
+
+    private JPanel createMenuHost() {
+        JPanel m = new JPanel();
+        m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
+        m.setPreferredSize(new Dimension(170, 50 * nbj));
         return m;
     }
 
@@ -143,13 +159,14 @@ public class App extends JFrame {
 
         // Initialisation des éléments
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
-        for (int i = 0; i < 2; ++i) {
+        for (int i = 0; i < nbj; ++i) {
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
             JTextArea jtxt = (JTextArea) menu2.getComponent(i);
             String nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
             ljou.add(new Joueur(p, nomjoueur));
         }
-        Terrain rt = new Terrain(ljou.get(0),ljou.get(1), DJ.getHeight(), DJ.getWidth());
+        Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth(),host,multiplayer,0);
+        
 
         // Ajout des éléments à la fenêtre
         DJ.add(new Vue(rt));
@@ -183,7 +200,10 @@ public class App extends JFrame {
         });
 
         buttonMulti.addActionListener(e -> {
-
+            menu.setVisible(false);
+            this.nbj=1;
+            multiplayer=true;
+            menu2=this.createMenuMulti();
         });
 
         buttonExit.addActionListener(e -> {

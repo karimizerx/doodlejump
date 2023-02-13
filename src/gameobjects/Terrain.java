@@ -16,15 +16,18 @@ import multiplayer.ThreadMouvement;
 public class Terrain{
 
     private ArrayList<Plateforme> plateformesListe;
-    private Joueur joueurA;
-    private Joueur joueurB=null;
-    private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
 
-    public boolean multiplayer=false;
-    public boolean isHost=false;
-    public boolean twoPlayer=true;
+    private ArrayList<Joueur> ListeJoueurs;
+    private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
+    private int diff_plateformes = 40; // Différence de y entre 2 plateformes
+
+
+    public boolean multiplayer;
+    public boolean isHost;
     public Serveur host=null;
     public JoueurConnecte client=null;
+    public final int playerID;// si cest zero; il est host ou il est pas multijoueur
+    
 
     private final double height, width;// dimensions du terrain
 
@@ -36,18 +39,20 @@ public class Terrain{
      */
     private double difficulty = 1.0;
 
-    public Terrain(Joueur joueurA,Joueur joueurB, double height, double width) {
+    public Terrain(ArrayList<Joueur> ljoueur, double height, double width,boolean host,boolean multiplayer,int id) {
         this.plateformesListe = new ArrayList<Plateforme>();
-        this.joueurA = joueurA;
-        this.joueurB = joueurB;
+        ListeJoueurs=ljoueur;
         this.height = height;
         this.width = width;
-        generateObstacles(20);
+        this.multiplayer=multiplayer;
+        this.isHost =host;
+        playerID=id;
+        generateObstacles();
         if(this.multiplayer){
             if(isHost){ 
                 try{
-                host=new Serveur();
-                host.run();
+                this.host=new Serveur();
+                this.host.run();
                 }catch(IOException e){
                     e.printStackTrace();
                     System.exit(-1);
@@ -64,67 +69,72 @@ public class Terrain{
      * 
      * @param nb nombres d'obstacles à générer
      * 
+     plateformesListe.add(new PlateformeBase(0,this.height-50 , width, 50, -10));
      */
-    private void generateObstacles(int nb) {
-        plateformesListe = new ArrayList<Plateforme>();
-        plateformesListe.add(new PlateformeBase(0,this.height-50 , width, 50, -10));
-        nb=nb-1;
-        for (int i = 0; i < (nb * difficulty); i++) {
-            Plateforme p = new PlateformeBase(new Random().nextInt((int) this.width),
-                    new Random().nextInt((int) this.height), 60, 20, -10);
-            plateformesListe.add(p);
+    private void generateObstacles() {
+        // Génère des plateformes à coord aléatoires pour la liste des plateformes
+        for (int i = (int) height; i > 0; i -= diff_plateformes) {
+            // On définit la largeur/hauteur des plateformes de base
+            int w = 60, h = 20;
+            int x = new Random().nextInt((int) this.width - w);
+            int y = i;
+            plateformesListe.add(new PlateformeBase(x, y, w, h, -10));
         }
+        // On s'assure d'aboird toujours une solution au début
     }
 
-    /**
-     * 
-     * @param maxY indique la coordonnee maximale que peut avoir un objet en y,
-     *             si supérieur, on le retire
-     */
-    private void removeObstacles(double maxY) {
-        int c = 0;// compte le nombres d'obstacles qu'on enleve
-        for (GameObject gameObject : plateformesListe) {
-            if (gameObject.getY() >= maxY) {
-                plateformesListe.remove(gameObject);
-                ++c;
+    private Plateforme highestPlateforme() {
+        Plateforme plateformeLaPlusHaute = plateformesListe.get(0);
+        for (Plateforme p : plateformesListe) {
+            if (p.getY() <= plateformeLaPlusHaute.getY()) {
+                plateformeLaPlusHaute = p;
             }
         }
-        // si on veut des nouveaux obstacles.
-        generateObstacles(c);
+        return plateformeLaPlusHaute;
     }
 
-    private void limite(GameObject object) {
-        if (object.getX() + object.getWidth() / 2 <= 0) // bord a droite, on le mets a gauche
-            object.setX(width - object.getWidth() / 2);
-        else if (object.getX() + object.getWidth() / 2 >= width) // bord a gauche, on le mets a gauche
-            object.setX(object.getWidth() / 2);
+
+    // Gère, pour le perso, le débordement de l'écran
+    private void limite(Personnage p) {
+        // 0.43 est la valeur exacte de la moitié du perso
+        // Si + de la moitié du perso est sortie du côté gauche de l'écran
+        // => on place la moitié du perso au côté droit de l'écran
+        if (p.getX() + p.getWidth() * 0.43 <= 0)
+            p.setX(this.width - (p.getWidth() * 0.43));
+        else if (p.getX() + p.getWidth() * 0.43 >= width) // Et inversement
+            p.setX(-(p.getWidth() * 0.43));
     }
 
     public void update() {
-        if((isHost && multiplayer)||!multiplayer){
-            update(joueurA);
+        if((isHost && multiplayer))update(ListeJoueurs.get(0));
+        else if((!isHost && multiplayer)||!multiplayer){
+            for(Joueur j: ListeJoueurs)
+                update(j);
         }
-        if((!isHost && multiplayer)||twoPlayer)update(joueurB);
     }
 
     public void update(Joueur j){
         Personnage p = j.getPerso();
-
+        
+        // Ralentissement progressif après un saut
         p.setDy(p.getDy() + 0.2);
         p.setY(p.getY() + p.getDy());
         // Si on est tout en bas de la fenêtre, endGame()
-        if (p.getY() + 0.7 * p.getHeight() >= this.height) {
+        if (p.getY() + 0.87 * p.getHeight() >= this.height) {
             Vue.isRunning = false;
         }
 
-        if (p.getY() < this.height / 2 && (((isHost && multiplayer)||!multiplayer)||twoPlayer)) {
+        if (p.getY() < this.height / 2 && (((isHost && multiplayer)||!multiplayer))) {
+
+            
+            difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;
             p.setY(this.height / 2);
+            j.setScore(j.getScore() + 1); // On incrémente le score de 1
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
-                if (pf.getY() > this.height) {
-                    pf.setY(0);
-                    int r = new Random().nextInt(500);
-                    pf.setX(r);
+                if (pf.getY() - pf.getHeight() >= this.height * 0.95) {
+                    pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
+                            + ((new Random().nextInt(11) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                 }
             }
         }
@@ -144,21 +154,7 @@ public class Terrain{
         this.plateformesListe = plateformesListe;
     }
 
-    public Joueur getJoueurA() {
-        return joueurA;
-    }
 
-    public void setJoueurA(Joueur joueur) {
-        this.joueurA = joueur;
-    }
-
-    public Joueur getJoueurB() {
-        return joueurB;
-    }
-
-    public void setJoueurB(Joueur joueur) {
-        this.joueurB = joueur;
-    }
 
     public double getHeight() {
         return height;
@@ -186,26 +182,7 @@ public class Terrain{
         this.difficulty = difficulty;
     }
 
-    public int getPlayerBmvt() {
-        int i=-1;
-        if(joueurB.getPerso().isRight) i=1;
-        if(joueurB.getPerso().isLeft == joueurB.getPerso().isRight ) i=0;
-        System.out.println(i);
-        return i;
-    }
 
-    public void setPlayerBmvt(int i) {
-        System.out.println("Terrain.setPlayerBmvt("+i+")");
-        Personnage p=joueurB.getPerso();
-        switch(i){
-            case -1: 
-                p.setX(p.getX() + 5);
-            break;
-            case 1: 
-            p.setX(p.getX() - 5);
-                break;
-        }
-    }
 
     public boolean isMultiplayer() {
         return multiplayer;
@@ -221,6 +198,10 @@ public class Terrain{
 
     public JoueurConnecte getClient() {
         return client;
+    }
+
+    public  ArrayList<Joueur> getListeJoueurs(){
+        return ListeJoueurs;
     }
 
 

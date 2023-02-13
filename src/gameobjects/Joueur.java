@@ -31,4 +31,8 @@ public class Joueur implements Serializable{
     public void setPerso(Personnage perso) {
         this.perso = perso;
     }
+
+    public String getNom()      {
+        return this.nom;
+    }
 }

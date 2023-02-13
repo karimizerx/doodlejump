@@ -5,6 +5,7 @@ import javax.swing.*;
 import gameobjects.Joueur;
 import gameobjects.Personnage;
 import gameobjects.Plateforme;
+import gameobjects.PlateformeBase;
 import gameobjects.Terrain;
 import multiplayer.ThreadMouvement;
 
@@ -21,22 +22,47 @@ import java.io.*;
 public class Vue extends JPanel implements Runnable, KeyListener{
 
     public static boolean isRunning;
-    Thread thread;
-    BufferedImage view, terrainView, platformeView, persoView;
+    private Thread thread;
+    private String chemin = (new File("gui/images/")).getAbsolutePath();
+    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, persoView, scoreView,scoreBackgroundView;
 
-    Terrain terter;
-    int lll;
-    boolean isMenu, isEsc;
-    boolean pause = false;
+    boolean isMenu, isEsc,pause=false;
+    Terrain terrain;
     JFrame menuPause;
     ThreadMouvement threadMvt=null;
 
 
+
     public Vue(Terrain ter) {
-        this.terter = ter;
-        setPreferredSize(new Dimension((int) terter.getWidth(), (int) terter.getHeight()));
-        // retournMenu();
-        addKeyListener(this);
+        this.terrain = ter;
+        // Taille du panel
+        this.setPreferredSize(new Dimension((int) terrain.getWidth(), (int) terrain.getHeight()));
+        // Gestion d'évènements boutons
+        this.addKeyListener(this);
+    }
+
+    private void init() {
+        // view est l'image qui contiendra toutes les autres
+        view = new BufferedImage((int) terrain.getWidth(), (int) terrain.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        // Double try_catch pour gérer la différence entre windows & linux
+        try {
+            try {
+                terrainView = ImageIO.read(new File(chemin + "/background/background.png"));
+                platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
+                persoView = ImageIO.read(new File(chemin + "/personnages/doodleNinja.png"));
+                scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground.png"));
+            } catch (Exception e) {
+                terrainView = ImageIO.read(new File("src/gui/images/background/background.png"));
+                platformeBaseView = ImageIO.read(new File("src/gui/images/plateformes/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File("src/gui/images/plateformes/plateformeMobile.png"));
+                persoView = ImageIO.read(new File("src/gui/images/personnages/doodleNinja.png"));
+                scoreBackgroundView = ImageIO.read(new File("src/gui/images/background/scoreBackground.png"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -49,6 +75,8 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         }
     }
 
+
+/* 
     public void start() {
         String chemin = (new File("gui/images/")).getAbsolutePath();
 
@@ -71,70 +99,134 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         }
         System.out.println(getGraphics() == null);
     }
+ */
 
-    public boolean endGame() {
-        isRunning = false;
-        if (terter.getJoueurA().getPerso().getY() > 900) {
-            return true;
-        } else {
-            return false;
+ public void afficheImage() {
+    Graphics2D g2 = (Graphics2D) view.getGraphics();
+    // Affichage terrain
+    g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
+
+    // Affichage des plateformes
+    for (Plateforme pf : terrain.getPlateformesListe()) {
+        BufferedImage pfV = (pf instanceof PlateformeBase) ? platformeBaseView : platformeMobileView;
+        g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
+    }
+
+    // Affichage du Score : seulement s'il n'y a qu'un joueur
+    if (terrain.getListeJoueurs().size() == 1) {
+        String score = String.valueOf(terrain.getListeJoueurs().get(0).getScore());
+        g2.drawImage(scoreBackgroundView, 2, 2, 60 + (30 * (score.length() - 1)), 55, null);
+        for (int i = 0; i < score.length(); ++i) {
+            try {
+                try {
+                    scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
+
+                } catch (Exception e) {
+                    scoreView = ImageIO.read(new File("src/gui/images/chiffres/ch" + score.charAt(i) + ".png"));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            g2.drawImage(scoreView, 5 + (25 * i), 5, 50, 50, null);
         }
     }
 
-    public void update() {
-        Joueur j = terter.getJoueurA();
+    // Affichage des personnages
+    for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+        Joueur j = terrain.getListeJoueurs().get(i);
         Personnage p = j.getPerso();
+        g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+    }
 
+    // Affichage final
+    Graphics g = getGraphics(); // Contexte graphique
+    g.drawImage(view, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
+    g.dispose(); // On libère les ressource
+}
+
+
+    public void update() {
+        
         // Gère les boutons flèches
-        if (p.isRight) {
-            p.setX(p.getX() + 5);
-        } else if (p.isLeft) {
-            p.setX(p.getX() - 5);
-        }
-        j = terter.getJoueurB();
-        if(j!=null){
-            p = j.getPerso();
+        for(Joueur j :terrain.getListeJoueurs()){
+            Personnage p = j.getPerso();
             if (p.isRight) {
                 p.setX(p.getX() + 5);
             } else if (p.isLeft) {
                 p.setX(p.getX() - 5);
             }
         }
-        terter.update();
-    }
-
-    public void draw() {
-        Personnage pA = terter.getJoueurA().getPerso();
-
-        Graphics2D g2 = (Graphics2D) view.getGraphics();
-        g2.drawImage(terrainView, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
-
-        for (Plateforme pf : terter.getPlateformesListe()) {
-            g2.drawImage(
-                    platformeView,
-                    (int) pf.getX(),
-                    (int) pf.getY(),
-                    (int) pf.getWidth(),
-                    (int) pf.getHeight(),
-                    null);
-        }
-        g2.drawImage(persoView, (int) pA.getX(), (int) pA.getY(), (int) pA.getWidth(), (int) pA.getHeight(), null);
-        if(terter.getJoueurB()!=null){
-            Personnage pB = terter.getJoueurB().getPerso();
-            g2.drawImage(persoView, (int) pB.getX(), (int) pB.getY(), (int) pB.getWidth(), (int) pB.getHeight(), null);
-        }
-        Graphics g = getGraphics();
-        g.drawImage(view, 0, 0, (int) terter.getWidth(), (int) terter.getHeight(), null);
-        g.dispose();
+        terrain.update();
     }
 
     @Override
     public void run() {
         try {
-            requestFocusInWindow();
-            start();
-            if(terter.multiplayer){
-                Thread t=new Thread(new ThreadMouvement(terter));
+            // Demande à ce que ce composant obtienne le focus.
+            // Le focus est le fait qu'un composant soit sélectionné ou pas.
+            // Le composant doit être afficheable (OK grâce à addNotify())
+            this.requestFocusInWindow();
+            init(); // Initialisation des images
+            if(terrain.multiplayer){
+                Thread t=new Thread(new ThreadMouvement(terrain));
+                t.start();
+            }
+            while (isRunning) { // Tant que le jeu tourne
+                if (!pause) // Tant qu'on appuie pas sur pause
+                    update(); // On met à jour les variables
+                afficheImage(); // On affiche les images
+                Thread.sleep(5); // Temps de stop de la thread, i.e d'update (en ms)
+            }
+            if (endGame()) { // Si c'est la fin du jeu
+                if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
+                    Joueur j = terrain.getListeJoueurs().get(0);
+                    String score = String.valueOf(j.getScore());
+                    System.out.println("Score à cette manche : " + j.getScore());
+                    Classement c = new Classement();
+                    c.ajoutClassement(j.getNom(), score);
+                    c.afficherClassement();
+                }
+                this.removeAll(); // On retire tout
+                this.repaint(); // On met à jour l'affichage
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /*
+
+    public void draw() {
+        
+        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
+        
+        for (Plateforme pf : terrain.getPlateformesListe()) {
+            g2.drawImage(
+                platformeView,
+                (int) pf.getX(),
+                (int) pf.getY(),
+                (int) pf.getWidth(),
+                (int) pf.getHeight(),
+                null);
+        }
+        for(Joueur a:terrain.getListeJoueurs()){
+            Personnage p = a.getPerso();
+            g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+        }
+        Graphics g = getGraphics();
+        g.drawImage(view, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
+        g.dispose();
+    }
+ * 
+ * 
+ @Override
+ public void run() {
+     try {
+         requestFocusInWindow();
+         start();
+         if(terrain.multiplayer){
+             Thread t=new Thread(new ThreadMouvement(terrain));
                 t.start();
             }
             while (isRunning) {
@@ -150,6 +242,17 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             e.printStackTrace();
         }
     }
+    */
+    
+    public boolean endGame() {
+        boolean isFin = false;
+        // Si un joueur à perdu, c'est fini
+        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+            Joueur j = terrain.getListeJoueurs().get(i);
+            isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) ? true : false;
+        }
+        return isFin;
+    }
 
     // Gestion des boutons
     @Override
@@ -159,20 +262,20 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     @Override
     public void keyPressed(KeyEvent e) {
-        Personnage pA;
+        Personnage p;
         Personnage pB;
-        if((terter.isHost && terter.multiplayer)||!terter.multiplayer)
-        pA=terter.getJoueurA().getPerso();
-        else pA=terter.getJoueurB().getPerso();
+        if((!terrain.multiplayer))
+        p=terrain.getListeJoueurs().get(0).getPerso();
+        else p=terrain.getListeJoueurs().get(terrain.playerID).getPerso();
 
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                pA.isRight = true;
+                p.isRight = true;
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                pA.isLeft = true;
+                p.isLeft = true;
             }
-            if(terter.twoPlayer){
-                pB=terter.getJoueurB().getPerso();
+            if(terrain.getListeJoueurs().size()==2){
+                pB=terrain.getListeJoueurs().get(1).getPerso();
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     pB.isRight = true;
                 }
@@ -183,33 +286,26 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         
 
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            isEsc = true;
-            pause = !pause;
-            menuPause = new JFrame();
-            menuPause.setLayout(new FlowLayout());
-            menuPause.setBounds((int)terter.getWidth()/2, (int)terter.getHeight()/2, 200, 200);
-            JButton cont = new JButton("Continue");
-            JButton exit = new JButton("Exit");
-            menuPause.add(cont, exit);
-            menuPause.setVisible(pause);
+            pause();
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        Personnage pA;
+        Personnage p;
         Personnage pB;
-        if((terter.isHost && terter.multiplayer)||!terter.multiplayer)
-        pA=terter.getJoueurA().getPerso();
-        else pA=terter.getJoueurB().getPerso();
+        if((!terrain.multiplayer))
+        p=terrain.getListeJoueurs().get(0).getPerso();
+        else p=terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                pA.isRight = false;
+                p.isRight = false;
             }
             if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                pA.isLeft = false;
+                p.isLeft = false;
             }
-            if(terter.twoPlayer){
-                pB=terter.getJoueurB().getPerso();
+            if(terrain.getListeJoueurs().size()==2){
+                pB=terrain.getListeJoueurs().get(1).getPerso();
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     pB.isRight = false;
                 }
@@ -231,4 +327,36 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             }
         });
     }
+
+
+        
+    private void pause() {
+        this.pause = !this.pause;
+        this.menuPause = new JFrame();
+        this.menuPause.setBounds((int) terrain.getWidth() * 3 / 2 - 50, (int) terrain.getHeight() / 2 - 60, 150, 120);
+        this.menuPause.setResizable(false);
+        this.menuPause.setLayout(new FlowLayout());
+        this.menuPause.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+        JButton cont = new JButton("Continuer");
+        JButton exit = new JButton("Menu principal");
+
+        this.menuPause.add(cont);
+        this.menuPause.add(exit);
+        this.menuPause.setVisible(true);
+
+        cont.addActionListener(ev -> {
+            this.menuPause.dispose();
+            this.pause = !this.pause;
+        });
+
+        exit.addActionListener(ev -> {
+            this.menuPause.dispose();
+            JFrame retourMenu = new App();
+            retourMenu.setVisible(true);
+        });
+    }
+
+
+
 }
