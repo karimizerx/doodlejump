@@ -39,11 +39,11 @@ public class Terrain {
             int w = 60, h = 20;
             int x = new Random().nextInt((int) this.width - w);
             int y = i;
-            double c=new Random().nextDouble();
+            double c = new Random().nextDouble();
             if (c < 0.1) {
-                plateformesListe.add(new MovingPlateforme(x, y, w, h, -12,5));
-            }else
-            plateformesListe.add(new PlateformeBase(x, y, w, h, -10));
+                plateformesListe.add(new MovingPlateforme(x, y, w, h, -12, 2));
+            } else
+                plateformesListe.add(new PlateformeBase(x, y, w, h, -10));
 
         }
         // On s'assure d'aboird toujours une solution au début
@@ -106,8 +106,8 @@ public class Terrain {
             // On gère les collisions & les débordements du personnage
             for (Plateforme pf : plateformesListe) {
                 p.collides_plateforme(pf);
-                if(pf instanceof MovingPlateforme)
-                ((MovingPlateforme)pf).move(this);
+                if (pf instanceof MovingPlateforme)
+                    ((MovingPlateforme) pf).move(this);
             }
             limite(p);
         }
