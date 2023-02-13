@@ -51,7 +51,7 @@ public class Terrain{
         if(this.multiplayer){
             if(isHost){ 
                 try{
-                this.host=new Serveur();
+                this.host=new Serveur(ljoueur.size());
                 this.host.run();
                 }catch(IOException e){
                     e.printStackTrace();
@@ -202,6 +202,13 @@ public class Terrain{
 
     public  ArrayList<Joueur> getListeJoueurs(){
         return ListeJoueurs;
+    }
+
+    public Joueur getMyPlayer(){
+        return this.ListeJoueurs.get(playerID);
+    }
+
+    public void setJoueur(ArrayList<Joueur> readObject) {
     }
 
 

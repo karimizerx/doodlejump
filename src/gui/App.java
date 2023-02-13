@@ -204,6 +204,7 @@ public class App extends JFrame {
             this.nbj=1;
             multiplayer=true;
             menu2=this.createMenuMulti();
+            menu2.setVisible(true);
         });
 
         buttonExit.addActionListener(e -> {

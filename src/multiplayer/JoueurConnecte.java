@@ -9,21 +9,20 @@ import gameobjects.Joueur;
 import gameobjects.Plateforme;
 import gameobjects.Terrain;
 
-/* On ne calcule plus rien sur la machine du joueur qui se connecte. Le host calcule tout et passe l'information.  
-* On enverra seulement l'etat de la raquette (Going_UP,Going_DOWN,IDLE)
-*/
-
-//Joueur qui se connecte vers le Serveur qui, dans notre cas, sera le joueur qui host  
 public class JoueurConnecte {
     
-    Socket client; // Socket qui sera initialisé avec ServerName et port 
-    
+    Socket serveur; // Socket qui sera initialisé avec ServerName et port 
+    int id;
     public JoueurConnecte(){
-        this.client=null;
+        this.serveur=null;
+    }
+    public JoueurConnecte(Socket serveur,int c){
+        this.serveur=serveur;
+        this.id=c;
     }
 
-    protected void setClient(Socket a){
-        if(null==this.client)this.client=a;
+    protected void setServeur(Socket a){
+        if(null==this.serveur)this.serveur=a;
     }
     /**
      * @param ServerName nom du serveur
@@ -35,7 +34,7 @@ public class JoueurConnecte {
             String ServerName=JOptionPane.showInputDialog("Nom du Serveur");
             int port=Integer.parseInt(JOptionPane.showInputDialog( "Port"));
             
-            this.client=new Socket(ServerName,port);  
+            this.serveur=new Socket(ServerName,port);  
             return true;   
             
         } catch (Exception e) {
@@ -54,9 +53,9 @@ public class JoueurConnecte {
     public void receiveTerrain(Terrain terrain){
         ObjectInputStream in;
         try {
-            in = new ObjectInputStream(client.getInputStream());
+            in = new ObjectInputStream(serveur.getInputStream());
             terrain.setPlateformesListe((ArrayList<Plateforme>)in.readObject());
-            terrain.setJoueurA((Joueur)in.readObject());
+            terrain.setJoueur((ArrayList<Joueur>)in.readObject());
             terrain.setY((double)in.readObject());                
         }catch (ClassNotFoundException c){
             c.printStackTrace();
@@ -73,13 +72,14 @@ public class JoueurConnecte {
 
 
     protected void deconnecter() throws IOException{
-        client.close();
+        serveur.close();
     }
 
-    public void sendJoueurB(Joueur joueurB) {
+    public void sendJoueur(Joueur joueurB,int ID) {
         try{
-            ObjectOutputStream output= new ObjectOutputStream(client.getOutputStream()) ;
+            ObjectOutputStream output= new ObjectOutputStream(serveur.getOutputStream()) ;
             output.writeObject(joueurB);
+            output.writeObject(ID);;
             System.out.println("JoueurConnecte.sendJoueurB() reussi");
             }catch(IOException e){
                 e.printStackTrace();
