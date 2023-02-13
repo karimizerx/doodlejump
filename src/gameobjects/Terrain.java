@@ -67,7 +67,7 @@ public class Terrain {
     }
 
     // Mise à jour du jeu.
-    public void update() {
+    public void update(double deltaTime) {
         // On effectue une mise à jour pour tous les joueurs
         for (int i = 0; i < ListeJoueurs.size(); ++i) {
             Joueur j = ListeJoueurs.get(i);

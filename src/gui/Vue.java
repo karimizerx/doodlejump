@@ -24,6 +24,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private boolean isRight, isInertRight, isLeft, isInertLeft, pause;
     private Terrain terrain;
     private JFrame menuPause;
+    public double deltaTime = 5;
 
     public Vue(Terrain ter) {
         this.terrain = ter;
@@ -154,7 +155,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     // Met à jour l'affichage
-    public void update() {
+    public void update(double dTime) {
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
             Joueur j = terrain.getListeJoueurs().get(i);
             Personnage p = j.getPerso();
@@ -178,7 +179,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 p.setDx(0);
             }
         }
-        terrain.update();
+        terrain.update(dTime);
     }
 
     // Fait tourner le jeu
@@ -191,11 +192,24 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // Le composant doit être afficheable (OK grâce à addNotify())
             this.requestFocusInWindow();
             init(); // Initialisation des images
+            double cnt = 0.0; // Compteur du nombre d'update
+            double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
+            long t0 = System.currentTimeMillis(); // Temps actuel
             while (isRunning) { // Tant que le jeu tourne
-                if (!pause) // Tant qu'on appuie pas sur pause
-                    update(); // On met à jour les variables
-                afficheImage(); // On affiche les images
-                Thread.sleep(5); // Temps de stop de la thread, i.e d'update (en ms)
+                // if (!pause) // Tant qu'on appuie pas sur pause
+                long t1 = System.currentTimeMillis();
+                long t = t1 - t0;
+                t0 = System.currentTimeMillis();
+                acc += t;
+                while (t > deltaTime) {
+                    update(deltaTime); // On met à jour les variables
+                    // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
+                    // un retard, qu'on stock pour l'ajouter à l'étape suivante.
+                    // Si on a reste > Δ, on relance cette boucle
+                    acc -= deltaTime;
+                    cnt += deltaTime; // On accumule le nombre d'update
+                }
+                afficheImage(); // On affiche les images une fois les données update
             }
             if (endGame()) { // Si c'est la fin du jeu
                 if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
