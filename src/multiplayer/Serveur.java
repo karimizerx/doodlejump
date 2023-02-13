@@ -14,21 +14,37 @@ import gameobjects.Terrain;
 public class Serveur implements Runnable {
 
     private ServerSocket serveurSocket;
-    private ArrayList<JoueurConnecte> clients;
+    private ArrayList<JoueurConnecte> clients=new ArrayList<JoueurConnecte>();
 
 
-    public Serveur(int i)throws IOException{ // initialise et ouvre un serveur au quelle on peut se cconnecter
+    public Serveur(){ 
+        serveurSocket=null;
+    }
+    public String start() throws IOException{
+        // initialise et ouvre un serveur au quelle on peut se cconnecter
         this.serveurSocket=new ServerSocket(0,1);
-        
+
         /** 0 veut dire que le constructeur choisit automatiquement le port, 
          *  1 c'est le backlog(nombre de connection autorisé), nous on veut seulement une connection qui est l'autre joueur.
          *  On utilisera getLocalPort() pour voir le numero du port afin de le communiquer a l'autre joueur
          * Si, apres 120 secondes, personne ne se connecte,il y a un timeout error qu'on attrape et le programme s'arrete.
          */
         serveurSocket.setSoTimeout(120000);
+        return "Le numero du port est :"+serveurSocket.getLocalPort()+"\n le nom du serveur est :"+ InetAddress.getLocalHost();
     }
-    
 
+    public void accept(){
+        try{
+            clients.add(new JoueurConnecte(serveurSocket.accept(),clients.size()));
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public String show(JoueurConnecte a){
+        return "Le joueur "+a.serveur.getRemoteSocketAddress() +" est connecté, il y a "+clients.size()+" joueurs connectés";
+    }
 
     public void sendTerrain(Terrain terrain){//envoyer les coordonnees du jeu
         ObjectOutputStream in;
@@ -49,17 +65,12 @@ public class Serveur implements Runnable {
     }
 
 
-    public int run(){
+    public void run(){
         try {  
-            int c=0;
-            while(true){   
-                JOptionPane.showMessageDialog(null, "Le numero du port est :"+serveurSocket.getLocalPort()+"\n le nom du serveur est :"+ InetAddress. getLocalHost(),"Important",JOptionPane.INFORMATION_MESSAGE);
-                clients=new ArrayList<JoueurConnecte>();
-                JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),c);
-                JOptionPane.showMessageDialog(null, "Le joueur "+a.serveur.getRemoteSocketAddress() +" est connecté, il y a "+c+" joueurs connectés","Succes",JOptionPane.DEFAULT_OPTION); 
-                ++c;
-            }
-            return c;
+            JOptionPane.showMessageDialog(null, "Le numero du port est :"+serveurSocket.getLocalPort()+"\n le nom du serveur est :"+ InetAddress. getLocalHost(),"Important",JOptionPane.INFORMATION_MESSAGE);
+            clients=new ArrayList<JoueurConnecte>();
+            JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),1);
+            JOptionPane.showMessageDialog(null, "Le joueur "+a.serveur.getRemoteSocketAddress() +" est connecté, il y a "+clients.size()+" joueurs connectés","Succes",JOptionPane.DEFAULT_OPTION); 
         } catch (IOException e) { 
             JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
             System.exit(-1);
@@ -83,6 +94,7 @@ public class Serveur implements Runnable {
         System.exit(-1);
         return null;
     }
+
 
     
 

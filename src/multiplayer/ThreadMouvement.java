@@ -2,9 +2,11 @@ package multiplayer;
 
 
 import java.net.*;
+import java.util.ArrayList;
 import java.io.*;
 import javax.swing.*;
 
+import gameobjects.Joueur;
 import gameobjects.Terrain;
 
 public class ThreadMouvement implements Runnable {
@@ -20,7 +22,12 @@ public class ThreadMouvement implements Runnable {
         while(true){
             if(terrain.isHost){
                 serveur.sendTerrain(terrain);
-                terrain.setJoueur(serveur.getJoueurB(),serveur.getInt());//recevoir ce que le mvt du client
+                ArrayList<Joueur> list=new ArrayList<Joueur>();
+                list.add(terrain.getMyPlayer());
+                for(int i=1;i<terrain.getListeJoueurs().size();i++){
+                    list.add(serveur.getJoueur(i));
+                }//recevoir ce que le mvt des clients
+                terrain.setJoueur(list);
                 System.out.println("ThreadMouvement.run() done");
             }else{
                 client.sendJoueur(terrain.getMyPlayer(),terrain.playerID);//le client envoi le mvt de son joueur

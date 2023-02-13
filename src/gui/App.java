@@ -9,16 +9,20 @@ import java.util.ArrayList;
 
 // Import des autres dossiers
 import gameobjects.*;
+import multiplayer.JoueurConnecte;
+import multiplayer.Serveur;
 
 // App est la fenêtre du menu démarrer
 public class App extends JFrame {
     JFrame DoodleJumpheur; // La fenêtre de jeu
     JPanel menu, menu2; // Menu démarrer
     JButton buttonSolo, button2joueur, buttonMulti, buttonLeaderboard, buttonExit, buttonPlay;
+    JButton h = new JButton("Host"), c = new JButton("Connecter-vous");
     int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran
     int height = Toolkit.getDefaultToolkit().getScreenSize().height; // Longueur de l'écran
     int nbj; // Nombre de joueurs
     boolean multiplayer=false,host=false;
+    ArrayList<String> names=new ArrayList<String>();
 
     public App() {
         /// Création de la fenêtre
@@ -107,30 +111,14 @@ public class App extends JFrame {
         // Initalisation du panel
         JPanel m = new JPanel();
         m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
-        m.setPreferredSize(new Dimension(170, 50 * nbj));
+        m.setPreferredSize(new Dimension(150, 150));
 
         // Initialisation & ajout des élements dans le panel
-        for (int i = 0; i < nbj; ++i) { 
-            // Classement c = new Classement();
-            String n;
-            // if (c.getClassement().size() > 1) {
-            //     n = c.getClassement().get(0)[0];
-            // } else {
-                n = "Entrez votre nom";
-            // }
-            JTextArea nomjoueur = new JTextArea(n);
-            nomjoueur.setPreferredSize(new Dimension(100, 100));
-            m.add(nomjoueur);
-        }
-        JButton h=new JButton("Host");
-        JButton c=new JButton("Connecter-vous");
-        h.addActionListener(e ->{
-            host=true;
 
-        });
+        h.setPreferredSize(new Dimension(100, 100));
+        c.setPreferredSize(new Dimension(100, 100));
         m.add(h);
         m.add(c);
-
         return m;
     }
 
@@ -138,6 +126,29 @@ public class App extends JFrame {
         JPanel m = new JPanel();
         m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
         m.setPreferredSize(new Dimension(170, 50 * nbj));
+        //this.menu2.add(this.buttonPlay);
+        int c=0;
+        JLabel label=new JLabel();
+        JTextArea nomjoueur = new JTextArea("Entrez nom");
+        nomjoueur.setPreferredSize(new Dimension(100, 100));
+        m.add(nomjoueur);
+        try {  
+            Serveur s=new Serveur();
+            System.out.println("App.createMenuHost()");
+            label.setText(s.start());
+            boolean waiting=true;
+            m.add(label);
+            // while(waiting){   
+            //     s.accept();
+            //     ++c;
+            // }
+            //TODO fix this, add la partie client du jeu.
+
+        } catch (IOException e) { 
+            JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
+            System.exit(-1);
+        }  
+        nbj=c;
         return m;
     }
 
@@ -200,12 +211,28 @@ public class App extends JFrame {
         });
 
         buttonMulti.addActionListener(e -> {
-            menu.setVisible(false);
+            this.menu.setVisible(false);
             this.nbj=1;
-            multiplayer=true;
-            menu2=this.createMenuMulti();
-            menu2.setVisible(true);
+            this.multiplayer=true;
+            this.menu2 = createMenuMulti();
+            //this.menu2.add(this.buttonPlay);
+            this.add(this.menu2);
+            int mpw2 = (int) this.menu2.getPreferredSize().getWidth();
+            int mph2 = (int) this.menu2.getPreferredSize().getHeight();
+            this.menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
         });
+
+        h.addActionListener(e ->{
+            host=true;
+            this.menu2.setVisible(false);
+            this.menu = createMenuHost();
+            this.menu.setVisible(true);
+            this.add(this.menu);
+            int mpw2 = (int) this.menu.getPreferredSize().getWidth();
+            int mph2 = (int) this.menu.getPreferredSize().getHeight();
+            this.menu.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
+        });
+
 
         buttonExit.addActionListener(e -> {
             System.exit(0);

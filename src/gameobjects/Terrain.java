@@ -48,20 +48,16 @@ public class Terrain{
         this.isHost =host;
         playerID=id;
         generateObstacles();
-        if(this.multiplayer){
-            if(isHost){ 
-                try{
-                this.host=new Serveur(ljoueur.size());
-                this.host.run();
-                }catch(IOException e){
-                    e.printStackTrace();
-                    System.exit(-1);
-                }
-            }else{
-                client=new JoueurConnecte();
-                client.connecter();
-            }    
-        }else isHost=false;
+        // if(this.multiplayer){
+        //     if(isHost){ 
+        //         this.host=new Serveur();
+        //         this.host.run();
+        //     }else{
+        //         client=new JoueurConnecte();
+        //         client.connecter();
+        //     }    
+        // }else
+         if (!multiplayer)isHost=false;
     }
 
     /**

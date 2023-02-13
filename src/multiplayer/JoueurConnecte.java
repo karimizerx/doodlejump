@@ -29,19 +29,24 @@ public class JoueurConnecte {
      * @param port port au quelle le socket va se connecter
      * @true Si le joueur est connecté 
      */
-    public boolean connecter(){
+    public void connecter(String name){
         try {
             String ServerName=JOptionPane.showInputDialog("Nom du Serveur");
             int port=Integer.parseInt(JOptionPane.showInputDialog( "Port"));
             
-            this.serveur=new Socket(ServerName,port);  
-            return true;   
+            this.serveur=new Socket(ServerName,port);    
             
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Echec de connexion","Erreur",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(-1);
-            return false;
+        }
+        DataOutputStream out;
+        try {
+            out=new DataOutputStream(serveur.getOutputStream());
+            out.writeChars(name);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -79,7 +84,7 @@ public class JoueurConnecte {
         try{
             ObjectOutputStream output= new ObjectOutputStream(serveur.getOutputStream()) ;
             output.writeObject(joueurB);
-            output.writeObject(ID);;
+            // output.writeObject(ID);;
             System.out.println("JoueurConnecte.sendJoueurB() reussi");
             }catch(IOException e){
                 e.printStackTrace();
