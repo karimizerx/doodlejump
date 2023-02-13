@@ -5,7 +5,7 @@ public class MovingPlateforme extends Plateforme {
     private double dx;
 
     public MovingPlateforme(double x, double y, double w, double h, double saut, double dx) {
-        super(x, y, w, h, saut);
+        super(x, y, w, h, -1);
         this.dx = dx;
     }
 
