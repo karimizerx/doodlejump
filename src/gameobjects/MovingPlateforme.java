@@ -1,11 +1,13 @@
 package gameobjects;
 
+import gui.Skin;
+
 public class MovingPlateforme extends Plateforme {
 
     private double dx;
 
-    public MovingPlateforme(double x, double y, double w, double h, double saut, double dx) {
-        super(x, y, w, h, saut);
+    public MovingPlateforme(double x, double y, double w, double h, double saut, double dx, Skin skin) {
+        super(x, y, w, h, saut, skin);
         this.dx = dx;
     }
 

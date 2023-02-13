@@ -123,9 +123,9 @@ public class App extends JFrame {
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
             JTextArea jtxt = (JTextArea) menu2.getComponent(i);
             String nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
-            ljou.add(new Joueur(p, nomjoueur));
+            ljou.add(new Joueur(p, nomjoueur, new Skin("/personnages/doodleNinja.png")));
         }
-        Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth());
+        Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth(), new Skin("/background/background.png"));
 
         // Ajout des éléments à la fenêtre
         DJ.add(new Vue(rt));

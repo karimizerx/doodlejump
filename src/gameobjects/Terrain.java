@@ -4,6 +4,7 @@ package gameobjects;
 import java.util.ArrayList;
 import java.util.Random;
 
+import gui.Skin;
 // Import d'autres dossiers
 import gui.Vue;
 
@@ -17,14 +18,15 @@ public class Terrain {
     private int diff_plateformes = 40; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
+    private Skin skin;
 
-    public Terrain(ArrayList<Joueur> ljoueur, double height, double width) {
+    public Terrain(ArrayList<Joueur> ljoueur, double height, double width, Skin skin) {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
-
+        this.skin = skin;
         // Création des plateformes
         generateObstacles();
     }
@@ -39,7 +41,7 @@ public class Terrain {
             int w = 60, h = 20;
             int x = new Random().nextInt((int) this.width - w);
             int y = i;
-            plateformesListe.add(new PlateformeBase(x, y, w, h, -10));
+            plateformesListe.add(new PlateformeBase(x, y, w, h, -10, new Skin("/plateformes/plateformeBase.png")));
         }
         // On s'assure d'aboird toujours une solution au début
     }
@@ -123,6 +125,10 @@ public class Terrain {
 
     public double getWidth() {
         return width;
+    }
+
+    public Skin getSkin() {
+        return skin;
     }
 
     public double getDifficulty() {

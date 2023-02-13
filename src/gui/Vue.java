@@ -17,7 +17,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private Thread thread;
     private String chemin = (new File("gui/images/")).getAbsolutePath();
-    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, persoView, scoreView,
+    private BufferedImage view, scoreView,
             scoreBackgroundView;
     private boolean isRight, isLeft, pause = false;
     private Terrain terrain;
@@ -41,16 +41,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
-                terrainView = ImageIO.read(new File(chemin + "/background/background.png"));
-                platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
-                persoView = ImageIO.read(new File(chemin + "/personnages/doodleNinja.png"));
                 scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground.png"));
             } catch (Exception e) {
-                terrainView = ImageIO.read(new File("src/gui/images/background/background.png"));
-                platformeBaseView = ImageIO.read(new File("src/gui/images/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File("src/gui/images/plateformes/plateformeMobile.png"));
-                persoView = ImageIO.read(new File("src/gui/images/personnages/doodleNinja.png"));
                 scoreBackgroundView = ImageIO.read(new File("src/gui/images/background/scoreBackground.png"));
             }
         } catch (Exception e) {
@@ -62,12 +54,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public void afficheImage() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         // Affichage terrain
-        g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
+        g2.drawImage(terrain.getSkin().getImage(), 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
 
         // Affichage des plateformes
         for (Plateforme pf : terrain.getPlateformesListe()) {
-            BufferedImage pfV = (pf instanceof PlateformeBase) ? platformeBaseView : platformeMobileView;
-            g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
+            g2.drawImage(pf.getSkin().getImage(), (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur
@@ -93,7 +84,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
             Joueur j = terrain.getListeJoueurs().get(i);
             Personnage p = j.getPerso();
-            g2.drawImage(persoView, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+            g2.drawImage(j.getSkin().getImage(), (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
         }
 
         // Affichage final
