@@ -74,10 +74,10 @@ public class Terrain {
             Personnage p = j.getPerso();
 
             // Ralentissement progressif après un saut
-            p.setDy(p.getDy() + 0.2);
+            p.setDy(p.getDy() + (0.02 * deltaTime));
             p.setY(p.getY() + p.getDy());
 
-            // Si les piedds du perso touchent le bas de la fenêtre, on a perdu
+            // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
             if (p.getY() + 0.87 * p.getHeight() >= this.height) {
                 Vue.isRunning = false;
             }
@@ -100,7 +100,7 @@ public class Terrain {
             }
             // On gère les collisions & les débordements du personnage
             for (Plateforme pf : plateformesListe) {
-                p.collides_plateforme(pf);
+                p.collides_plateforme(pf, deltaTime);
                 // pf.move(this);
             }
             limite(p);

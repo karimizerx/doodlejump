@@ -24,7 +24,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private boolean isRight, isInertRight, isLeft, isInertLeft, pause;
     private Terrain terrain;
     private JFrame menuPause;
-    public double deltaTime = 5;
+    public double deltaTime = 10;
 
     public Vue(Terrain ter) {
         this.terrain = ter;
@@ -198,10 +198,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             while (isRunning) { // Tant que le jeu tourne
                 // if (!pause) // Tant qu'on appuie pas sur pause
                 long t1 = System.currentTimeMillis();
+                System.out.println("t0, t1 : " + t0 + " : " + t1 + "  :  " + (t1 - t0));
                 long t = t1 - t0;
                 t0 = System.currentTimeMillis();
                 acc += t;
-                while (t > deltaTime) {
+                System.out.println("acc 1 : " + acc);
+                while (acc > deltaTime) {
                     update(deltaTime); // On met à jour les variables
                     // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
                     // un retard, qu'on stock pour l'ajouter à l'étape suivante.
@@ -209,6 +211,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     acc -= deltaTime;
                     cnt += deltaTime; // On accumule le nombre d'update
                 }
+                System.out.println("acc 2 : " + acc);
                 afficheImage(); // On affiche les images une fois les données update
             }
             if (endGame()) { // Si c'est la fin du jeu

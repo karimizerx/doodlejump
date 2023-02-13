@@ -14,7 +14,7 @@ public class Personnage extends GameObject {
     // Méthodes de la classe
 
     // Colision entre le personnage et une plateforme
-    public void collides_plateforme(Plateforme pf) {
+    public void collides_plateforme(Plateforme pf, double deltaTime) {
         if ((this.getX() + (this.getWidth() * 0.65) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
                 // plateforme. + witdh*0.65 sert à ne compter que le x du dernier pied
                 && (this.getX() + (this.getWidth() * 0.25) <= pf.getX() + pf.getWidth())
@@ -23,7 +23,7 @@ public class Personnage extends GameObject {
                 && (this.getY() + 0.87 * this.getHeight() >= pf.getY())
                 && (this.getY() + 0.87 * this.getHeight() <= pf.getY() + pf.getHeight())
                 && (this.getDy() > 0)) { // Si le personnage descent
-            dy = pf.getSaut();
+            dy = pf.getSaut() * deltaTime;
         }
     }
 
