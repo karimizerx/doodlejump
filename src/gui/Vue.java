@@ -74,7 +74,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
                     Joueur joueur = terrain.getListeJoueurs().get(i);
-                    Personnage perso = joueur.getPerso();
                     String nom = joueur.getNom().toLowerCase();
                     // On stock dans ListAux les images liées à chaque joueur et qui ne changent
                     // jamais, i.e le perso et le nom, contrairement au score
