@@ -20,6 +20,4 @@ public abstract class Plateforme extends GameObject {
         this.saut = saut;
     }
 
-
-
 }
