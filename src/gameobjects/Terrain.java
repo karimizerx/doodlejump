@@ -100,7 +100,7 @@ public class Terrain {
                 // On descend toutes les plateforme
                 for (Plateforme pf : plateformesListe) {
                     pf.setY(pf.getY() - (int) p.getDy());
-                    if (pf.getY() - pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
+                    if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                         pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                                 + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                     }
