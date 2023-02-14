@@ -14,7 +14,7 @@ public class Terrain {
     private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
-    private int diff_plateformes = 40; // Différence de y entre 2 plateformes
+    private double diff_plateformes; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
 
@@ -24,6 +24,7 @@ public class Terrain {
         this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
+        this.diff_plateformes = this.height * 0.039;
 
         // Création des plateformes
         generateObstacles();
@@ -33,15 +34,16 @@ public class Terrain {
 
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     private void generateObstacles() {
+        // Taille des plateformes en fonction de la taille de la fenêtre
+        double w = this.width * 0.09375, h = this.height * 0.0195;
         // Génère des plateformes à coord aléatoires pour la liste des plateformes
         for (int i = (int) height; i > 0; i -= diff_plateformes) {
             // On définit la largeur/hauteur des plateformes de base
-            int w = 60, h = 20;
-            int x = new Random().nextInt((int) this.width - w);
+            int x = new Random().nextInt((int) (this.width - w));
             int y = i;
             double c = new Random().nextDouble();
             if (c < 0.1) {
-                plateformesListe.add(new MovingPlateforme(x, y, w, h, -12, 2));
+                plateformesListe.add(new MovingPlateforme(x, y, w, h, -(this.height / 1026), (this.width * 0.003125)));
             } else
                 plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height / 1026)));
 
@@ -102,7 +104,7 @@ public class Terrain {
                     pf.setY(pf.getY() - (int) p.getDy());
                     if (pf.getY() - pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                         pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
-                                + ((new Random().nextInt(11) * (new Random().nextInt(3) - 1)) * difficulty / 2));
+                                + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                     }
                 }
             }
@@ -150,11 +152,11 @@ public class Terrain {
         ListeJoueurs = listeJoueurs;
     }
 
-    public int getDiff_plateformes() {
+    public double getDiff_plateformes() {
         return diff_plateformes;
     }
 
-    public void setDiff_plateformes(int diff_plateformes) {
+    public void setDiff_plateformes(double diff_plateformes) {
         this.diff_plateformes = diff_plateformes;
     }
 }
