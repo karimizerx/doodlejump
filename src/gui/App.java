@@ -107,7 +107,8 @@ public class App extends JFrame {
         JFrame DJ = new JFrame();
         DJ.setTitle("Doodle Jumpheur");
         // Définition de la taille de cette fenêtre de jeu
-        DJ.setSize(width / 3, (int) (height * 0.95));
+        int framew = width / 3, frameh = (int) (height * 0.95);
+        DJ.setSize(framew, frameh);
         // Empêche la fenetre d'être redimensionée
         DJ.setResizable(false);
         // Action à effectuer en cas de fermeture : fermer uniquement de cette fenêtre
@@ -120,7 +121,9 @@ public class App extends JFrame {
         // Initialisation des éléments
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
-            Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
+            // L'image du perso doit être un carré. On prend la valeure la plus petite
+            int z = ((102600 / frameh) >= (64000 / framew)) ? (64000 / framew) : (102600 / frameh);
+            Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - z, z, z, -(10260 / frameh));
             JTextArea jtxt = (JTextArea) menu2.getComponent(i);
             String nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
             ljou.add(new Joueur(p, nomjoueur));
