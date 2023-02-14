@@ -43,7 +43,7 @@ public class Terrain {
             if (c < 0.1) {
                 plateformesListe.add(new MovingPlateforme(x, y, w, h, -12, 2));
             } else
-                plateformesListe.add(new PlateformeBase(x, y, w, h, -10));
+                plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height / 1026)));
 
         }
         // On s'assure d'aboird toujours une solution au début
@@ -79,7 +79,10 @@ public class Terrain {
             Personnage p = j.getPerso();
 
             // Ralentissement progressif après un saut
-            p.setDy(p.getDy() + (0.02 * deltaTime));
+            System.out.println("wwwwwwwwwwwwwwwwwwwwwww,hhhhhhhhhhh : " + this.width + " , " + this.height + " , "
+                    + (this.height * 0.5));
+            double ralentissement = this.height * 0.0000195;
+            p.setDy(p.getDy() + (ralentissement * deltaTime));
             p.setY(p.getY() + p.getDy());
 
             // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
@@ -97,7 +100,7 @@ public class Terrain {
                 // On descend toutes les plateforme
                 for (Plateforme pf : plateformesListe) {
                     pf.setY(pf.getY() - (int) p.getDy());
-                    if (pf.getY() - pf.getHeight() >= this.height * 0.95) {
+                    if (pf.getY() - pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                         pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                                 + ((new Random().nextInt(11) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                     }
