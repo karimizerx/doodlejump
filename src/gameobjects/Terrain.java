@@ -20,6 +20,7 @@ public class Terrain{
     private ArrayList<Joueur> ListeJoueurs;
     private double y = 0;// hauteur du jeu. On l'utilisera aussi pour le score
     private int diff_plateformes = 40; // Différence de y entre 2 plateformes
+    public boolean isMenu, isEsc,pause=false;
 
 
     public boolean multiplayer;
@@ -203,8 +204,15 @@ public class Terrain{
     public Joueur getMyPlayer(){
         return this.ListeJoueurs.get(playerID);
     }
+    public void setHost(Serveur host) {
+        this.host = host;
+    }
+    public void setJoueurConnecte(JoueurConnecte j){
+        client=j;
+    }
 
-    public void setJoueur(ArrayList<Joueur> readObject) {
+    public void setJoueur(ArrayList<Joueur> l) {
+        ListeJoueurs=l;
     }
 
 

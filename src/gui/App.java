@@ -4,7 +4,10 @@ package gui;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.plaf.nimbus.*;
+
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 
 // Import des autres dossiers
@@ -17,12 +20,14 @@ public class App extends JFrame {
     JFrame DoodleJumpheur; // La fenêtre de jeu
     JPanel menu, menu2; // Menu démarrer
     JButton buttonSolo, button2joueur, buttonMulti, buttonLeaderboard, buttonExit, buttonPlay;
-    JButton h = new JButton("Host"), c = new JButton("Connecter-vous");
+    JButton h = new JButton("Host"), c = new JButton("Connecter-vous");JButton end=new JButton("start");
     int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran
     int height = Toolkit.getDefaultToolkit().getScreenSize().height; // Longueur de l'écran
     int nbj; // Nombre de joueurs
     boolean multiplayer=false,host=false;
     ArrayList<String> names=new ArrayList<String>();
+    Serveur s=new Serveur();
+    JoueurConnecte j=new JoueurConnecte();
 
     public App() {
         /// Création de la fenêtre
@@ -124,31 +129,100 @@ public class App extends JFrame {
 
     private JPanel createMenuHost() {
         JPanel m = new JPanel();
-        m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
-        m.setPreferredSize(new Dimension(170, 50 * nbj));
-        //this.menu2.add(this.buttonPlay);
-        int c=0;
-        JLabel label=new JLabel();
+        m.setLayout(new GridLayout(4, 0)); // +1 pour le bouton Play
+        m.setPreferredSize(new Dimension(170, 100));
+        int c=1;
+        JLabel label1=new JLabel();
+        label1.setSize(new Dimension(300, 100));
+        JLabel label2=new JLabel();
+        label2.setSize(new Dimension(300, 100));
         JTextArea nomjoueur = new JTextArea("Entrez nom");
         nomjoueur.setPreferredSize(new Dimension(100, 100));
-        m.add(nomjoueur);
+
         try {  
-            Serveur s=new Serveur();
+            s=new Serveur();
             System.out.println("App.createMenuHost()");
-            label.setText(s.start());
-            boolean waiting=true;
-            m.add(label);
-            // while(waiting){   
-            //     s.accept();
-            //     ++c;
-            // }
+            label1.setText(s.start()[0]);
+            label2.setText(s.start()[1]);
+            m.add(label1);
+            m.add(label2);
+            m.add(nomjoueur);
+            m.add(end);
+            Thread t=new Thread(s);
+            t.start();
             //TODO fix this, add la partie client du jeu.
 
         } catch (IOException e) { 
             JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
             System.exit(-1);
         }  
-        nbj=c;
+        this.nbj=c;
+        return m;
+    }
+
+    public JPanel createFinalMenu(){
+        JPanel m = new JPanel();
+        m.setLayout(new GridLayout(nbj+1, 0)); // +1 pour le bouton Play
+        m.setPreferredSize(new Dimension(170, 50 * nbj));
+        //terminer this et la pertie client
+        this.buttonPlay=new JButton("Jouer");
+        this.buttonPlay.addActionListener(e ->{
+            // On crée une nouvelle fenêtre de jeu
+            s.commence();
+            DoodleJumpheur = createDJ();
+            DoodleJumpheur.setVisible(true);
+            this.dispose();
+        });
+        m.add(this.buttonPlay);
+        return m;
+    }
+
+    public JPanel createClientMenu(){
+        JPanel m = new JPanel();
+        m.setLayout(new GridLayout(4, 0)); // +1 pour le bouton Play
+        m.setPreferredSize(new Dimension(170, 100));
+        JTextArea nomjoueur = new JTextArea("Entrez nom");
+        nomjoueur.setPreferredSize(new Dimension(100, 100));
+        m.add(nomjoueur);
+        JTextArea serverName = new JTextArea("nom du serveur");
+        serverName.setPreferredSize(new Dimension(100, 100));
+        m.add(serverName);
+        JTextArea port = new JTextArea("port");
+        port.setPreferredSize(new Dimension(100, 100));
+        m.add(port);
+        c=new JButton("Connectez-Vous");
+        c.addActionListener(e ->{
+            j.connecter(nomjoueur.getText(), serverName.getText(),Integer.parseInt(port.getText()));
+            this.menu.setVisible(false);
+            this.menu2=createWaitingMenu();
+        });
+        m.add(c);
+        return m;
+    }
+
+    public JPanel createWaitingMenu(){
+        JPanel m = new JPanel();
+        m.setLayout(new GridLayout(1, 1)); // +1 pour le bouton Play
+        m.setPreferredSize(new Dimension(170, 100));
+        JLabel text=new JLabel("Waiting for host to start game");
+        new Thread(new Runnable() {
+            public void run(){
+                boolean waiting=true;
+                while(waiting){
+                    DataInputStream in;
+                    boolean tmp=true;
+                    try {
+                        in=new DataInputStream(j.getServeur().getInputStream());
+                        tmp=in.readBoolean();
+                        waiting=tmp;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                createDJ();
+            }
+        }).run();
+
         return m;
     }
 
@@ -172,12 +246,15 @@ public class App extends JFrame {
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
-            JTextArea jtxt = (JTextArea) menu2.getComponent(i);
-            String nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
+            String nomjoueur;
+            if(!multiplayer){
+                JTextArea jtxt = (JTextArea) menu2.getComponent(i);
+                nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
+            }else  nomjoueur=names.get(i);
             ljou.add(new Joueur(p, nomjoueur));
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth(),host,multiplayer,0);
-        
+        if(multiplayer){if (host) rt.setHost(s); else rt.setJoueurConnecte(j);}
 
         // Ajout des éléments à la fenêtre
         DJ.add(new Vue(rt));
@@ -233,6 +310,34 @@ public class App extends JFrame {
             this.menu.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
         });
 
+        c.addActionListener(e ->{
+            host=false;
+            this.menu2.setVisible(false);
+            this.menu=createClientMenu();
+            this.menu.setVisible(true);
+            this.add(this.menu);
+            int mpw2 = (int) this.menu.getPreferredSize().getWidth();
+            int mph2 = (int) this.menu.getPreferredSize().getHeight();
+            this.menu.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
+
+        });
+
+
+        end.addActionListener(e ->{
+            s.end=true;
+            this.menu.setVisible(false);     
+            int c=0;
+            while(!(menu.getComponent(c) instanceof JTextArea)){c++;}           
+            JTextArea jtxt = (JTextArea) menu.getComponent(c);
+            names.add(jtxt.getText().equals("Entrez votre nom") ? "Mizer" : jtxt.getText());
+            names.addAll(s.getNames());
+            this.menu2=createFinalMenu();
+            this.menu2.setVisible(true);
+            this.add(this.menu2);
+            int mpw2 = (int) this.menu.getPreferredSize().getWidth();
+            int mph2 = (int) this.menu.getPreferredSize().getHeight();
+            this.menu.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
+        });
 
         buttonExit.addActionListener(e -> {
             System.exit(0);

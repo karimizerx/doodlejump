@@ -20,7 +20,7 @@ public class Serveur implements Runnable {
     public Serveur(){ 
         serveurSocket=null;
     }
-    public String start() throws IOException{
+    public String[] start() throws IOException{
         // initialise et ouvre un serveur au quelle on peut se cconnecter
         this.serveurSocket=new ServerSocket(0,1);
 
@@ -30,20 +30,21 @@ public class Serveur implements Runnable {
          * Si, apres 120 secondes, personne ne se connecte,il y a un timeout error qu'on attrape et le programme s'arrete.
          */
         serveurSocket.setSoTimeout(120000);
-        return "Le numero du port est :"+serveurSocket.getLocalPort()+"\n le nom du serveur est :"+ InetAddress.getLocalHost();
+        String[] tmp={ "Le numero du port est :"+serveurSocket.getLocalPort()," le nom du serveur est :"+ InetAddress.getLocalHost()};
+        return tmp;
     }
 
     public void accept(){
         try{
             clients.add(new JoueurConnecte(serveurSocket.accept(),clients.size()));
-
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
-    public String show(JoueurConnecte a){
-        return "Le joueur "+a.serveur.getRemoteSocketAddress() +" est connecté, il y a "+clients.size()+" joueurs connectés";
+    public String[] show(JoueurConnecte a){
+        String[] tmp= {"Le joueur "+(a.serveur.getRemoteSocketAddress()) +" est connecté"," il y a "+clients.size()+" joueurs connectés"};
+        return tmp;
     }
 
     public void sendTerrain(Terrain terrain){//envoyer les coordonnees du jeu
@@ -53,7 +54,10 @@ public class Serveur implements Runnable {
                 in =  new ObjectOutputStream(client.serveur.getOutputStream());
                 in.writeObject(terrain.getPlateformesListe());
                 in.writeObject(terrain.getMyPlayer());
-                in.writeObject(terrain.getY());
+                in.writeObject(terrain.isEsc);
+                in.writeObject(terrain.isMenu);
+                in.writeObject(terrain.pause);
+
             } catch (Exception e) {
                 e.printStackTrace();
             } 
@@ -64,19 +68,55 @@ public class Serveur implements Runnable {
         serveurSocket.close();
     }
 
+    public volatile boolean end=false; 
 
+    @Override 
     public void run(){
+        int c=1;
         try {  
-            JOptionPane.showMessageDialog(null, "Le numero du port est :"+serveurSocket.getLocalPort()+"\n le nom du serveur est :"+ InetAddress. getLocalHost(),"Important",JOptionPane.INFORMATION_MESSAGE);
             clients=new ArrayList<JoueurConnecte>();
-            JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),1);
-            JOptionPane.showMessageDialog(null, "Le joueur "+a.serveur.getRemoteSocketAddress() +" est connecté, il y a "+clients.size()+" joueurs connectés","Succes",JOptionPane.DEFAULT_OPTION); 
-        } catch (IOException e) { 
+            while (!end) {    
+                JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),c++);
+                clients.add(a);
+                DataOutputStream out;
+                try{
+                    out=new DataOutputStream(a.serveur.getOutputStream());
+                    out.writeInt(c);
+                }catch(IOException e){
+                    e.printStackTrace();
+                }
+            }                
+            } catch (IOException e) { 
             JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
             System.exit(-1);
         }  
     }
 
+    public ArrayList<String> getNames(){
+        ArrayList<String> l=new ArrayList<String>();
+        for(JoueurConnecte j:clients){
+            DataInputStream in;
+            try{
+                in=new DataInputStream(j.serveur.getInputStream());
+                l.add(in.readUTF());
+            }catch(IOException e){
+                e.printStackTrace();
+            }
+        }
+        return l;
+    }
+
+    public void commence(){
+        DataOutputStream in;
+        for(JoueurConnecte client : clients){
+            try {
+                in =  new DataOutputStream(client.serveur.getOutputStream());
+                in.writeBoolean(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } 
+        }
+    }
 
 
     public Joueur getJoueur(int c){

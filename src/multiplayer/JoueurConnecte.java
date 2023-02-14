@@ -29,13 +29,9 @@ public class JoueurConnecte {
      * @param port port au quelle le socket va se connecter
      * @true Si le joueur est connecté 
      */
-    public void connecter(String name){
+    public void connecter(String name,String ServerName,int port){
         try {
-            String ServerName=JOptionPane.showInputDialog("Nom du Serveur");
-            int port=Integer.parseInt(JOptionPane.showInputDialog( "Port"));
-            
             this.serveur=new Socket(ServerName,port);    
-            
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Echec de connexion","Erreur",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -46,6 +42,13 @@ public class JoueurConnecte {
             out=new DataOutputStream(serveur.getOutputStream());
             out.writeChars(name);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        DataInputStream in;
+        try{
+            in=new DataInputStream(serveur.getInputStream());
+            id=in.readInt();
+        }catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -61,7 +64,9 @@ public class JoueurConnecte {
             in = new ObjectInputStream(serveur.getInputStream());
             terrain.setPlateformesListe((ArrayList<Plateforme>)in.readObject());
             terrain.setJoueur((ArrayList<Joueur>)in.readObject());
-            terrain.setY((double)in.readObject());                
+            terrain.isEsc=(boolean)in.readObject();
+            terrain.isMenu=(boolean)in.readObject();
+            terrain.pause=(boolean)in.readObject();
         }catch (ClassNotFoundException c){
             c.printStackTrace();
             System.out.println("classe perdu");
@@ -74,7 +79,9 @@ public class JoueurConnecte {
 
 
 
-
+    public Socket getServeur(){
+        return serveur;
+    }
 
     protected void deconnecter() throws IOException{
         serveur.close();

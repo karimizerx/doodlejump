@@ -26,7 +26,6 @@ public class Vue extends JPanel implements Runnable, KeyListener{
     private String chemin = (new File("gui/images/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, persoView, scoreView,scoreBackgroundView;
 
-    boolean isMenu, isEsc,pause=false;
     Terrain terrain;
     JFrame menuPause;
     ThreadMouvement threadMvt=null;
@@ -147,7 +146,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 t.start();
             }
             while (isRunning) { // Tant que le jeu tourne
-                if (!pause) // Tant qu'on appuie pas sur pause
+                if (!terrain.pause) // Tant qu'on appuie pas sur pause
                     update(); // On met à jour les variables
                 afficheImage(); // On affiche les images
                 Thread.sleep(5); // Temps de stop de la thread, i.e d'update (en ms)
@@ -247,7 +246,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                 super.mouseClicked(e);
                 if (0 <= e.getX() && e.getX() <= 100 && 0 <= e.getY() && e.getY() <= 100) {
                     isRunning = false;
-                    isMenu = true;
+                    terrain.isMenu = true;
                 }
             }
         });
@@ -256,7 +255,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
         
     private void pause() {
-        this.pause = !this.pause;
+        this.terrain.pause = !this.terrain.pause;
         this.menuPause = new JFrame();
         this.menuPause.setBounds((int) terrain.getWidth() * 3 / 2 - 50, (int) terrain.getHeight() / 2 - 60, 150, 120);
         this.menuPause.setResizable(false);
@@ -272,7 +271,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
         cont.addActionListener(ev -> {
             this.menuPause.dispose();
-            this.pause = !this.pause;
+            this.terrain.pause = !this.terrain.pause;
         });
 
         exit.addActionListener(ev -> {
