@@ -24,7 +24,7 @@ public class Terrain {
         this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
-        this.diff_plateformes = this.height * 0.039;
+        this.diff_plateformes = 41040 / this.height;
 
         // Création des plateformes
         generateObstacles();
@@ -35,17 +35,17 @@ public class Terrain {
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     private void generateObstacles() {
         // Taille des plateformes en fonction de la taille de la fenêtre
-        double w = this.width * 0.09375, h = this.height * 0.0195;
+        double w = 38400 / this.width, h = 20520 / this.height;
         // Génère des plateformes à coord aléatoires pour la liste des plateformes
         for (int i = (int) height; i > 0; i -= diff_plateformes) {
             // On définit la largeur/hauteur des plateformes de base
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
             double c = new Random().nextDouble();
-            if (c < 0.1) {
-                plateformesListe.add(new MovingPlateforme(x, y, w, h, -(this.height / 1026), (this.width * 0.003125)));
+            if (c < 0.1) { // Le saut sur les plateformes mobiles est + avantageux
+                plateformesListe.add(new MovingPlateforme(x, y, w, h, -(1231.2 / this.height), (1280 / this.width)));
             } else
-                plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height / 1026)));
+                plateformesListe.add(new PlateformeBase(x, y, w, h, -(1026 / this.height)));
 
         }
         // On s'assure d'aboird toujours une solution au début
@@ -81,10 +81,9 @@ public class Terrain {
             Personnage p = j.getPerso();
 
             // Ralentissement progressif après un saut
-            System.out.println("wwwwwwwwwwwwwwwwwwwwwww,hhhhhhhhhhh : " + this.width + " , " + this.height + " , "
-                    + (this.height * 0.5));
-            double ralentissement = this.height * 0.0000195;
+            double ralentissement = 20.52 / this.height;
             p.setDy(p.getDy() + (ralentissement * deltaTime));
+            //int s = (int) ((p.getY() + p.getDy() < p.getY() && p.getY() + p.getDy() > j.getScore() ) ? j.getScore() + p.getDy() : j.getScore());
             p.setY(p.getY() + p.getDy());
 
             // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
@@ -94,11 +93,10 @@ public class Terrain {
 
             // Si la tête du personnage dépasse la moitié de l'écran
             if (p.getY() < this.height / 2) {
-                // plus la difficulté augmente plus les plateformes sont écarté jusqu'a a
-                // certain seuil qu'on a défini préalablement
+                // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
+                // certain seuil qu'on a défini préalablement (la moitié de la taille)
                 difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;
                 p.setY(this.height / 2);
-                j.setScore(j.getScore() + 1); // On incrémente le score de 1
                 // On descend toutes les plateforme
                 for (Plateforme pf : plateformesListe) {
                     pf.setY(pf.getY() - (int) p.getDy());
