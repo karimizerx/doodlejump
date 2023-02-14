@@ -83,7 +83,6 @@ public class Terrain {
             // Ralentissement progressif après un saut
             double ralentissement = 20.52 / this.height;
             p.setDy(p.getDy() + (ralentissement * deltaTime));
-            //int s = (int) ((p.getY() + p.getDy() < p.getY() && p.getY() + p.getDy() > j.getScore() ) ? j.getScore() + p.getDy() : j.getScore());
             p.setY(p.getY() + p.getDy());
 
             // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
@@ -97,6 +96,7 @@ public class Terrain {
                 // certain seuil qu'on a défini préalablement (la moitié de la taille)
                 difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;
                 p.setY(this.height / 2);
+                j.setScore(j.getScore() + 1);
                 // On descend toutes les plateforme
                 for (Plateforme pf : plateformesListe) {
                     pf.setY(pf.getY() - (int) p.getDy());
