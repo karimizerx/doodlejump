@@ -230,7 +230,7 @@ public class App extends JFrame {
         return m;
     }
 
-
+//fermer les threads 
     private JFrame createDJ() {
         // Initalisation de la fenêtre
         JFrame DJ = new JFrame();

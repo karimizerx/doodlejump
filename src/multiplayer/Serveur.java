@@ -31,7 +31,7 @@ public class Serveur implements Runnable {
          */
         serveurSocket.setSoTimeout(120000);
         System.out.println(InetAddress.getLocalHost());
-        String[] tmp={ "Le numero du port est :"+serveurSocket.getLocalPort()," le nom du serveur est :"+ InetAddress.getLocalHost()};
+        String[] tmp={ "port :"+serveurSocket.getLocalPort()," srv  :"+ InetAddress.getLocalHost()};
         return tmp;
     }
 
