@@ -7,7 +7,6 @@ import javax.swing.plaf.nimbus.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.io.DataInputStream;
-import java.net.Socket;
 
 // Import des autres dossiers
 import gameobjects.*;
