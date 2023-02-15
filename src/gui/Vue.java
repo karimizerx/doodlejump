@@ -19,7 +19,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
+    private String chemin = (new File("gui/images/packTux/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
@@ -46,7 +46,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
-                terrainView = ImageIO.read(new File(chemin + "/background/background.png"));
+                terrainView = ImageIO.read(new File(chemin + "/background/background1.png"));
                 platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
                 scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground.png"));
@@ -58,7 +58,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     // jamais, i.e le perso et le nom, contrairement au score
                     ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
                     // L'élément de rang 0 contient l'image du perso
-                    viewListAux.add(ImageIO.read(new File(chemin + "/personnages/doodleNinja.png")));
+                    viewListAux.add(ImageIO.read(new File(chemin + "/personnages/persoBase.png")));
                     // Les autres contiennent les lettres du nom du joueur
                     for (int j = 0; j < nom.length(); ++j) {
                         char c = (nom.charAt(j) == ' ') ? '0' : nom.charAt(j);
@@ -68,7 +68,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     viewList.add(viewListAux);
                 }
             } catch (Exception e) {
-                terrainView = ImageIO.read(new File("src/gui/images/packBase/background/background.png"));
+                terrainView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
                 platformeBaseView = ImageIO.read(new File("src/gui/images/packBase/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO
                         .read(new File("src/gui/images/packBase/plateformes/plateformeMobile.png"));
@@ -81,7 +81,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     // jamais, i.e le perso et le nom, contrairement au score
                     ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
                     // L'élément de rang 0 contient l'image du perso
-                    viewListAux.add(ImageIO.read(new File("src/gui/images/packBase/personnages/doodleNinja.png")));
+                    viewListAux.add(ImageIO.read(new File("src/gui/images/packBase/personnages/persoBase.png")));
                     // Les autres contiennent les lettres du nom du joueur
                     for (int j = 0; j < nom.length(); ++j) {
                         BufferedImage lv = ImageIO
@@ -118,7 +118,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                         scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
 
                     } catch (Exception e) {
-                        scoreView = ImageIO.read(new File("src/gui/images/chiffres/ch" + score.charAt(i) + ".png"));
+                        scoreView = ImageIO.read(new File("src/gui/images/packTux/chiffres/ch" + score.charAt(i) + ".png"));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
