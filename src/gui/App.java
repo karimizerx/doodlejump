@@ -196,6 +196,7 @@ public class App extends JFrame {
         c=new JButton("Connectez-Vous");
         c.addActionListener(e ->{
             j.connecter(nomjoueur.getText(), serverName.getText(),Integer.parseInt(port.getText()));
+
             this.menu.setVisible(false);
             this.menu2=createWaitingMenu();
         });
@@ -205,14 +206,15 @@ public class App extends JFrame {
 
     public JPanel createWaitingMenu(){
         JPanel m = new JPanel();
-        m.setLayout(new GridLayout(1, 1)); // +1 pour le bouton Play
+        m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
         m.setPreferredSize(new Dimension(170, 100));
         JLabel text=new JLabel("Waiting for host to start game");
         m.add(text);
         new Thread(new Runnable() {
+            public volatile boolean waiting=true;
             public void run(){
-                boolean waiting=true;
                 while(waiting){
+                    System.out.println("App.createWaitingMenu().new Runnable() {...}.run()");
                     DataInputStream in;
                     boolean tmp=true;
                     try {
@@ -223,7 +225,9 @@ public class App extends JFrame {
                         e.printStackTrace();
                     }
                 }
-                createDJ();
+                DoodleJumpheur = createDJ();
+                DoodleJumpheur.setVisible(true);
+                App.this.dispose();            
             }
         }).run();
 
@@ -254,8 +258,8 @@ public class App extends JFrame {
             if(!multiplayer){
                 JTextArea jtxt = (JTextArea) menu2.getComponent(i);
                 nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
-            }else  nomjoueur=names.get(i);
-            ljou.add(new Joueur(p, nomjoueur));
+            }else if(host) {nomjoueur=names.get(i);
+            ljou.add(new Joueur(p, nomjoueur));}
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth(),host,multiplayer,0);
         if(multiplayer){if (host) rt.setHost(s); else rt.setJoueurConnecte(j);}
