@@ -1,7 +1,10 @@
 package gameobjects;
 
+// Import de packages java
+import java.io.Serializable;
+
 // La classe GameObject représente les différents types d'objets du jeu.
-public abstract class GameObject {
+public abstract class GameObject implements Serializable { // C'est une classe abstraite
 
     private double x, y; // Coordonnées position x,y
     private double width, height; // Largeur et hauteur de l'objet

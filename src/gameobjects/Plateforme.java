@@ -19,7 +19,5 @@ public abstract class Plateforme extends GameObject {
     public void setSaut(double saut) {
         this.saut = saut;
     }
-
-
-
+    
 }

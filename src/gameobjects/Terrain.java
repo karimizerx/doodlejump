@@ -6,44 +6,57 @@ import java.util.Random;
 
 // Import d'autres dossiers
 import gui.Vue;
+import multiplayer.*;
 
-// Gère tous les éléments du terrain
 public class Terrain {
 
     private ArrayList<Plateforme> plateformesListe; // Liste des plateformes sur le terrain
     private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
-    private int diff_plateformes = 40; // Différence de y entre 2 plateformes
+    private double diff_plateformes; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
+    public boolean pause;
 
-    public Terrain(ArrayList<Joueur> ljoueur, double height, double width) {
+    public boolean multiplayer;
+    public boolean isHost;
+    public Serveur host = null;
+    public JoueurConnecte client = null;
+    public final int playerID;// si cest zero; il est host ou il est pas multijoueur
+
+    public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer, int id) {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
+        this.pause = false;
+        this.diff_plateformes = 41040 / this.height;
+        this.multiplayer = multiplayer;
+        this.isHost = host;
+        this.playerID = id;
+        if (!multiplayer)
+            isHost = false;
 
         // Création des plateformes
         generateObstacles();
     }
 
-    /// Méthodes de la classe
-
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     private void generateObstacles() {
+        // Taille des plateformes en fonction de la taille de la fenêtre
+        double w = 38400 / this.width, h = 20520 / this.height;
         // Génère des plateformes à coord aléatoires pour la liste des plateformes
         for (int i = (int) height; i > 0; i -= diff_plateformes) {
             // On définit la largeur/hauteur des plateformes de base
-            int w = 60, h = 20;
-            int x = new Random().nextInt((int) this.width - w);
+            int x = new Random().nextInt((int) (this.width - w));
             int y = i;
             double c = new Random().nextDouble();
-            if (c < 0.1) {
-                plateformesListe.add(new MovingPlateforme(x, y, w, h, -12, 2));
+            if (c < 0.1) { // Le saut sur les plateformes mobiles est + avantageux
+                plateformesListe.add(new MovingPlateforme(x, y, w, h, -(1231.2 / this.height), (1280 / this.width)));
             } else
-                plateformesListe.add(new PlateformeBase(x, y, w, h, -10));
+                plateformesListe.add(new PlateformeBase(x, y, w, h, -(1026 / this.height)));
 
         }
         // On s'assure d'aboird toujours une solution au début
@@ -71,46 +84,53 @@ public class Terrain {
             p.setX(-(p.getWidth() * 0.43));
     }
 
+    public void update(double deltaTime) {
+        if ((isHost && multiplayer))
+            update(ListeJoueurs.get(0), deltaTime);
+        else if ((!isHost && multiplayer) || !multiplayer) {
+            for (Joueur j : ListeJoueurs)
+                update(j, deltaTime);
+        }
+    }
+
     // Mise à jour du jeu.
-    public void update() {
+    private void update(Joueur j, double deltaTime) {
         // On effectue une mise à jour pour tous les joueurs
-        for (int i = 0; i < ListeJoueurs.size(); ++i) {
-            Joueur j = ListeJoueurs.get(i);
-            Personnage p = j.getPerso();
+        Personnage p = j.getPerso();
 
-            // Ralentissement progressif après un saut
-            p.setDy(p.getDy() + 0.2);
-            p.setY(p.getY() + p.getDy());
+        // Ralentissement progressif après un saut
+        double ralentissement = 20.52 / this.height;
+        p.setDy(p.getDy() + (ralentissement * deltaTime));
+        p.setY(p.getY() + p.getDy());
 
-            // Si les piedds du perso touchent le bas de la fenêtre, on a perdu
-            if (p.getY() + 0.87 * p.getHeight() >= this.height) {
-                Vue.isRunning = false;
-            }
+        // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
+        if (p.getY() + 0.87 * p.getHeight() >= this.height) {
+            Vue.isRunning = false;
+        }
 
-            // Si la tête du personnage dépasse la moitié de l'écran
-            if (p.getY() < this.height / 2) {
-                // plus la difficulté augmente plus les plateformes sont écarté jusqu'a a
-                // certain seuil qu'on a défini préalablement
-                difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;
-                p.setY(this.height / 2);
-                j.setScore(j.getScore() + 1); // On incrémente le score de 1
-                // On descend toutes les plateforme
-                for (Plateforme pf : plateformesListe) {
-                    pf.setY(pf.getY() - (int) p.getDy());
-                    if (pf.getY() - pf.getHeight() >= this.height * 0.95) {
-                        pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
-                                + ((new Random().nextInt(11) * (new Random().nextInt(3) - 1)) * difficulty / 2));
-                    }
+        // Si la tête du personnage dépasse la moitié de l'écran
+        if (p.getY() < this.height / 2 && (((isHost && multiplayer) || !multiplayer))) {
+            // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
+            // certain seuil qu'on a défini préalablement (la moitié de la taille)
+            difficulty = (difficulty > 5) ? 5 : difficulty + 0.0006;
+            p.setY(this.height / 2);
+            j.setScore(j.getScore() + 1);
+            // On descend toutes les plateforme
+            for (Plateforme pf : plateformesListe) {
+                pf.setY(pf.getY() - (int) p.getDy());
+                if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
+                    pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
+                            + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                 }
             }
-            // On gère les collisions & les débordements du personnage
-            for (Plateforme pf : plateformesListe) {
-                p.collides_plateforme(pf);
-                if (pf instanceof MovingPlateforme)
-                    ((MovingPlateforme) pf).move(this);
-            }
-            limite(p);
         }
+        // On gère les collisions & les débordements du personnage
+        for (Plateforme pf : plateformesListe) {
+            p.collides_plateforme(pf, deltaTime);
+            if (pf instanceof MovingPlateforme)
+                ((MovingPlateforme) pf).move(this);
+        }
+        limite(p);
     }
 
     // Getter & Setter
@@ -121,6 +141,14 @@ public class Terrain {
 
     public void setPlateformesListe(ArrayList<Plateforme> plateformesListe) {
         this.plateformesListe = plateformesListe;
+    }
+
+    public ArrayList<Joueur> getListeJoueurs() {
+        return ListeJoueurs;
+    }
+
+    public void setListeJoueurs(ArrayList<Joueur> listeJoueurs) {
+        ListeJoueurs = listeJoueurs;
     }
 
     public double getHeight() {
@@ -139,19 +167,68 @@ public class Terrain {
         this.difficulty = difficulty;
     }
 
-    public ArrayList<Joueur> getListeJoueurs() {
-        return ListeJoueurs;
-    }
-
-    public void setListeJoueurs(ArrayList<Joueur> listeJoueurs) {
-        ListeJoueurs = listeJoueurs;
-    }
-
-    public int getDiff_plateformes() {
+    public double getDiff_plateformes() {
         return diff_plateformes;
     }
 
-    public void setDiff_plateformes(int diff_plateformes) {
+    public void setDiff_plateformes(double diff_plateformes) {
         this.diff_plateformes = diff_plateformes;
     }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
+    }
+
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
+
+    public void setMultiplayer(boolean multiplayer) {
+        this.multiplayer = multiplayer;
+    }
+
+    public boolean isHost() {
+        return isHost;
+    }
+
+    public void setHost(boolean isHost) {
+        this.isHost = isHost;
+    }
+
+    public Serveur getHost() {
+        return host;
+    }
+
+    public void setHost(Serveur host) {
+        this.host = host;
+    }
+
+    public JoueurConnecte getClient() {
+        return client;
+    }
+
+    public void setClient(JoueurConnecte client) {
+        this.client = client;
+    }
+
+    public int getPlayerID() {
+        return playerID;
+    }
+
+    public Joueur getMyPlayer() {
+        return this.ListeJoueurs.get(playerID);
+    }
+
+    public void setJoueurConnecte(JoueurConnecte j) {
+        client = j;
+    }
+
+    public void setJoueur(ArrayList<Joueur> l) {
+        ListeJoueurs = l;
+    }
+
 }
