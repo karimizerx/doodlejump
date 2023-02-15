@@ -1,0 +1,29 @@
+Sprint 13.02.2023 :
+
+Objectifs du sprint précédent :
+- nettoyage et refactoring du code : Mohamed & Fares [OK]
+- menu démarrer v1.2 : Mohamed & Fares [OK]
+- mode de jeu à 2 joueurs sur un pc : Fares [OK]
+- mode de jeu multijoueur en réseaux (débuté) : Fares [OK]
+- diminution du nombre de plateformes en fonction de la distance parcourue : Elyo [OK]
+- plateformes qui ne se superpose pas : Elyo [OK]
+- plateformes qui ne dépassent pas les limites de l'écran : Elyo & Mohamed [OK]
+- ajout d'un classement local + affichage v1 (terminal) : Mohamed [OK]
+- ajout des plateformes mobiles : Necerine [OK]
+- commencer le système de skin/pack de skin : Ayman [OK]
+- ajout de l'inertie du personnage : Mohamed [OK]
+- affichage du nom au dessus des perso : Mohamed [OK]
+
+Objectifs du sprint suivant :
+- changement physique : Mohamed
+  - update par secondes (ups) constant
+  - toutes les variables de déplacement, taille... dépendent de deltaTime & des dimensions de la fenêtre
+- menu démarrer v2 : Mohamed
+  -> Menu en image & dynamique
+- mode de jeu multijoueur en réseaux (finir) : Fares [OK]
+- ajouter les items et des monstres :
+  - génération & update : Elyo & Fares
+  - affichage & update : Ayman
+- Système de skin & Création de pack de skin : Ayman
+- Changement de calcul du score : Necerine
+  -> le score n'est pas un incrément de +1, mais la distance parcourue.
