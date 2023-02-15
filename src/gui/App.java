@@ -150,6 +150,7 @@ public class App extends JFrame {
             m.add(end);
             Thread t=new Thread(s);
             t.start();
+            s.commence.start();
             //TODO fix this, add la partie client du jeu.
 
         } catch (IOException e) { 
@@ -157,6 +158,7 @@ public class App extends JFrame {
             System.exit(-1);
         }  
         this.nbj=c;
+        System.out.println(c);
         return m;
     }
 
@@ -164,11 +166,12 @@ public class App extends JFrame {
         JPanel m = new JPanel();
         m.setLayout(new GridLayout(nbj+1, 0)); // +1 pour le bouton Play
         m.setPreferredSize(new Dimension(170, 50 * nbj));
-        //terminer this et la pertie client
+        //terminer this et la partie client
         this.buttonPlay=new JButton("Jouer");
         this.buttonPlay.addActionListener(e ->{
             // On crée une nouvelle fenêtre de jeu
-            s.commence();
+            s.start=true;
+            s.end=true;
             DoodleJumpheur = createDJ();
             DoodleJumpheur.setVisible(true);
             this.dispose();
@@ -205,6 +208,7 @@ public class App extends JFrame {
         m.setLayout(new GridLayout(1, 1)); // +1 pour le bouton Play
         m.setPreferredSize(new Dimension(170, 100));
         JLabel text=new JLabel("Waiting for host to start game");
+        m.add(text);
         new Thread(new Runnable() {
             public void run(){
                 boolean waiting=true;
@@ -325,9 +329,9 @@ public class App extends JFrame {
 
         end.addActionListener(e ->{
             s.end=true;
-            this.menu.setVisible(false);     
             int c=0;
             while(!(menu.getComponent(c) instanceof JTextArea)){c++;}           
+            this.menu.setVisible(false);     
             JTextArea jtxt = (JTextArea) menu.getComponent(c);
             names.add(jtxt.getText().equals("Entrez votre nom") ? "Mizer" : jtxt.getText());
             names.addAll(s.getNames());
@@ -336,7 +340,7 @@ public class App extends JFrame {
             this.add(this.menu2);
             int mpw2 = (int) this.menu.getPreferredSize().getWidth();
             int mph2 = (int) this.menu.getPreferredSize().getHeight();
-            this.menu.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
+            this.menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
         });
 
         buttonExit.addActionListener(e -> {

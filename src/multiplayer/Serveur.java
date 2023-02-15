@@ -78,6 +78,7 @@ public class Serveur implements Runnable {
             while (!end) {    
                 JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),c++);
                 clients.add(a);
+                System.out.println("Serveur.run()");
                 DataOutputStream out;
                 try{
                     out=new DataOutputStream(a.serveur.getOutputStream());
@@ -91,6 +92,8 @@ public class Serveur implements Runnable {
             System.exit(-1);
         }  
     }
+
+
 
     public ArrayList<String> getNames(){
         ArrayList<String> l=new ArrayList<String>();
@@ -106,17 +109,32 @@ public class Serveur implements Runnable {
         return l;
     }
 
-    public void commence(){
-        DataOutputStream in;
-        for(JoueurConnecte client : clients){
-            try {
-                in =  new DataOutputStream(client.serveur.getOutputStream());
-                in.writeBoolean(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            } 
+    public volatile boolean start=false;
+    
+    public Thread commence= new Thread(new Runnable() {
+            public void run(){
+                DataOutputStream in;
+                while(!start){
+                for(JoueurConnecte client : clients){
+                    try {
+                        in =  new DataOutputStream(client.serveur.getOutputStream());
+                        in.writeBoolean(start);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } 
+                }
+            }
+            for(JoueurConnecte client : clients){
+                try {
+                    in =  new DataOutputStream(client.serveur.getOutputStream());
+                    in.writeBoolean(start);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } 
+            }
         }
-    }
+        });
+    
 
 
     public Joueur getJoueur(int c){
