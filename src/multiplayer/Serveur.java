@@ -30,6 +30,7 @@ public class Serveur implements Runnable {
          * Si, apres 120 secondes, personne ne se connecte,il y a un timeout error qu'on attrape et le programme s'arrete.
          */
         serveurSocket.setSoTimeout(120000);
+        System.out.println(InetAddress.getLocalHost());
         String[] tmp={ "Le numero du port est :"+serveurSocket.getLocalPort()," le nom du serveur est :"+ InetAddress.getLocalHost()};
         return tmp;
     }

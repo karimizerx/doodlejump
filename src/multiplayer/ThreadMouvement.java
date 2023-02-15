@@ -10,17 +10,18 @@ import gameobjects.Joueur;
 import gameobjects.Terrain;
 
 public class ThreadMouvement implements Runnable {
-    Serveur serveur;
-    JoueurConnecte client;
+    // Serveur serveur;
+    // JoueurConnecte client;
     Terrain terrain;
     public ThreadMouvement(Terrain court){
         this.terrain = court;
-        this.serveur= court.host;
-        this.client=court.client;
+        // this.serveur= court.host;
+        // this.client=court.client;
     }
     public void run() {
         while(true){
             if(terrain.isHost){
+                Serveur serveur=terrain.host;
                 serveur.sendTerrain(terrain);
                 ArrayList<Joueur> list=new ArrayList<Joueur>();
                 list.add(terrain.getMyPlayer());
@@ -30,8 +31,8 @@ public class ThreadMouvement implements Runnable {
                 terrain.setJoueur(list);
                 System.out.println("ThreadMouvement.run() done");
             }else{
-                client.sendJoueur(terrain.getMyPlayer(),terrain.playerID);//le client envoi le mvt de son joueur
-                client.receiveTerrain(terrain);    
+                terrain.client.sendJoueur(terrain.getMyPlayer(),terrain.playerID);//le client envoi le mvt de son joueur
+                terrain.client.receiveTerrain(terrain);    
                 System.out.println("ThreadMouvement.run() done");
             }
         }
