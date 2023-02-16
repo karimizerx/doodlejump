@@ -179,6 +179,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 p.setInertLeft(false);
                 p.setDx(0);
             }
+            if(p.isSpace()){
+                p.tirer();
+            }
+            else{
+                p.setSpace(false);
+            }
         }
         terrain.update(dTime);
     }
@@ -345,5 +351,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
+        Personnage p=terrain.getListeJoueurs().get(0).getPerso();
+        if (e.getKeyCode()== KeyEvent.VK_SPACE){
+            p.setSpace(true);
+        }
     }
 }

@@ -107,6 +107,14 @@ public class Terrain {
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
             Vue.isRunning = false;
         }
+        for ( Projectile pro : p.getListProjectiles()){
+            pro.setY(pro.getY()+pro.getDy());
+            if(pro.limite(0)){
+                p.getListProjectiles().remove(pro);
+            }
+        }
+            
+        
 
         // Si la tête du personnage dépasse la moitié de l'écran
         if (p.getY() < this.height / 2 && (((isHost && multiplayer) || !multiplayer))) {
