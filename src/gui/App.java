@@ -151,6 +151,7 @@ public class App extends JFrame {
             Thread t=new Thread(s);
             t.start();
             s.commence.start();
+            System.out.println("App.createMenuHost() end");
             //TODO fix this, add la partie client du jeu.
 
         } catch (IOException e) { 
@@ -196,7 +197,6 @@ public class App extends JFrame {
         c=new JButton("Connectez-Vous");
         c.addActionListener(e ->{
             j.connecter(nomjoueur.getText(), serverName.getText(),Integer.parseInt(port.getText()));
-
             this.menu.setVisible(false);
             this.menu2=createWaitingMenu();
         });
@@ -222,15 +222,17 @@ public class App extends JFrame {
                         tmp=in.readBoolean();
                         waiting=tmp;
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        // e.printStackTrace();
+                        waiting=false;
                     }
                 }
+                System.out.println("DoodlePheur");
                 DoodleJumpheur = createDJ();
                 DoodleJumpheur.setVisible(true);
                 App.this.dispose();            
             }
-        }).run();
-
+        }).start();
+        System.out.println("App.createWaitingMenu()");
         return m;
     }
 
@@ -254,12 +256,14 @@ public class App extends JFrame {
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
-            String nomjoueur;
+            String nomjoueur="";
             if(!multiplayer){
                 JTextArea jtxt = (JTextArea) menu2.getComponent(i);
                 nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
             }else if(host) {nomjoueur=names.get(i);
-            ljou.add(new Joueur(p, nomjoueur));}
+            }
+            ljou.add(new Joueur(p, nomjoueur));
+            
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth(),host,multiplayer,0);
         if(multiplayer){if (host) rt.setHost(s); else rt.setJoueurConnecte(j);}

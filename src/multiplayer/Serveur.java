@@ -37,7 +37,9 @@ public class Serveur implements Runnable {
 
     public void accept(){
         try{
+            System.out.println("Serveur.accept() avant");
             clients.add(new JoueurConnecte(serveurSocket.accept(),clients.size()));
+            System.out.println("Serveur.accept() apres");
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -77,21 +79,27 @@ public class Serveur implements Runnable {
         try {  
             clients=new ArrayList<JoueurConnecte>();
             while (!end) {    
-                JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),c++);
+                System.out.println("Serveur.run() 0");
+                JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),++c);
+                System.out.println("Serveur.run() 1");
                 clients.add(a);
-                System.out.println("Serveur.run()");
-                DataOutputStream out;
-                try{
-                    out=new DataOutputStream(a.serveur.getOutputStream());
-                    out.writeInt(c);
-                }catch(IOException e){
-                    e.printStackTrace();
-                }
+                // sendInt(c, a);
             }                
             } catch (IOException e) { 
             JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
             System.exit(-1);
         }  
+    }
+
+    private void sendInt(int c, JoueurConnecte a) {
+        DataOutputStream out;
+        try{
+            System.out.println("Serveur.run() "+c);
+            out=new DataOutputStream(a.serveur.getOutputStream());
+            out.writeInt(c);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -115,16 +123,24 @@ public class Serveur implements Runnable {
     public Thread commence= new Thread(new Runnable() {
             public void run(){
                 DataOutputStream in;
+                System.out.println("Serveur.enclosing_method() before while");
                 while(!start){
+                // System.out.println("Serveur.enclosing_method() in while");
+
                 for(JoueurConnecte client : clients){
+                System.out.println("Serveur.enclosing_method() in for");
+
                     try {
                         in =  new DataOutputStream(client.serveur.getOutputStream());
+                        System.out.println("Serveur.enclosing_method() will send "+start);
                         in.writeBoolean(start);
+                        System.out.println("Serveur.enclosing_method() has sent "+start);
                     } catch (Exception e) {
                         e.printStackTrace();
                     } 
                 }
             }
+            System.out.println("Serveur.enclosing_method() after while");
             for(JoueurConnecte client : clients){
                 try {
                     in =  new DataOutputStream(client.serveur.getOutputStream());

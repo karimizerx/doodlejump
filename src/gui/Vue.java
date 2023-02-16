@@ -191,7 +191,8 @@ public class Vue extends JPanel implements Runnable, KeyListener{
         if((!terrain.multiplayer))
         p=terrain.getListeJoueurs().get(0).getPerso();
         else p=terrain.getListeJoueurs().get(terrain.playerID).getPerso();
-
+        //TODO trouver un moyen de savoir quelle joueur appartient a quelle machine
+        // maybe use callable ? https://gkemayo.developpez.com/tutoriels/java/introduction-java-8-concurrency/
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 p.isRight = true;
             }

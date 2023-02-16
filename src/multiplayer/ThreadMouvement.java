@@ -31,7 +31,7 @@ public class ThreadMouvement implements Runnable {
                 terrain.setJoueur(list);
                 System.out.println("ThreadMouvement.run() done");
             }else{
-                terrain.client.sendJoueur(terrain.getMyPlayer(),terrain.playerID);//le client envoi le mvt de son joueur
+                terrain.client.sendJoueur(terrain.getMyPlayer());//le client envoi le mvt de son joueur
                 terrain.client.receiveTerrain(terrain);    
                 System.out.println("ThreadMouvement.run() done");
             }

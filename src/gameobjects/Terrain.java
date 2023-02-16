@@ -27,7 +27,8 @@ public class Terrain{
     public boolean isHost;
     public Serveur host=null;
     public JoueurConnecte client=null;
-    public final int playerID;// si cest zero; il est host ou il est pas multijoueur
+    // public final int playerID;
+    // si cest zero; il est host ou il est pas multijoueur
     
 
     private final double height, width;// dimensions du terrain
@@ -47,7 +48,6 @@ public class Terrain{
         this.width = width;
         this.multiplayer=multiplayer;
         this.isHost =host;
-        playerID=id;
         generateObstacles();
         // if(this.multiplayer){
         //     if(isHost){ 
@@ -202,7 +202,7 @@ public class Terrain{
     }
 
     public Joueur getMyPlayer(){
-        return this.ListeJoueurs.get(playerID);
+        return this.ListeJoueurs.get(0);
     }
     public void setHost(Serveur host) {
         this.host = host;
