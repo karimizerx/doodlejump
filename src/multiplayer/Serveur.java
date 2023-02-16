@@ -67,7 +67,7 @@ public class Serveur implements Runnable {
         }
     }
 
-    protected void fermerLeServeur()throws IOException{
+    public void fermerLeServeur()throws IOException{
         serveurSocket.close();
     }
 
@@ -122,7 +122,7 @@ public class Serveur implements Runnable {
     
     public Thread commence= new Thread(new Runnable() {
             public void run(){
-                DataOutputStream in;
+                DataOutputStream out;
                 System.out.println("Serveur.enclosing_method() before while");
                 while(!start){
                 // System.out.println("Serveur.enclosing_method() in while");
@@ -131,9 +131,9 @@ public class Serveur implements Runnable {
                 System.out.println("Serveur.enclosing_method() in for");
 
                     try {
-                        in =  new DataOutputStream(client.serveur.getOutputStream());
+                        out =  new DataOutputStream(client.serveur.getOutputStream());
                         System.out.println("Serveur.enclosing_method() will send "+start);
-                        in.writeBoolean(start);
+                        out.writeBoolean(start);
                         System.out.println("Serveur.enclosing_method() has sent "+start);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -143,13 +143,15 @@ public class Serveur implements Runnable {
             System.out.println("Serveur.enclosing_method() after while");
             for(JoueurConnecte client : clients){
                 try {
-                    in =  new DataOutputStream(client.serveur.getOutputStream());
-                    in.writeBoolean(start);
+                    out =  new DataOutputStream(client.serveur.getOutputStream());
+                    out.writeBoolean(start);
+                    out.writeInt(clients.indexOf(client));
                 } catch (Exception e) {
                     e.printStackTrace();
                 } 
             }
         }
+        
         });
     
 

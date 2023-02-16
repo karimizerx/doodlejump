@@ -41,6 +41,8 @@ public class Terrain{
      */
     private double difficulty = 1.0;
 
+    public int playerID;
+
     public Terrain(ArrayList<Joueur> ljoueur, double height, double width,boolean host,boolean multiplayer,int id) {
         this.plateformesListe = new ArrayList<Plateforme>();
         ListeJoueurs=ljoueur;
@@ -202,7 +204,7 @@ public class Terrain{
     }
 
     public Joueur getMyPlayer(){
-        return this.ListeJoueurs.get(0);
+        return this.ListeJoueurs.get(playerID);
     }
     public void setHost(Serveur host) {
         this.host = host;

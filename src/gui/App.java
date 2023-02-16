@@ -210,28 +210,7 @@ public class App extends JFrame {
         m.setPreferredSize(new Dimension(170, 100));
         JLabel text=new JLabel("Waiting for host to start game");
         m.add(text);
-        new Thread(new Runnable() {
-            public volatile boolean waiting=true;
-            public void run(){
-                while(waiting){
-                    System.out.println("App.createWaitingMenu().new Runnable() {...}.run()");
-                    DataInputStream in;
-                    boolean tmp=true;
-                    try {
-                        in=new DataInputStream(j.getServeur().getInputStream());
-                        tmp=in.readBoolean();
-                        waiting=tmp;
-                    } catch (Exception e) {
-                        // e.printStackTrace();
-                        waiting=false;
-                    }
-                }
-                System.out.println("DoodlePheur");
-                DoodleJumpheur = createDJ();
-                DoodleJumpheur.setVisible(true);
-                App.this.dispose();            
-            }
-        }).start();
+        t.start();
         System.out.println("App.createWaitingMenu()");
         return m;
     }
@@ -260,9 +239,9 @@ public class App extends JFrame {
             if(!multiplayer){
                 JTextArea jtxt = (JTextArea) menu2.getComponent(i);
                 nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
-            }else if(host) {nomjoueur=names.get(i);
-            }
+            }else if(host) nomjoueur=names.get(i);
             ljou.add(new Joueur(p, nomjoueur));
+            System.out.println(nomjoueur);
             
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth(),host,multiplayer,0);
@@ -386,4 +365,35 @@ public class App extends JFrame {
         });
 
     }
+
+
+    Thread t=new Thread(new Runnable() {
+        public volatile boolean waiting=true;
+        public void run(){
+            
+            while(waiting){
+                System.out.println("App.createWaitingMenu().new Runnable() {...}.run()");
+                DataInputStream in;
+                boolean tmp=true;
+                try {
+                    in=new DataInputStream(j.getServeur().getInputStream());
+                    tmp=in.readBoolean();
+                    waiting=tmp;
+                } catch (Exception e) {
+                    // e.printStackTrace();
+                    waiting=false;
+                }
+            }
+            try{
+                DataInputStream in=new DataInputStream(j.getServeur().getInputStream());
+                j.id=in.readInt();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            System.out.println("DoodlePheur");
+            DoodleJumpheur = createDJ();
+            DoodleJumpheur.setVisible(true);
+            App.this.dispose();            
+        }
+    });
 }

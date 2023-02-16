@@ -12,8 +12,8 @@ import gameobjects.Terrain;
 public class JoueurConnecte {
     
     Socket serveur; // Socket qui sera initialisé avec ServerName et port 
-    int id;
-    String name="";
+    public int id;
+    public String name="";
     public JoueurConnecte(){
         this.serveur=null;
     }
@@ -45,22 +45,6 @@ public class JoueurConnecte {
         System.out.println("JoueurConnecte.connecter()");
     }
 
-    private void getId() {
-        DataInputStream in;
-        try{
-            in=new DataInputStream(serveur.getInputStream());
-            id=in.readInt();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
-
-
-
-
     /**
      * @return tableau qui contient l'etat de la partie, la position de la raquette du host, coordonnées de la balle.
      */
@@ -77,7 +61,7 @@ public class JoueurConnecte {
             c.printStackTrace();
             System.out.println("classe perdu");
         } catch (IOException e) {
-            System.out.println("bug2");
+            System.out.println("JoueurConnecte.receiveTerrain() catch, am I connected: "+serveur.isConnected());
             e.printStackTrace();
             // System.exit(-1);
         }
@@ -89,7 +73,7 @@ public class JoueurConnecte {
         return serveur;
     }
 
-    protected void deconnecter() throws IOException{
+    public void deconnecter() throws IOException{
         serveur.close();
     }
 
@@ -97,11 +81,11 @@ public class JoueurConnecte {
         try{
             ObjectOutputStream output= new ObjectOutputStream(serveur.getOutputStream()) ;
             output.writeObject(joueurB);
-            // output.writeObject(ID);;
-            System.out.println("JoueurConnecte.sendJoueurB() reussi");
+            output.writeObject(id);
+            System.out.println("JoueurConnecte.sendJoueur() reussi");
             }catch(IOException e){
-                e.printStackTrace();
-                System.out.println("JoueurConnecte.sendJoueurB() echoue");
+                // e.printStackTrace();
+                System.out.println("JoueurConnecte.sendJoueur() echoue");
             }
     }
 
@@ -114,6 +98,7 @@ public class JoueurConnecte {
             e.printStackTrace();
         }
     }
+
 
 
     

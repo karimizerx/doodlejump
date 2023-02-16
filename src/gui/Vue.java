@@ -141,8 +141,9 @@ public class Vue extends JPanel implements Runnable, KeyListener{
             // Le composant doit être afficheable (OK grâce à addNotify())
             this.requestFocusInWindow();
             init(); // Initialisation des images
+            Thread t=new Thread();
             if(terrain.multiplayer){
-                Thread t=new Thread(new ThreadMouvement(terrain));
+                t=new Thread(new ThreadMouvement(terrain));
                 t.start();
             }
             while (isRunning) { // Tant que le jeu tourne
@@ -159,6 +160,11 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                     Classement c = new Classement();
                     c.ajoutClassement(j.getNom(), score);
                     c.afficherClassement();
+                }
+                if(terrain.multiplayer) {
+                    t.interrupt();
+                    if(terrain.isHost)terrain.getHost().fermerLeServeur();
+                    else terrain.client.deconnecter();
                 }
                 this.removeAll(); // On retire tout
                 this.repaint(); // On met à jour l'affichage
