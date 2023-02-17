@@ -146,18 +146,16 @@ public class App extends JFrame {
         });
 
         button2joueur.addActionListener(e -> {
-            /*
-             * FARES C'EST POUR TOI
-             * this.nbj = 2;
-             * menu.setVisible(false);
-             * this.menu2 = createMenu2();
-             * menu2.add(buttonPlay);
-             * this.add(this.menu2);
-             * int mpw2 = (int) menu2.getPreferredSize().getWidth();
-             * int mph2 = (int) menu2.getPreferredSize().getHeight();
-             * menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) -
-             * mph2, mpw2, mph2);
-             */
+             this.nbj = 2;
+             menu.setVisible(false);
+             this.menu2 = createMenu2();
+             menu2.add(buttonPlay);
+             this.add(this.menu2);
+             int mpw2 = (int) menu2.getPreferredSize().getWidth();
+             int mph2 = (int) menu2.getPreferredSize().getHeight();
+             menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) -
+             mph2, mpw2, mph2);
+             
         });
 
         buttonExit.addActionListener(e -> {
