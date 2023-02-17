@@ -7,7 +7,7 @@ public class Personnage extends GameObject {
 
     private double dx, dy; // Vitesse en x et en y
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
-    private boolean isRight, isInertRight, isLeft, isInertLeft, isSpace;
+    private boolean isRight, isInertRight, isLeft, isInertLeft, isSpace, tirPossible;
     private ArrayList<Projectile> listProjectiles;
 
     public Personnage(double x, double y, double w, double h, double dy) {
@@ -19,6 +19,7 @@ public class Personnage extends GameObject {
         this.isInertRight = false;
         this.isInertLeft = false;
         this.isSpace=false;
+        this.tirPossible=true;
         listProjectiles=new ArrayList<Projectile>();
     }
 
@@ -67,7 +68,7 @@ public class Personnage extends GameObject {
     }
 
     public void tirer(){
-        listProjectiles.add(new Projectile(this.getX()*0.5, this.getY()*0.5, 20, 20, 0, -2));
+        listProjectiles.add(new Projectile(this.getX()+this.getWidth()/2, this.getY(), 40, 40, 0, -8));
     }
 
     /*
@@ -154,5 +155,13 @@ public class Personnage extends GameObject {
 
     public void setListProjectiles(ArrayList<Projectile> listProjectiles) {
         this.listProjectiles = listProjectiles;
+    }
+
+    public boolean isTirPossible() {
+        return tirPossible;
+    }
+
+    public void setTirPossible(boolean tirPossible) {
+        this.tirPossible = tirPossible;
     }
 }

@@ -107,7 +107,8 @@ public class Terrain {
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
             Vue.isRunning = false;
         }
-        for ( Projectile pro : p.getListProjectiles()){
+        for (int i = 0; i<p.getListProjectiles().size(); ++i){
+            Projectile pro=p.getListProjectiles().get(i);
             pro.setY(pro.getY()+pro.getDy());
             if(pro.limite(0)){
                 p.getListProjectiles().remove(pro);
