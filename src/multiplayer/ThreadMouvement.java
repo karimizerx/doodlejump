@@ -18,24 +18,30 @@ public class ThreadMouvement implements Runnable {
         // this.serveur= court.host;
         // this.client=court.client;
     }
+    public volatile boolean running=true;
     public void run() {
-        while(true){
+        while(running){
             if(terrain.isHost){
                 Serveur serveur=terrain.host;
                 serveur.sendTerrain(terrain);
-                ArrayList<Joueur> list=new ArrayList<Joueur>();
-                list.add(terrain.getMyPlayer());
-                for(int i=1;i<terrain.getListeJoueurs().size();i++){
-                    list.add(serveur.getJoueur(i));
-                }//recevoir ce que le mvt des clients
-                terrain.setJoueur(list);
-                // System.out.println("ThreadMouvement.run() done");
+                getPlayers(serveur);
+                System.out.println("ThreadMouvement.run() done");
             }else{
                 terrain.client.sendJoueur(terrain.getMyPlayer());//le client envoi le mvt de son joueur
                 terrain.client.receiveTerrain(terrain);    
                 // System.out.println("ThreadMouvement.run() done");
             }
         }
+    }
+
+
+    private void getPlayers(Serveur serveur) {
+        ArrayList<Joueur> list=new ArrayList<Joueur>();
+        list.add(terrain.getMyPlayer());
+        for(int i=1;i<terrain.getListeJoueurs().size();i++){
+            list.add(terrain.getHost().getJoueur(i));
+        }
+        terrain.setJoueur(list);
     }
     
 }

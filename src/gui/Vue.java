@@ -162,7 +162,7 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                     c.afficherClassement();
                 }
                 if(terrain.multiplayer) {
-                    t.interrupt();
+                    threadMvt.running=false;
                     if(terrain.isHost)terrain.getHost().fermerLeServeur();
                     else terrain.client.deconnecter();
                 }

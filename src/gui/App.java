@@ -152,7 +152,7 @@ public class App extends JFrame {
             t.start();
             s.commence.start();
             System.out.println("App.createMenuHost() end");
-            //TODO fix this, add la partie client du jeu.
+            //TODO fix this
 
         } catch (IOException e) { 
             JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
@@ -209,6 +209,7 @@ public class App extends JFrame {
         m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
         m.setPreferredSize(new Dimension(170, 100));
         JLabel text=new JLabel("Waiting for host to start game");
+        System.out.println(text.getText());
         m.add(text);
         t.start();
         System.out.println("App.createWaitingMenu()");
@@ -234,6 +235,7 @@ public class App extends JFrame {
         // Initialisation des éléments
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
+            System.out.println("App.createDJ() boucle i="+nbj);
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
             String nomjoueur="";
             if(!multiplayer){
@@ -242,10 +244,9 @@ public class App extends JFrame {
             }else if(host) nomjoueur=names.get(i);
             ljou.add(new Joueur(p, nomjoueur));
             System.out.println(nomjoueur);
-            
         }
         Terrain rt = new Terrain(ljou, DJ.getHeight(), DJ.getWidth(),host,multiplayer,0);
-        if(multiplayer){if (host) rt.setHost(s); else rt.setJoueurConnecte(j);}
+        if(multiplayer){if (host) {rt.setHost(s);rt.playerID=0;} else {rt.setJoueurConnecte(j);rt.playerID=j.id;}}
 
         // Ajout des éléments à la fenêtre
         DJ.add(new Vue(rt));

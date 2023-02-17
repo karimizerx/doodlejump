@@ -58,11 +58,11 @@ public class JoueurConnecte {
             terrain.isMenu=(boolean)in.readObject();
             terrain.pause=(boolean)in.readObject();
         }catch (ClassNotFoundException c){
-            c.printStackTrace();
+            // c.printStackTrace();
             System.out.println("classe perdu");
         } catch (IOException e) {
             System.out.println("JoueurConnecte.receiveTerrain() catch, am I connected: "+serveur.isConnected());
-            e.printStackTrace();
+            // e.printStackTrace();
             // System.exit(-1);
         }
     }
