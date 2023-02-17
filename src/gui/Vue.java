@@ -20,7 +20,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
     private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
-    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView, projectileView;
+    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView,
+            projectileView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
     private Terrain terrain;
@@ -119,7 +120,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                         scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
 
                     } catch (Exception e) {
-                        scoreView = ImageIO.read(new File("src/gui/images/packTux/chiffres/ch" + score.charAt(i) + ".png"));
+                        scoreView = ImageIO
+                                .read(new File("src/gui/images/packTux/chiffres/ch" + score.charAt(i) + ".png"));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -139,11 +141,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 g2.drawImage(jImData.get(j), (int) (p.getX() - c + (15 * (j - 1))), (int) p.getY() - 15, 15, 15, null);
             }
         }
-        for (Joueur j : terrain.getListeJoueurs() ) {
-            Personnage pers=j.getPerso();
-            for (Projectile pro : pers.getListProjectiles()){
-                g2.drawImage(projectileView,(int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(), (int) pro.getHeight(), null);
-                //pers.setSpace(false);
+        for (Joueur j : terrain.getListeJoueurs()) {
+            Personnage pers = j.getPerso();
+            for (Projectile pro : pers.getListProjectiles()) {
+                g2.drawImage(projectileView, (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
+                        (int) pro.getHeight(), null);
+                // pers.setSpace(false);
             }
         }
 
@@ -188,11 +191,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 p.setInertLeft(false);
                 p.setDx(0);
             }
-            if(p.isSpace() && p.isTirPossible()){
+            if (p.isSpace() && p.isTirPossible()) { // Si on tire, on ne tire plus
                 p.tirer();
-            }
-            else{
-                p.setSpace(false);
             }
         }
         terrain.update(dTime);
@@ -308,13 +308,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             p1.setRight(true);
             p1.setInertRight(false);
         }
-         if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()){
-            p1.setSpace(true);
-            System.out.println("type 22 : "+terrain.getListeJoueurs().get(0).getPerso().isSpace());
-            for (int i=0 ; i)
-            p1.setTirPossible(false);;
-        } 
-
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()) { // Si on a le droit de tirer et qu'on tire
+            // On a pas le droit de re-tirer
+            // On indique qu'on vient de tirer
+        }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             p1.setLeft(true);
             p1.setInertLeft(false);
@@ -345,13 +342,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         else
             p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
 
-        if (e.getKeyChar()=='b'){
-            p1.setSpace(false);
-            System.out.println("relache : "+p1.isSpace());
-        }
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             p1.setRight(false);
             p1.setInertRight(true);
+        }
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) { // Dès qu'on lâche, on a de nouveau le droit de tirer.
+            // On oblige donc le joueur à lâcher pour tirer
         }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             p1.setLeft(false);
