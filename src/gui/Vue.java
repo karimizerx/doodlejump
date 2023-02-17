@@ -19,7 +19,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private String chemin = (new File("gui/images/packTux/")).getAbsolutePath();
+    private String chemin = (new File("gui/images/packMizer/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
