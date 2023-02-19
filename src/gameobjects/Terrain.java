@@ -60,7 +60,7 @@ public class Terrain {
                 plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
 
         }
-        // On s'assure d'aboird toujours une solution au début
+        // On s'assure d'abord toujours une solution au début
     }
 
     // Renvoie la plateforme la plus haute sur le terrain
@@ -100,7 +100,6 @@ public class Terrain {
         Personnage p = j.getPerso();
 
         // Ralentissement progressif après un saut
-        // double ralentissement = 20.52 / this.height;
         double ralentissement = 0.0000194942 * this.height;
         p.setDy(p.getDy() + (ralentissement * deltaTime));
         p.setY(p.getY() + p.getDy());

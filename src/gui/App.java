@@ -248,7 +248,7 @@ public class App extends JFrame {
         for (int i = 0; i < nbj; ++i) {
             // L'image du perso doit être un carré. On prend la valeure la plus petite
             double z = ((frameh * 0.09746) > (framew * 0.15625)) ? (framew * 0.15625) : (frameh * 0.09746);
-            Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - z, z, z, -(10260 / frameh));
+            Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - z, z, z, -(frameh * 0.0097465887));
             String nomjoueur;
             if (!multiplayer) {
                 JTextArea jtxt = (JTextArea) menu2.getComponent(i);
