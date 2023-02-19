@@ -19,7 +19,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private String chemin = (new File("gui/images/packMizer/")).getAbsolutePath();
+    private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
@@ -49,7 +49,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 terrainView = ImageIO.read(new File(chemin + "/background/background1.png"));
                 platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground.png"));
+                scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground1.png"));
 
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
                     Joueur joueur = terrain.getListeJoueurs().get(i);

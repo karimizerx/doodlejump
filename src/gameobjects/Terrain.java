@@ -45,8 +45,9 @@ public class Terrain {
 
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     private void generateObstacles() {
+        System.out.println((this.height * 0.0009746589));
         // Taille des plateformes en fonction de la taille de la fenêtre
-        double w = 38400 / this.width, h = 20520 / this.height;
+        double w = this.width * 0.09375, h = 0.0194931774 * this.height;
         // Génère des plateformes à coord aléatoires pour la liste des plateformes
         for (int i = (int) height; i > 0; i -= diff_plateformes) {
             // On définit la largeur/hauteur des plateformes de base
@@ -56,7 +57,7 @@ public class Terrain {
             if (c < 0.1) { // Le saut sur les plateformes mobiles est + avantageux
                 plateformesListe.add(new MovingPlateforme(x, y, w, h, -(1231.2 / this.height), (1280 / this.width)));
             } else
-                plateformesListe.add(new PlateformeBase(x, y, w, h, -(1026 / this.height)));
+                plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
 
         }
         // On s'assure d'aboird toujours une solution au début
@@ -84,6 +85,7 @@ public class Terrain {
             p.setX(-(p.getWidth() * 0.43));
     }
 
+    // Mises à jour du jeu.
     public void update(double deltaTime) {
         if ((isHost && multiplayer))
             update(ListeJoueurs.get(0), deltaTime);
@@ -93,13 +95,13 @@ public class Terrain {
         }
     }
 
-    // Mise à jour du jeu.
     private void update(Joueur j, double deltaTime) {
         // On effectue une mise à jour pour tous les joueurs
         Personnage p = j.getPerso();
 
         // Ralentissement progressif après un saut
-        double ralentissement = 20.52 / this.height;
+        // double ralentissement = 20.52 / this.height;
+        double ralentissement = 0.0000194942* this.height;
         p.setDy(p.getDy() + (ralentissement * deltaTime));
         p.setY(p.getY() + p.getDy());
 

@@ -247,7 +247,7 @@ public class App extends JFrame {
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
             // L'image du perso doit être un carré. On prend la valeure la plus petite
-            int z = ((102600 / frameh) >= (64000 / framew)) ? (64000 / framew) : (102600 / frameh);
+            double z = ((frameh * 0.09746) > (framew * 0.15625)) ? (framew * 0.15625) : (frameh * 0.09746);
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - z, z, z, -(10260 / frameh));
             String nomjoueur;
             if (!multiplayer) {
