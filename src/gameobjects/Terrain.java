@@ -45,7 +45,6 @@ public class Terrain {
 
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     private void generateObstacles() {
-        System.out.println((this.height * 0.0009746589));
         // Taille des plateformes en fonction de la taille de la fenêtre
         double w = this.width * 0.09375, h = 0.0194931774 * this.height;
         // Génère des plateformes à coord aléatoires pour la liste des plateformes
@@ -55,7 +54,8 @@ public class Terrain {
             int y = i;
             double c = new Random().nextDouble();
             if (c < 0.1) { // Le saut sur les plateformes mobiles est + avantageux
-                plateformesListe.add(new MovingPlateforme(x, y, w, h, -(1231.2 / this.height), (1280 / this.width)));
+                plateformesListe
+                        .add(new MovingPlateforme(x, y, w, h, -(this.height * 0.0013645224), (0.003125 * this.width)));
             } else
                 plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
 
@@ -101,7 +101,7 @@ public class Terrain {
 
         // Ralentissement progressif après un saut
         // double ralentissement = 20.52 / this.height;
-        double ralentissement = 0.0000194942* this.height;
+        double ralentissement = 0.0000194942 * this.height;
         p.setDy(p.getDy() + (ralentissement * deltaTime));
         p.setY(p.getY() + p.getDy());
 

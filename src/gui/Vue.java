@@ -111,19 +111,22 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Affichage du Score : seulement s'il n'y a qu'un joueur
         if (terrain.getListeJoueurs().size() == 1) {
             String score = String.valueOf(terrain.getListeJoueurs().get(0).getScore());
-            g2.drawImage(scoreBackgroundView, 2, 2, 60 + (30 * (score.length() - 1)), 55, null);
+            int sw = (int) (terrain.getWidth() * 0.09375), sh = (int) (terrain.getHeight() * 0.0536062378);
+            g2.drawImage(scoreBackgroundView, 2, 2, sw + (sw / 2 * (score.length() - 1)), sh, null);
             for (int i = 0; i < score.length(); ++i) {
                 try {
                     try {
                         scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
 
                     } catch (Exception e) {
-                        scoreView = ImageIO.read(new File("src/gui/images/packTux/chiffres/ch" + score.charAt(i) + ".png"));
+                        scoreView = ImageIO
+                                .read(new File("src/gui/images/packTux/chiffres/ch" + score.charAt(i) + ".png"));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                g2.drawImage(scoreView, 5 + (25 * i), 5, 50, 50, null);
+                int x = (int) (terrain.getWidth() * 0.0078125); // Variable pour adapter en fonction de la résolution
+                g2.drawImage(scoreView, x + (5 * x * i), 5, x * 10, x * 10, null);
             }
         }
 
@@ -162,17 +165,19 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             Personnage p = j.getPerso();
             // Gère les boutons flèches, avec inertie
             // Dans qu'on appuie, on set la vitesse à ± 4, et on avance de cette distance
+            double vitesse = 0.0078125 * terrain.getWidth();
+            double ralentissement = 0.000375 * terrain.getWidth();
             if (p.isRight()) {
-                p.setDx(+5);
+                p.setDx(+vitesse);
                 p.setX(p.getX() + p.getDx());
             } else if (p.isLeft()) {
-                p.setDx(-5);
+                p.setDx(-vitesse);
                 p.setX(p.getX() + p.getDx());
             } else if (p.isInertRight() && p.getDx() > 0) { // Si on arrête d'appuyer,
-                p.setDx(p.getDx() - 0.24); // la vitesse ralentie petit à petit jusqu'à devenir nulle
+                p.setDx(p.getDx() - ralentissement); // la vitesse ralentie petit à petit jusqu'à devenir nulle
                 p.setX(p.getX() + p.getDx());
             } else if (p.isInertLeft() && p.getDx() < 0) {
-                p.setDx(p.getDx() + 0.24);
+                p.setDx(p.getDx() + ralentissement);
                 p.setX(p.getX() + p.getDx());
             } else {
                 p.setInertRight(false);
