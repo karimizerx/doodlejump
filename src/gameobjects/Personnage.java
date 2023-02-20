@@ -18,9 +18,9 @@ public class Personnage extends GameObject {
         this.isLeft = false;
         this.isInertRight = false;
         this.isInertLeft = false;
-        this.isSpace=false;
-        this.tirPossible=true;
-        listProjectiles=new ArrayList<Projectile>();
+        this.isSpace = false;
+        this.tirPossible = true;
+        listProjectiles = new ArrayList<Projectile>();
     }
 
     // Méthodes de la classe
@@ -67,8 +67,8 @@ public class Personnage extends GameObject {
 
     }
 
-    public void tirer(){
-        listProjectiles.add(new Projectile(this.getX()+this.getWidth()*0.43, this.getY(), 30, 30, 0, -10));
+    public void tirer() {
+        listProjectiles.add(new Projectile(this.getX() + this.getWidth() * 0.43, this.getY(), 30, 30, 0, -10));
     }
 
     /*
@@ -91,8 +91,6 @@ public class Personnage extends GameObject {
 
     // Getter & Setter
 
-
-    
     public double getDy() {
         return dy;
     }

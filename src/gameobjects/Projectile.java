@@ -1,22 +1,22 @@
 package gameobjects;
 
-public class Projectile extends GameObject{
+public class Projectile extends GameObject {
 
     private double dx;
     private double dy;
 
-    public Projectile(double x, double y, double w, double h, double dx, double dy ) {
+    public Projectile(double x, double y, double w, double h, double dx, double dy) {
         super(x, y, w, h);
-        this.dx=dx;
-        this.dy=dy;
+        this.dx = dx;
+        this.dy = dy;
     }
 
-    public void collides_monster(){
-        return;   
+    public void collides_monster() {
+        return;
     }
 
-    public boolean limite(){
-        return this.getY()-this.getHeight()/2<=0;
+    public boolean limite() {
+        return this.getY() - this.getHeight() / 2 <= 0;
     }
 
     public double getDx() {
@@ -35,6 +35,4 @@ public class Projectile extends GameObject{
         this.dy = dy;
     }
 
-
 }
-
