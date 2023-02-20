@@ -19,7 +19,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
+    private String chemin = (new File("gui/images/packTux/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView,
             projectileView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
@@ -196,7 +196,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 p.setDx(0);
             }
             if (p.isSpace() && p.isTirPossible()) { // Si on tire, on ne tire plus
-                p.tirer();
+                p.tirer(0.046875 * terrain.getWidth(), 0.02923397661 * terrain.getHeight(), 0, -deltaTime);
                 p.setSpace(false);
             }
         }
