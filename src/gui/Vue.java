@@ -193,6 +193,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             }
             if (p.isSpace() && p.isTirPossible()) { // Si on tire, on ne tire plus
                 p.tirer();
+                p.setSpace(false);
             }
         }
         terrain.update(dTime);
@@ -308,8 +309,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             p1.setRight(true);
             p1.setInertRight(false);
         }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()) { // Si on a le droit de tirer et qu'on tire
-            // On a pas le droit de re-tirer
+        if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()) {
+            p1.setSpace(true);// Si on a le droit de tirer et qu'on tire
+            p1.setTirPossible(false);// On a pas le droit de re-tirer
             // On indique qu'on vient de tirer
         }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
@@ -346,7 +348,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             p1.setRight(false);
             p1.setInertRight(true);
         }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) { // Dès qu'on lâche, on a de nouveau le droit de tirer.
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+            p1.setTirPossible(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
             // On oblige donc le joueur à lâcher pour tirer
         }
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {

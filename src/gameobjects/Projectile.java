@@ -16,7 +16,7 @@ public class Projectile extends GameObject{
     }
 
     public boolean limite(double y){
-        return this.getY()<=y;
+        return this.getY()-this.getHeight()/2<=y;
     }
 
     public double getDx() {
