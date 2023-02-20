@@ -110,7 +110,7 @@ public class Terrain {
         for (int i = 0; i<p.getListProjectiles().size(); ++i){
             Projectile pro=p.getListProjectiles().get(i);
             pro.setY(pro.getY()+pro.getDy());
-            if(pro.limite(0)){
+            if(pro.limite()){
                 p.getListProjectiles().remove(pro);
             }
         }
