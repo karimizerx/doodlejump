@@ -68,7 +68,7 @@ public class Personnage extends GameObject {
     }
 
     public void tirer(){
-        listProjectiles.add(new Projectile(this.getX()+this.getWidth()*0.43, this.getY(), 700, 700, 0, -8));
+        listProjectiles.add(new Projectile(this.getX()+this.getWidth()*0.43, this.getY(), 30, 30, 0, -8));
     }
 
     /*
