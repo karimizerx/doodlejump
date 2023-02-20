@@ -1,11 +1,14 @@
 package gameobjects;
 
+import java.util.ArrayList;
+
 // Le personnage est un objet avec vitesse.
 public class Personnage extends GameObject {
 
     private double dx, dy; // Vitesse en x et en y
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
-    private boolean isRight, isInertRight, isLeft, isInertLeft;
+    private boolean isRight, isInertRight, isLeft, isInertLeft, isSpace, tirPossible;
+    private ArrayList<Projectile> listProjectiles;
 
     public Personnage(double x, double y, double w, double h, double dy) {
         super(x, y, w, h);
@@ -15,6 +18,9 @@ public class Personnage extends GameObject {
         this.isLeft = false;
         this.isInertRight = false;
         this.isInertLeft = false;
+        this.isSpace = false;
+        this.tirPossible = true;
+        listProjectiles = new ArrayList<Projectile>();
     }
 
     // Méthodes de la classe
@@ -59,6 +65,10 @@ public class Personnage extends GameObject {
             }
         }
 
+    }
+
+    public void tirer() {
+        listProjectiles.add(new Projectile(this.getX() + this.getWidth() * 0.43, this.getY(), 30, 30, 0, -10));
     }
 
     /*
@@ -127,5 +137,29 @@ public class Personnage extends GameObject {
 
     public void setInertLeft(boolean isInertLeft) {
         this.isInertLeft = isInertLeft;
+    }
+
+    public boolean isSpace() {
+        return isSpace;
+    }
+
+    public void setSpace(boolean isSpace) {
+        this.isSpace = isSpace;
+    }
+
+    public ArrayList<Projectile> getListProjectiles() {
+        return listProjectiles;
+    }
+
+    public void setListProjectiles(ArrayList<Projectile> listProjectiles) {
+        this.listProjectiles = listProjectiles;
+    }
+
+    public boolean isTirPossible() {
+        return tirPossible;
+    }
+
+    public void setTirPossible(boolean tirPossible) {
+        this.tirPossible = tirPossible;
     }
 }
