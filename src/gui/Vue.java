@@ -373,6 +373,18 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             p1.setTirPossible(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
             // On oblige donc le joueur à lâcher pour tirer
         }
+        if(e.getKeyCode() == KeyEvent.VK_T){
+            
+            try {
+                projectileView = ImageIO.read(new File("gui/images/packTux/projectile.png"));
+                terrainView = ImageIO.read(new File("gui/images/packTux/background/background1.png"));
+                platformeBaseView = ImageIO.read(new File("gui/images/packTux/plateformes/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File("gui/images/packTux/plateformes/plateformeMobile.png"));
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+        }
     }
 
     @Override
