@@ -375,29 +375,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // On oblige donc le joueur à lâcher pour tirer
         }
         if(e.getKeyCode() == KeyEvent.VK_T){
-            
-            try {
                 if(!tux){
-                projectileView = ImageIO.read(new File("gui/images/packTux/projectile.png"));
-                terrainView = ImageIO.read(new File("gui/images/packTux/background/background1.png"));
-                platformeBaseView = ImageIO.read(new File("gui/images/packTux/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File("gui/images/packTux/plateformes/plateformeMobile.png"));
-                viewList.get(0).set(0, ImageIO.read(new File("gui/images/packTux/personnages/persoBase.png")));
-                tux = !tux;
-                }
-                else{
-                    terrainView = ImageIO.read(new File(chemin + "/background/background1.png"));
-                    platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
-                    platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
-                    scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground1.png"));
-                    projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
-                    viewList.get(0).set(0, ImageIO.read(new File(chemin + "/personnages/persoBase.png")));
+                    chemin = (new File("gui/images/packTux/")).getAbsolutePath();
                     tux = !tux;
                 }
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-            }
+                else{
+                    chemin = (new File("gui/images/packBase/")).getAbsolutePath();
+                    tux = !tux;
+                }     
         }
     }
 
