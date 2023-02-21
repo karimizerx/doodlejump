@@ -19,7 +19,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isRunning;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private String chemin = (new File("gui/images/packTux/")).getAbsolutePath();
+    private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
     private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView,
             projectileView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
@@ -74,7 +74,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 platformeBaseView = ImageIO.read(new File("src/gui/images/packBase/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO
                         .read(new File("src/gui/images/packBase/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File("src/gui/images/packBase/background/scoreBackground.png"));
+                scoreBackgroundView = ImageIO.read(new File("src/gui/images/packBase/background/scoreBackground1.png"));
+                projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
 
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
                     Joueur joueur = terrain.getListeJoueurs().get(i);
@@ -86,8 +87,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     viewListAux.add(ImageIO.read(new File("src/gui/images/packBase/personnages/persoBase.png")));
                     // Les autres contiennent les lettres du nom du joueur
                     for (int j = 0; j < nom.length(); ++j) {
+                        char c = (nom.charAt(j) == ' ') ? '0' : nom.charAt(j);
                         BufferedImage lv = ImageIO
-                                .read(new File("src/gui/images/packBase/lettres/lettre" + nom.charAt(j) + ".png"));
+                                .read(new File("src/gui/images/packBase/lettres/lettre" + c + ".png"));
                         viewListAux.add(lv);
                     }
                     viewList.add(viewListAux);
@@ -122,7 +124,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
                     } catch (Exception e) {
                         scoreView = ImageIO
-                                .read(new File("src/gui/images/packTux/chiffres/ch" + score.charAt(i) + ".png"));
+                                .read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
