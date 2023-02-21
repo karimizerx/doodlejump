@@ -133,7 +133,7 @@ public class Terrain {
                 if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
-                    pf.setX(new Random().nextDouble(this.width-pf.getWidth()));
+                    pf.setX(new Random().nextInt((int)(this.width-pf.getWidth())));
                     if(willMove(difficulty)){
                        plateformesListe.remove(pf);
                        plateformesListe.add(new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(), -(this.height * 0.0013645224), (0.003125 * this.width)));
