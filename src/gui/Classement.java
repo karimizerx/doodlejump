@@ -37,14 +37,14 @@ public class Classement {
     // Sert à lire et enregistrer les données du fichier
     private void lectureFicher() throws IOException {
         /// Ajout chaque ligne du fichier à la liste ligneCSV
-        // La classe BufferedReader, jumelée à FileReader, permet de lire des entrées de
-        // séquences de caractères
-        // BufferedReader est utilisée pour sa méthode readLine
+        // La classe BufferedReader, jumelée à FileReader, permet de lire
+        // des entrées deséquences de caractères.
+        // BufferedReader est utilisée pour sa méthode readLine.
         BufferedReader lecteur = new BufferedReader(new FileReader(fichier));
         for (String ligne = lecteur.readLine(); ligne != null; ligne = lecteur.readLine()) {
             this.ligneCSV.add(ligne);
         }
-        ligneCSV.remove(0); // On retire l'en-tête
+        ligneCSV.remove(0); // On retire l'en-tête, on suppose que le fichier n'est jamais vide
 
         lecteur.close(); // On libère les ressources
 
@@ -90,8 +90,8 @@ public class Classement {
 
         classer();
 
-        // La classe BufferedWriter, jumelée à FileWriter, permet d'écrire des séquences
-        // de charactères dans le fichier
+        // La classe BufferedWriter, jumelée à FileWriter, permet d'écrire
+        // des séquences de caractères dans le fichier.
         BufferedWriter writerB = new BufferedWriter(new FileWriter(fichier));
         /// On réécrit complètement le fichier
         writerB.append(this.entete); // On rajoute l'en-tête
