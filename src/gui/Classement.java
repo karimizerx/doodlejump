@@ -55,31 +55,31 @@ public class Classement {
         }
     }
 
-    private String[] getMaxScore() {
-        String[] max = classement.get(0);
-        for (String[] tab : classement) {
+    private String[] getMaxScore(ArrayList<String[]> cl) {
+        String[] max = cl.get(0);
+        for (String[] tab : cl) {
             max = (Integer.valueOf(tab[1]) > Integer.valueOf(max[1])) ? tab : max;
         }
         return max;
     }
 
-    private int getMaxIndex() {
-        String[] max = classement.get(0);
+    private int getMaxIndex(ArrayList<String[]> cl) {
+        String[] max = cl.get(0);
         int index = 0;
-        for (int i = 0; i < classement.size(); ++i) {
-            index = (Integer.valueOf(classement.get(i)[1]) > Integer.valueOf(max[1])) ? i : index;
+        for (int i = 0; i < cl.size(); ++i) {
+            index = (Integer.valueOf(cl.get(i)[1]) > Integer.valueOf(max[1])) ? i : index;
         }
         return index;
     }
 
     // Range le classement par ordre décroissant
-    private void classer() throws IOException {
+    private void classer(ArrayList<String[]> cl) throws IOException {
         ArrayList<String[]> lb = new ArrayList<String[]>();
-        while (classement.size() != 0) {
-            lb.add(getMaxScore());
-            classement.remove(getMaxIndex());
+        while (cl.size() != 0) {
+            lb.add(getMaxScore(cl));
+            cl.remove(getMaxIndex(cl));
         }
-        this.classement = lb;
+        cl = lb;
     }
 
     // Ajout d'une ligne au classement
@@ -88,7 +88,8 @@ public class Classement {
         String[] newClassement = { nom, score };
         classement.add(newClassement);
 
-        classer();
+        ArrayList<String[]> cl = classement;
+        classer(cl);
 
         // La classe BufferedWriter, jumelée à FileWriter, permet d'écrire
         // des séquences de caractères dans le fichier.
