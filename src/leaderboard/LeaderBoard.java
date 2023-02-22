@@ -7,16 +7,17 @@ import java.util.ArrayList;
 // Un LeaderBoard est un objet défini pour stocker les données de score.
 public abstract class LeaderBoard {
 
-    private final String separateur = ",";
+    private final String separateur;
     private String entete;
     private File fichier;
     private ArrayList<String> ligneCSV;
     private ArrayList<String[]> classement;
-    private String chemin = (new File("gui/")).getAbsolutePath();
+    private String chemin;
 
     public LeaderBoard(String nomFichier) {
-
         // On initialise les attributs
+        this.separateur = ",";
+        this.chemin = (new File("leaderboard/")).getAbsolutePath();
         this.ligneCSV = new ArrayList<String>();
         this.classement = new ArrayList<String[]>();
 
@@ -25,7 +26,7 @@ public abstract class LeaderBoard {
             try {
                 this.fichier = new File(chemin + "/" + nomFichier);
             } catch (Exception e) {
-                this.fichier = new File("src/gui/" + nomFichier);
+                this.fichier = new File("src/leaderboard/" + nomFichier);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -33,10 +34,13 @@ public abstract class LeaderBoard {
     }
 
     // Sert à lire et enregistrer les données du fichier
-    abstract void lectureFicher();
+    abstract void lectureFicher() throws IOException;
 
-    // Classes qui trient une ArrayList
-    // protected car visibles que par les classes
+    // Ajout d'une ligne au classement
+    abstract void ajoutClassement(String nom, String score) throws IOException;
+
+    /// Protected car visibles que par les classes
+    // Trient une ArrayList par ordre décroissant
     protected String[] getMaxScore(ArrayList<String[]> cl) {
         String[] max = cl.get(0);
         for (String[] tab : cl) {
@@ -54,25 +58,21 @@ public abstract class LeaderBoard {
         return index;
     }
 
-    // Range le classement par ordre décroissant
-    protected void classer(ArrayList<String[]> cl) throws IOException {
+    protected ArrayList<String[]> classer(ArrayList<String[]> cl) throws IOException {
         ArrayList<String[]> lb = new ArrayList<String[]>();
         while (cl.size() != 0) {
             lb.add(getMaxScore(cl));
             cl.remove(getMaxIndex(cl));
         }
-        cl = lb;
+        return lb;
     }
 
-    // Ajout d'une ligne au classement
-    abstract void ajoutClassement(String nom, String score) throws IOException;
-
     // Affichage dans la console
-    public void afficherClassement() throws IOException {
+    protected void afficherClassement(ArrayList<String[]> cl) throws IOException {
         System.out.println("########## CLASSEMENT ##########");
-        for (int i = 0; i < classement.size(); ++i) {
-            String nom = classement.get(i)[0];
-            String score = classement.get(i)[1];
+        for (int i = 0; i < cl.size(); ++i) {
+            String nom = cl.get(i)[0];
+            String score = cl.get(i)[1];
             System.out.println("#" + (i + 1) + " " + nom + " : " + score);
         }
         System.out.println("################################\n");
@@ -94,5 +94,33 @@ public abstract class LeaderBoard {
 
     public void setClassement(ArrayList<String[]> classement) {
         this.classement = classement;
+    }
+
+    public String getSeparateur() {
+        return separateur;
+    }
+
+    public String getEntete() {
+        return entete;
+    }
+
+    public void setEntete(String entete) {
+        this.entete = entete;
+    }
+
+    public File getFichier() {
+        return fichier;
+    }
+
+    public void setFichier(File fichier) {
+        this.fichier = fichier;
+    }
+
+    public String getChemin() {
+        return chemin;
+    }
+
+    public void setChemin(String chemin) {
+        this.chemin = chemin;
     }
 }
