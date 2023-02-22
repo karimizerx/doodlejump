@@ -10,6 +10,7 @@ import java.io.DataInputStream;
 
 // Import des autres dossiers
 import gameobjects.*;
+import leaderboard.Classement;
 import multiplayer.*;
 
 // App est la fenêtre du menu démarrer

@@ -2,6 +2,7 @@ package gui;
 
 // Import d'autres dossiers
 import gameobjects.*;
+import leaderboard.Classement;
 import multiplayer.*;
 
 // Import de packages java

@@ -6,6 +6,7 @@ import java.io.Serializable;
 // Cette classe représente la personne qui joue.
 public class Joueur implements Serializable {
 
+    private int id;
     private int score;
     private Personnage perso;
     private String nom;
@@ -14,7 +15,6 @@ public class Joueur implements Serializable {
         this.perso = p;
         this.score = 0;
         this.nom = name; // Nom par défaut est Mizer ou 1er au classement
-
     }
 
     // Getter & Setter

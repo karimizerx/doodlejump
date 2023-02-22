@@ -1,4 +1,4 @@
-package gui;
+package leaderboard;
 
 // Import de packages java
 import java.io.*;
