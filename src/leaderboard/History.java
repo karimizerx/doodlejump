@@ -2,15 +2,15 @@ package leaderboard;
 
 // Import de packages java
 import java.io.*;
-import java.util.ArrayList;
 
 // Un classement est un objet défini par une liste de tableaux de données.
 public class History extends LeaderBoard {
 
     public History() {
+        // Initialisation des variables
         super("history.csv");
         try { // Initialise les ArrayList sur lesquelles on travail & l'en-tête
-            lectureFicher();
+            this.lectureFicher();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -27,26 +27,25 @@ public class History extends LeaderBoard {
         for (String ligne = lecteur.readLine(); ligne != null; ligne = lecteur.readLine()) {
             this.getLigneCSV().add(ligne);
         }
-        this.getLigneCSV().remove(0); // On retire l'en-tête, on suppose que le fichier n'est jamais vide
+        this.setEntete(this.getLigneCSV().get(0)); // On récupère l'en-tête, on suppose que le fichier n'est jamais vide
+        this.getLigneCSV().remove(0); // On retire l'en-tête
 
         lecteur.close(); // On libère les ressources
 
         /// Ajout de toutes les colonnes de chaque ligne à la liste classement
         for (String ligne : this.getLigneCSV()) { // On lit chaque ligne du fichier
             String[] ligneData = ligne.split(","); // Et on place les données de chaque colonne dans un tableau
-            this.getClassement().add(ligneData);
+            this.getLbData().add(ligneData);
         }
-        throw new UnsupportedOperationException("Unimplemented method 'lectureFicher'");
     }
 
     // Ajout d'une ligne au classement
-    public void ajoutClassement(String nom, String score) throws IOException {
+    public void ajoutClassement(String id, String nom, String score) throws IOException {
         // On ajoute un nouveau tableau de donnée à la liste
-        String[] newClassement = { nom, score };
-        this.getClassement().add(newClassement);
+        String[] newClassement = { id, nom, score };
+        this.getLbData().add(newClassement);
 
-        ArrayList<String[]> cl = this.getClassement();
-        super.classer(cl);
+        // On trie le classement
 
         // La classe BufferedWriter, jumelée à FileWriter, permet d'écrire
         // des séquences de caractères dans le fichier.
@@ -55,10 +54,12 @@ public class History extends LeaderBoard {
         writerB.append(this.getEntete()); // On rajoute l'en-tête
         // On utilise la méthode de BufferedWriter newLine()
         writerB.newLine(); // Le passage à une nouvelle ligne c'est le délimiteur
-        for (String[] tab : this.getClassement()) { // Pour chaque ligne dans le classement
-            writerB.append(tab[0]); // On ajoute le nom du joueur
+        for (String[] tab : this.getLbData()) { // Pour chaque ligne dans le classement
+            writerB.append(tab[0]); // On ajoute l'identifiant du joueur
             writerB.append(this.getSeparateur()); // Le séparateur
-            writerB.append(tab[1]); // Le Score du joueur
+            writerB.append(tab[1]); // On ajoute le nom du joueur
+            writerB.append(this.getSeparateur()); // Le séparateur
+            writerB.append(tab[2]); // Le Score du joueur
             writerB.newLine(); // Puis newLine();
         }
 
@@ -67,6 +68,7 @@ public class History extends LeaderBoard {
 
     // Affichage dans la console
     public void afficherClassement() throws IOException {
-        super.afficherClassement(this.getClassement());
+        System.out.println("########## HISTORIQUE DE SCORE (LOCAL) ##########");
+        super.afficherClassement(this.getLbData());
     }
 }

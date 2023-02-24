@@ -3,6 +3,7 @@ package gui;
 // Import d'autres dossiers
 import gameobjects.*;
 import leaderboard.Classement;
+import leaderboard.History;
 import multiplayer.*;
 
 // Import de packages java
@@ -162,7 +163,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     // Gère le cas de fin du jeu
-    public boolean endGame() {
+    private boolean endGame() {
         boolean isFin = false;
         // Si un joueur à perdu, c'est fini
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
@@ -172,8 +173,24 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return isFin;
     }
 
+    private void updateClassement() throws IOException {
+        Joueur j = terrain.getListeJoueurs().get(0);
+        String score = String.valueOf(j.getScore());
+        System.out.println("Score à cette manche : " + j.getScore());
+
+        // Mise à jour dans le Classement Global
+        Classement c = new Classement();
+        c.ajoutClassement(j.getId(), j.getNom(), score);
+        c.afficherClassement();
+
+        // Mise à jour dans le Classement Local
+        History h = new History();
+        h.ajoutClassement(j.getId(), j.getNom(), score);
+        h.afficherClassement();
+    }
+
     // Met à jour l'affichage
-    public void update(double dTime) {
+    private void update(double dTime) {
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
             Joueur j = terrain.getListeJoueurs().get(i);
             Personnage p = j.getPerso();
@@ -244,14 +261,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 afficheImage(); // On affiche les images une fois les données update
             }
             if (endGame()) { // Si c'est la fin du jeu
-                if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
-                    Joueur j = terrain.getListeJoueurs().get(0);
-                    String score = String.valueOf(j.getScore());
-                    System.out.println("Score à cette manche : " + j.getScore());
-                    Classement c = new Classement();
-                    c.ajoutClassement(j.getNom(), score);
-                    c.afficherClassement();
-                }
+                if (terrain.getListeJoueurs().size() == 1) // S'il n'y a qu'1 joueur, on affiche le score/LB
+                    updateClassement();
                 this.removeAll(); // On retire tout
                 this.repaint(); // On met à jour l'affichage
             }

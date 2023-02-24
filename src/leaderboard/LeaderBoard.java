@@ -11,7 +11,7 @@ public abstract class LeaderBoard {
     private String entete;
     private File fichier;
     private ArrayList<String> ligneCSV;
-    private ArrayList<String[]> classement;
+    private ArrayList<String[]> lbData;
     private String chemin;
 
     public LeaderBoard(String nomFichier) {
@@ -19,7 +19,7 @@ public abstract class LeaderBoard {
         this.separateur = ",";
         this.chemin = (new File("leaderboard/")).getAbsolutePath();
         this.ligneCSV = new ArrayList<String>();
-        this.classement = new ArrayList<String[]>();
+        this.lbData = new ArrayList<String[]>();
 
         // Double try_catch pour gérer la portabilité sur Windows
         try {
@@ -37,14 +37,14 @@ public abstract class LeaderBoard {
     abstract void lectureFicher() throws IOException;
 
     // Ajout d'une ligne au classement
-    abstract void ajoutClassement(String nom, String score) throws IOException;
+    abstract void ajoutClassement(String id, String nom, String score) throws IOException;
 
     /// Protected car visibles que par les classes
     // Trient une ArrayList par ordre décroissant
     protected String[] getMaxScore(ArrayList<String[]> cl) {
         String[] max = cl.get(0);
         for (String[] tab : cl) {
-            max = (Integer.valueOf(tab[1]) > Integer.valueOf(max[1])) ? tab : max;
+            max = (Integer.valueOf(tab[2]) > Integer.valueOf(max[2])) ? tab : max;
         }
         return max;
     }
@@ -53,7 +53,7 @@ public abstract class LeaderBoard {
         String[] max = cl.get(0);
         int index = 0;
         for (int i = 0; i < cl.size(); ++i) {
-            index = (Integer.valueOf(cl.get(i)[1]) > Integer.valueOf(max[1])) ? i : index;
+            index = (Integer.valueOf(cl.get(i)[2]) > Integer.valueOf(max[2])) ? i : index;
         }
         return index;
     }
@@ -69,10 +69,9 @@ public abstract class LeaderBoard {
 
     // Affichage dans la console
     protected void afficherClassement(ArrayList<String[]> cl) throws IOException {
-        System.out.println("########## CLASSEMENT ##########");
         for (int i = 0; i < cl.size(); ++i) {
-            String nom = cl.get(i)[0];
-            String score = cl.get(i)[1];
+            String nom = cl.get(i)[1];
+            String score = cl.get(i)[2];
             System.out.println("#" + (i + 1) + " " + nom + " : " + score);
         }
         System.out.println("################################\n");
@@ -86,14 +85,6 @@ public abstract class LeaderBoard {
 
     public void setLigneCSV(ArrayList<String> ligneCSV) {
         this.ligneCSV = ligneCSV;
-    }
-
-    public ArrayList<String[]> getClassement() {
-        return classement;
-    }
-
-    public void setClassement(ArrayList<String[]> classement) {
-        this.classement = classement;
     }
 
     public String getSeparateur() {
@@ -123,4 +114,13 @@ public abstract class LeaderBoard {
     public void setChemin(String chemin) {
         this.chemin = chemin;
     }
+
+    public ArrayList<String[]> getLbData() {
+        return lbData;
+    }
+
+    public void setLbData(ArrayList<String[]> lbData) {
+        this.lbData = lbData;
+    }
+
 }

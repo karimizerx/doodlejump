@@ -10,7 +10,7 @@ import java.io.DataInputStream;
 
 // Import des autres dossiers
 import gameobjects.*;
-import leaderboard.Classement;
+import leaderboard.*;
 import multiplayer.*;
 
 // App est la fenêtre du menu démarrer
@@ -96,10 +96,10 @@ public class App extends JFrame {
 
         // Initialisation & ajout des éléments dans le panel
         for (int i = 0; i < nbj; ++i) { // Si possible, on prend par défaut le nom du meilleur joueur
-            Classement c = new Classement();
+            History h = new History();
             String n;
-            if (c.getClassement().size() > 1) {
-                n = c.getClassement().get(0)[0];
+            if (h.getLbData().size() > 1) {
+                n = h.getLbData().get(h.getLbData().size() - 1)[1];
             } else {
                 n = "Entrez votre nom";
             }
