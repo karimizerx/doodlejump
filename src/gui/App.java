@@ -268,7 +268,7 @@ public class App extends JFrame {
         }
 
         // Ajout des éléments à la fenêtre
-        DJ.add(new Vue(rt));
+        DJ.add(new MenuVue(this));
 
         return DJ;
     }

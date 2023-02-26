@@ -152,7 +152,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             for (Projectile pro : pers.getListProjectiles()) {
                 g2.drawImage(projectileView, (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
                         (int) pro.getHeight(), null);
-                // pers.setSpace(false);
             }
         }
 
