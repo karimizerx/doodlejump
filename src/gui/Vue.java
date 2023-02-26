@@ -18,7 +18,7 @@ import javax.imageio.*;
 // S'occupe d'afficher les éléments du terrain
 public class Vue extends JPanel implements Runnable, KeyListener {
 
-    public static boolean isRunning, isMenuDemarrer, isMenuFin;
+    public static boolean isQuitte, isRunning, isMenuDemarrer, isMenuFin;
     private final int width, height;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
@@ -222,7 +222,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private void updateMenuFin() {
         this.xfleche = (10 * width / 100) - 50;
         if (space == 5)
-            yfleche = (10 * height / 100);
+            yfleche = (80 * height / 100);
+        if (space == 6)
+            yfleche = (80 * height / 100) + 50;
     }
 
     // Dessine toutes les images
@@ -231,7 +233,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Affichage terrain
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
-        int y = (10 * height / 100);
+        int y = (80 * height / 100);
         int x = (10 * width / 100) - 15;
         int w = 30, h = 30;
         // Affichage des boutons
@@ -244,7 +246,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 x += 15;
             }
         }
-
+        y = y + 50;
+        x = (10 * width / 100) - 15;
+        for (int i = 0; i < buttonQuitter.size(); ++i) {
+            BufferedImage image = buttonQuitter.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+                x += 20;
+            } else {
+                x += 15;
+            }
+        }
         // Affichage de la fleche
         g2.drawImage(flecheView, xfleche, yfleche, w, h, null);
 
@@ -476,32 +488,37 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     @Override
     public void run() {
         try {
-            // Demande à ce que ce composant obtienne le focus.
-            // Le focus est le fait qu'un composant soit sélectionné ou pas.
-            // Le composant doit être afficheable (OK grâce à addNotify())
-            this.requestFocusInWindow();
+            while (!isQuitte) {
 
-            // Initialisation des images
-            initMenuDemarrer();
-            runningMenuDemarrer();
+                // Demande à ce que ce composant obtienne le focus.
+                // Le focus est le fait qu'un composant soit sélectionné ou pas.
+                // Le composant doit être afficheable (OK grâce à addNotify())
+                this.requestFocusInWindow();
 
-            createPartie();
-            initGame();
-            initMenuFin();
+                // Initialisation des images
+                initMenuDemarrer();
+                initMenuFin();
+                runningMenuDemarrer();
 
-            if (terrain.multiplayer) { // Si on est en mode multijoueur
-                Thread t = new Thread(new ThreadMouvement(terrain)); // ???
-                t.start();
+                createPartie();
+                initGame();
+                if (terrain.multiplayer) { // Si on est en mode multijoueur
+                    Thread t = new Thread(new ThreadMouvement(terrain)); // ???
+                    t.start();
+                }
+
+                runningGame();
+
+                if (endGame()) { // Si c'est la fin du jeu
+                    if (terrain.getListeJoueurs().size() == 1) // S'il n'y a qu'1 joueur, on affiche le score/LB
+                        updateClassement();
+                    isRunning = false;
+                    isMenuFin = true;
+                    runningMenuFin();
+                }
+                System.out.println(isQuitte);
             }
-            runningGame();
-            if (endGame()) { // Si c'est la fin du jeu
-                if (terrain.getListeJoueurs().size() == 1) // S'il n'y a qu'1 joueur, on affiche le score/LB
-                    updateClassement();
-                isRunning = false;
-                isMenuFin = true;
-                runningMenuFin();
-            }
-            repaint();
+            System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -516,6 +533,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // Créer une nouvelle instance en précisant les traitements à exécuter (run)
             // This est l'objet qui implémente Runnable (run()), contenant les traitements
             this.thread = new Thread(this);
+            isQuitte = false;
             isMenuDemarrer = true; // Indique le jeu est lancé
             this.thread.start(); // Invoque la méthode run()
         }
@@ -551,7 +569,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons                    repaint();
+    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons repaint();
 
         if (isRunning) {
             Personnage p1;
@@ -613,8 +631,13 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     }
                 }
                 if (this.space == 4) {
+                    isQuitte = true;
                     System.exit(0);
                 }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                this.space = (this.space == 0) ? 4 : this.space - 1;
+                System.out.println(this.space);
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                 this.space = (this.space == 4) ? 0 : this.space + 1;
@@ -627,8 +650,22 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 System.out.println(this.space);
                 if (this.space == 5) {
                     isRunning = false;
-                    isMenuFin = true;
+                    isMenuFin = false;
+                    isMenuDemarrer = true;
+                    repaint();
                 }
+                if (this.space == 6) {
+                    isQuitte = true;
+                    System.exit(0);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                this.space = (this.space == 5) ? 6 : this.space - 1;
+                System.out.println(this.space);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                this.space = (this.space == 6) ? 5 : this.space + 1;
+                System.out.println(this.space);
             }
         }
     }
