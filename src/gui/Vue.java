@@ -18,7 +18,7 @@ import javax.imageio.*;
 // S'occupe d'afficher les éléments du terrain
 public class Vue extends JPanel implements Runnable, KeyListener {
 
-    public static boolean isRunning, isMenuDemarrer;
+    public static boolean isRunning, isMenuDemarrer, isMenuFin;
     private final int width, height;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
@@ -27,7 +27,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             scoreView, scoreBackgroundView,
             projectileView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
-    private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter;
+    private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
+            buttonRetourMenu;
     private int space = 0, xfleche, yfleche;
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
     private Terrain terrain;
@@ -65,31 +66,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     /// PARTIE MENU DEMARRER / PAUSE / FIN :
 
-    // Initialise toutes les images du menu
-    private void initMenu() {
-        // view est l'image qui contiendra toutes les autres
-        this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
-        // Double try_catch pour gérer la différence entre windows & linux
-        try {
-            try {
-                this.backgroundView = ImageIO.read(new File(chemin + "/background/background1.png"));
-                this.flecheView = ImageIO.read(new File(chemin + "/icon/iconfleche.png"));
-            } catch (Exception e) {
-                this.backgroundView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
-                this.flecheView = ImageIO.read(new File("src/gui/images/packBase/icon/iconfleche.png"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        this.buttonJouer = createImage("Jouer en solo");
-        this.button2joueur = createImage("Jouer a 2");
-        this.buttonMultiJoueur = createImage("Mode multijoueurs");
-        this.buttonLb = createImage("Classement");
-        this.buttonQuitter = createImage("Quitter");
-        System.out.println("Fini l'initMenu");
-    }
-
     private ArrayList<BufferedImage> createImage(String mot) {
         ArrayList<BufferedImage> motView = new ArrayList<BufferedImage>();
         mot = mot.toLowerCase();
@@ -113,6 +89,31 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return motView;
     }
 
+    // Initialise toutes les images du menu
+    private void initMenuDemarrer() {
+        // view est l'image qui contiendra toutes les autres
+        this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+        // Double try_catch pour gérer la différence entre windows & linux
+        try {
+            try {
+                this.backgroundView = ImageIO.read(new File(chemin + "/background/background1.png"));
+                this.flecheView = ImageIO.read(new File(chemin + "/icon/iconfleche.png"));
+            } catch (Exception e) {
+                this.backgroundView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
+                this.flecheView = ImageIO.read(new File("src/gui/images/packBase/icon/iconfleche.png"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        this.buttonJouer = createImage("Jouer en solo");
+        this.button2joueur = createImage("Jouer a 2");
+        this.buttonMultiJoueur = createImage("Mode multijoueurs");
+        this.buttonLb = createImage("Classement");
+        this.buttonQuitter = createImage("Quitter");
+    }
+
+    // Met à jour les images du menu
     private void updateMenuDemarrer() {
         this.xfleche = (10 * width / 100) - 50;
         if (space == 0)
@@ -200,6 +201,71 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g.dispose(); // On libère les ressource
     }
 
+    // Lance le menu
+    private void runningMenuDemarrer() {
+        this.space = 0;
+        while (isMenuDemarrer) {
+            updateMenuDemarrer();
+            afficheMenuDemarrer();
+        }
+    }
+
+    // Initialise toutes les images du menu
+    private void initMenuFin() {
+        // view est l'image qui contiendra toutes les autres
+        this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+        // Double try_catch pour gérer la différence entre windows & linux
+        this.buttonRetourMenu = createImage("Revenir au menu");
+    }
+
+    // Met à jour les images du menu
+    private void updateMenuFin() {
+        this.xfleche = (10 * width / 100) - 50;
+        if (space == 5)
+            yfleche = (10 * height / 100);
+    }
+
+    // Dessine toutes les images
+    public void afficheFin() {
+        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        // Affichage terrain
+        g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
+
+        int y = (10 * height / 100);
+        int x = (10 * width / 100) - 15;
+        int w = 30, h = 30;
+        // Affichage des boutons
+        for (int i = 0; i < buttonRetourMenu.size(); ++i) {
+            BufferedImage image = buttonRetourMenu.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+                x += 20;
+            } else {
+                x += 15;
+            }
+        }
+
+        // Affichage de la fleche
+        g2.drawImage(flecheView, xfleche, yfleche, w, h, null);
+
+        // Affichage final
+        Graphics g = getGraphics(); // Contexte graphique
+        g.drawImage(view, 0, 0, this.width, this.height, null);
+        g.dispose(); // On libère les ressource
+    }
+
+    // Lance le menu
+    private void runningMenuFin() {
+        this.space = 5;
+        while (isMenuFin) {
+            updateMenuFin();
+            afficheFin();
+        }
+    }
+
+    /// PARTIE JEU :
+
+    // Initialise toutes les images du menu
     private void initGame() {
         // view est l'image qui contiendra toutes les autres
         view = new BufferedImage((int) terrain.getWidth(), (int) terrain.getHeight(), BufferedImage.TYPE_INT_RGB);
@@ -381,6 +447,30 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         h.afficherClassement();
     }
 
+    private void runningGame() {
+        // Gestion de l'ups constant
+        double cnt = 0.0; // Compteur du nombre d'update
+        double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
+        long t0 = System.currentTimeMillis(); // Temps actuel
+        while (isRunning) { // Tant que le jeu tourne
+            if (!terrain.isPause()) { // Tant qu'on appuie pas sur pause
+                long t1 = System.currentTimeMillis();
+                long t = t1 - t0;
+                t0 = System.currentTimeMillis();
+                acc += t;
+                while (acc > deltaTime) { // Si on peut update
+                    updateGame(deltaTime); // On met à jour les variables
+                    // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
+                    // un retard, qu'on stock pour l'ajouter à l'étape suivante.
+                    // Si on a reste > Δ, on relance cette boucle
+                    acc -= deltaTime;
+                    cnt += deltaTime; // On accumule le nombre d'update
+                }
+            }
+            afficheGame(); // On affiche les images une fois les données update
+        }
+    }
+
     // Fait tourner le jeu
     // Cette méthode contient les traitements
     @Override
@@ -392,48 +482,26 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             this.requestFocusInWindow();
 
             // Initialisation des images
-            initMenu();
+            initMenuDemarrer();
+            runningMenuDemarrer();
 
-            while (isMenuDemarrer) {
-                updateMenuDemarrer();
-                afficheMenuDemarrer();
-            }
-            this.repaint();
             createPartie();
             initGame();
+            initMenuFin();
 
             if (terrain.multiplayer) { // Si on est en mode multijoueur
                 Thread t = new Thread(new ThreadMouvement(terrain)); // ???
                 t.start();
             }
-
-            // Gestion de l'ups constant
-            double cnt = 0.0; // Compteur du nombre d'update
-            double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
-            long t0 = System.currentTimeMillis(); // Temps actuel
-            while (isRunning) { // Tant que le jeu tourne
-                if (!terrain.isPause()) { // Tant qu'on appuie pas sur pause
-                    long t1 = System.currentTimeMillis();
-                    long t = t1 - t0;
-                    t0 = System.currentTimeMillis();
-                    acc += t;
-                    while (acc > deltaTime) { // Si on peut update
-                        updateGame(deltaTime); // On met à jour les variables
-                        // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
-                        // un retard, qu'on stock pour l'ajouter à l'étape suivante.
-                        // Si on a reste > Δ, on relance cette boucle
-                        acc -= deltaTime;
-                        cnt += deltaTime; // On accumule le nombre d'update
-                    }
-                }
-                afficheGame(); // On affiche les images une fois les données update
-            }
+            runningGame();
             if (endGame()) { // Si c'est la fin du jeu
                 if (terrain.getListeJoueurs().size() == 1) // S'il n'y a qu'1 joueur, on affiche le score/LB
                     updateClassement();
-                this.removeAll(); // On retire tout
-                this.repaint(); // On met à jour l'affichage
+                isRunning = false;
+                isMenuFin = true;
+                runningMenuFin();
             }
+            repaint();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -483,9 +551,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons
+    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons                    repaint();
+
         if (isRunning) {
-            System.out.println("Is Running Key");
             Personnage p1;
             Personnage p2;
             if ((!terrain.multiplayer))
@@ -521,8 +589,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 pause();
             }
         }
+
         if (isMenuDemarrer) {
-            System.out.println("Is Demarrer Key");
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 System.out.println(this.space);
                 if (this.space == 0) {
@@ -551,6 +619,16 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                 this.space = (this.space == 4) ? 0 : this.space + 1;
                 System.out.println(this.space);
+            }
+        }
+
+        if (isMenuFin) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                System.out.println(this.space);
+                if (this.space == 5) {
+                    isRunning = false;
+                    isMenuFin = true;
+                }
             }
         }
     }
