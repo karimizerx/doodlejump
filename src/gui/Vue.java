@@ -8,6 +8,7 @@ import multiplayer.*;
 
 // Import de packages java
 import java.io.*;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.awt.*;
 import java.awt.image.*;
@@ -26,7 +27,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private BufferedImage view, backgroundView, flecheView, terrainView, platformeBaseView, platformeMobileView,
             scoreView, scoreBackgroundView,
             projectileView;
-    private ArrayList<ArrayList<BufferedImage>> viewList;
+    private ArrayList<ArrayList<BufferedImage>> viewList, lbView;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
             buttonRetourMenu;
     private int space = 0, xfleche, yfleche;
@@ -216,6 +217,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
         // Double try_catch pour gérer la différence entre windows & linux
         this.buttonRetourMenu = createImage("Revenir au menu");
+        this.lbView = new ArrayList<ArrayList<BufferedImage>>();
     }
 
     // Met à jour les images du menu
@@ -227,16 +229,64 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             yfleche = (80 * height / 100) + 50;
     }
 
+    // Crée l'affichage à jour du classement Global
+    private void updateClassementVue() {
+        Classement c = new Classement();
+        ArrayList<String[]> cl = c.getLbData();
+
+        int imax = (cl.size() > 10) ? 10 : cl.size();
+        for (int i = 0; i < imax; ++i) {
+            String n = cl.get(i)[1];
+            String s = cl.get(i)[2];
+
+            ArrayList<BufferedImage> rank = createImage(String.valueOf(i + 1));
+            ArrayList<BufferedImage> name = createImage(n);
+            ArrayList<BufferedImage> score = createImage(s);
+            ArrayList<BufferedImage> espace = createImage(" ");
+
+            lbView.add(rank);
+            lbView.add(espace);
+            lbView.add(name);
+            lbView.add(espace);
+            lbView.add(score);
+            lbView.add(espace);
+        }
+    }
+
     // Dessine toutes les images
     public void afficheFin() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         // Affichage terrain
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
+        // Affichage du classement
+        int y1 = (10 * height / 100);
+        int x1 = (10 * width / 100) - 15;
+        int w1 = 30, h1 = 30;
+
+        for (int z = 0; z < 10; ++z) {
+            System.out.println("Z = " + z);
+            for (int i = 0; i < 6; ++i) {
+                System.out.println("z;i : " + z + "," + i);
+                ArrayList<BufferedImage> ligne = lbView.get(z + i);
+                for (int j = 0; j < ligne.size(); ++j) {
+                    BufferedImage image = ligne.get(j);
+                    if (image != null) {
+                        g2.drawImage(image, x1, y1, w1, h1, null);
+                        x1 += 20;
+                    } else {
+                        x1 += 15;
+                    }
+                }
+            }
+            y1 = y1 + 50;
+            x1 = (10 * width / 100) - 15;
+        }
+
+        // Affichage des boutons
         int y = (80 * height / 100);
         int x = (10 * width / 100) - 15;
         int w = 30, h = 30;
-        // Affichage des boutons
         for (int i = 0; i < buttonRetourMenu.size(); ++i) {
             BufferedImage image = buttonRetourMenu.get(i);
             if (image != null) {
@@ -269,6 +319,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Lance le menu
     private void runningMenuFin() {
         this.space = 5;
+        updateClassementVue();
         while (isMenuFin) {
             updateMenuFin();
             afficheFin();
