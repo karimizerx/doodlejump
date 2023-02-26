@@ -268,7 +268,7 @@ public class App extends JFrame {
         }
 
         // Ajout des éléments à la fenêtre
-        DJ.add(new MenuVue(this));
+        // DJ.add(new MenuVue(this));
 
         return DJ;
     }
@@ -385,6 +385,5 @@ public class App extends JFrame {
             App mw = new App();
             mw.setVisible(true);
         });
-
     }
 }

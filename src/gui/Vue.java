@@ -18,30 +18,189 @@ import javax.imageio.*;
 // S'occupe d'afficher les éléments du terrain
 public class Vue extends JPanel implements Runnable, KeyListener {
 
-    public static boolean isRunning;
+    public static boolean isRunning, isMenuDemarrer;
+    private final int width, height;
     private ThreadMouvement threadMvt = null;
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
     private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
-    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView,
+    private BufferedImage view, backgroundView, flecheView, terrainView, platformeBaseView, platformeMobileView,
+            scoreView, scoreBackgroundView,
             projectileView;
     private ArrayList<ArrayList<BufferedImage>> viewList;
+    private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter;
+    private int space = 0, xfleche, yfleche;
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
     private Terrain terrain;
     private JFrame menuPause;
     public double deltaTime = 10;
+    private JFrame frame;
 
-    public Vue(Terrain ter) {
-        this.terrain = ter;
+    public Vue(Game frame) {
+        this.frame = frame;
+        this.width = frame.getWidth();
+        this.height = frame.getHeight();
+        this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
         // Taille du panel
-        this.setPreferredSize(new Dimension((int) terrain.getWidth(), (int) terrain.getHeight()));
         // Gestion d'évènements boutons
         this.addKeyListener(this);
     }
 
     // Méthodes de la classe
 
-    // Initialise toutes les images du jeu
-    private void init() {
+    private void createPartie() {
+
+        // Initialisation des éléments
+        ArrayList<Joueur> ljou = new ArrayList<Joueur>();
+        for (int i = 0; i < 1; ++i) {
+            // L'image du perso doit être un carré. On prend la valeure la plus petite
+            double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
+            Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
+            String nomjoueur = "Mizer";
+            ljou.add(new Joueur(p, nomjoueur));
+
+        }
+        this.terrain = new Terrain(ljou, height, width, false, false, 0);
+
+    }
+
+    /// PARTIE MENU DEMARRER / PAUSE / FIN :
+
+    // Initialise toutes les images du menu
+    private void initMenu() {
+        // view est l'image qui contiendra toutes les autres
+        this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+        // Double try_catch pour gérer la différence entre windows & linux
+        try {
+            try {
+                this.backgroundView = ImageIO.read(new File(chemin + "/background/background1.png"));
+                this.flecheView = ImageIO.read(new File(chemin + "/icon/iconfleche.png"));
+            } catch (Exception e) {
+                this.backgroundView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
+                this.flecheView = ImageIO.read(new File("src/gui/images/packBase/icon/iconfleche.png"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        this.buttonJouer = createImage("Jouer en solo");
+        this.button2joueur = createImage("Jouer a 2");
+        this.buttonMultiJoueur = createImage("Mode multijoueurs");
+        this.buttonLb = createImage("Classement");
+        this.buttonQuitter = createImage("Quitter");
+        System.out.println("Fini l'initMenu");
+    }
+
+    private ArrayList<BufferedImage> createImage(String mot) {
+        ArrayList<BufferedImage> motView = new ArrayList<BufferedImage>();
+        mot = mot.toLowerCase();
+
+        for (int i = 0; i < mot.length(); ++i) {
+            char c = mot.charAt(i);
+            try {
+                try {
+                    BufferedImage lv = (c == ' ') ? null
+                            : ImageIO.read(new File(chemin + "/lettres/lettre" + c + ".png"));
+                    motView.add(lv);
+                } catch (Exception e) {
+                    BufferedImage lv = (c == ' ') ? null
+                            : ImageIO.read(new File(chemin + "/lettres/lettre" + c + ".png"));
+                    motView.add(lv);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return motView;
+    }
+
+    private void updateMenuDemarrer() {
+        this.xfleche = (10 * width / 100) - 50;
+        if (space == 0)
+            yfleche = (10 * height / 100);
+        if (space == 1)
+            yfleche = (10 * height / 100) + 50;
+        if (space == 2)
+            yfleche = (10 * height / 100) + 100;
+        if (space == 3)
+            yfleche = (10 * height / 100) + 150;
+        if (space == 4)
+            yfleche = (10 * height / 100) + 200;
+    }
+
+    // Dessine toutes les images
+    public void afficheMenuDemarrer() {
+        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        // Affichage terrain
+        g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
+
+        int y = (10 * height / 100);
+        int x = (10 * width / 100) - 15;
+        int w = 30, h = 30;
+        // Affichage des boutons
+        for (int i = 0; i < buttonJouer.size(); ++i) {
+            BufferedImage image = buttonJouer.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+                x += 20;
+            } else {
+                x += 15;
+            }
+        }
+        y = y + 50;
+        x = (10 * width / 100) - 15;
+        for (int i = 0; i < button2joueur.size(); ++i) {
+            BufferedImage image = button2joueur.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+                x += 20;
+            } else {
+                x += 15;
+            }
+        }
+        y = y + 50;
+        x = (10 * width / 100) - 15;
+        for (int i = 0; i < buttonMultiJoueur.size(); ++i) {
+            BufferedImage image = buttonMultiJoueur.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+                x += 20;
+            } else {
+                x += 15;
+            }
+        }
+        y = y + 50;
+        x = (10 * width / 100) - 15;
+        for (int i = 0; i < buttonLb.size(); ++i) {
+            BufferedImage image = buttonLb.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+                x += 20;
+            } else {
+                x += 15;
+            }
+        }
+        y = y + 50;
+        x = (10 * width / 100) - 15;
+        for (int i = 0; i < buttonQuitter.size(); ++i) {
+            BufferedImage image = buttonQuitter.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+                x += 20;
+            } else {
+                x += 15;
+            }
+        }
+
+        // Affichage de la fleche
+        g2.drawImage(flecheView, xfleche, yfleche, w, h, null);
+
+        // Affichage final
+        Graphics g = getGraphics(); // Contexte graphique
+        g.drawImage(view, 0, 0, this.width, this.height, null);
+        g.dispose(); // On libère les ressource
+    }
+
+    private void initGame() {
         // view est l'image qui contiendra toutes les autres
         view = new BufferedImage((int) terrain.getWidth(), (int) terrain.getHeight(), BufferedImage.TYPE_INT_RGB);
         viewList = new ArrayList<ArrayList<BufferedImage>>();
@@ -102,8 +261,42 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    // Met à jour l'affichage
+    private void updateGame(double dTime) {
+        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
+            Joueur j = terrain.getListeJoueurs().get(i);
+            Personnage p = j.getPerso();
+            // Gère les boutons flèches, avec inertie
+            // Dans qu'on appuie, on set la vitesse à ± 4, et on avance de cette distance
+            double vitesse = 0.0078125 * terrain.getWidth();
+            double ralentissement = 0.000375 * terrain.getWidth();
+            if (p.isRight()) {
+                p.setDx(+vitesse);
+                p.setX(p.getX() + p.getDx());
+            } else if (p.isLeft()) {
+                p.setDx(-vitesse);
+                p.setX(p.getX() + p.getDx());
+            } else if (p.isInertRight() && p.getDx() > 0) { // Si on arrête d'appuyer,
+                p.setDx(p.getDx() - ralentissement); // la vitesse ralentie petit à petit jusqu'à devenir nulle
+                p.setX(p.getX() + p.getDx());
+            } else if (p.isInertLeft() && p.getDx() < 0) {
+                p.setDx(p.getDx() + ralentissement);
+                p.setX(p.getX() + p.getDx());
+            } else {
+                p.setInertRight(false);
+                p.setInertLeft(false);
+                p.setDx(0);
+            }
+            if (p.isSpace() && p.isTirPossible()) { // Si on tire, on ne tire plus
+                p.tirer(0.046875 * terrain.getWidth(), 0.02923397661 * terrain.getHeight(), 0, -deltaTime);
+                p.setSpace(false);
+            }
+        }
+        terrain.update(dTime);
+    }
+
     // Dessine toutes les images
-    public void afficheImage() {
+    public void afficheGame() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         // Affichage terrain
         g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
@@ -188,40 +381,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         h.afficherClassement();
     }
 
-    // Met à jour l'affichage
-    private void update(double dTime) {
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur j = terrain.getListeJoueurs().get(i);
-            Personnage p = j.getPerso();
-            // Gère les boutons flèches, avec inertie
-            // Dans qu'on appuie, on set la vitesse à ± 4, et on avance de cette distance
-            double vitesse = 0.0078125 * terrain.getWidth();
-            double ralentissement = 0.000375 * terrain.getWidth();
-            if (p.isRight()) {
-                p.setDx(+vitesse);
-                p.setX(p.getX() + p.getDx());
-            } else if (p.isLeft()) {
-                p.setDx(-vitesse);
-                p.setX(p.getX() + p.getDx());
-            } else if (p.isInertRight() && p.getDx() > 0) { // Si on arrête d'appuyer,
-                p.setDx(p.getDx() - ralentissement); // la vitesse ralentie petit à petit jusqu'à devenir nulle
-                p.setX(p.getX() + p.getDx());
-            } else if (p.isInertLeft() && p.getDx() < 0) {
-                p.setDx(p.getDx() + ralentissement);
-                p.setX(p.getX() + p.getDx());
-            } else {
-                p.setInertRight(false);
-                p.setInertLeft(false);
-                p.setDx(0);
-            }
-            if (p.isSpace() && p.isTirPossible()) { // Si on tire, on ne tire plus
-                p.tirer(0.046875 * terrain.getWidth(), 0.02923397661 * terrain.getHeight(), 0, -deltaTime);
-                p.setSpace(false);
-            }
-        }
-        terrain.update(dTime);
-    }
-
     // Fait tourner le jeu
     // Cette méthode contient les traitements
     @Override
@@ -231,7 +390,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // Le focus est le fait qu'un composant soit sélectionné ou pas.
             // Le composant doit être afficheable (OK grâce à addNotify())
             this.requestFocusInWindow();
-            init(); // Initialisation des images
+
+            // Initialisation des images
+            initMenu();
+
+            while (isMenuDemarrer) {
+                updateMenuDemarrer();
+                afficheMenuDemarrer();
+            }
+            this.repaint();
+            createPartie();
+            initGame();
 
             if (terrain.multiplayer) { // Si on est en mode multijoueur
                 Thread t = new Thread(new ThreadMouvement(terrain)); // ???
@@ -249,7 +418,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     t0 = System.currentTimeMillis();
                     acc += t;
                     while (acc > deltaTime) { // Si on peut update
-                        update(deltaTime); // On met à jour les variables
+                        updateGame(deltaTime); // On met à jour les variables
                         // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
                         // un retard, qu'on stock pour l'ajouter à l'étape suivante.
                         // Si on a reste > Δ, on relance cette boucle
@@ -257,7 +426,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                         cnt += deltaTime; // On accumule le nombre d'update
                     }
                 }
-                afficheImage(); // On affiche les images une fois les données update
+                afficheGame(); // On affiche les images une fois les données update
             }
             if (endGame()) { // Si c'est la fin du jeu
                 if (terrain.getListeJoueurs().size() == 1) // S'il n'y a qu'1 joueur, on affiche le score/LB
@@ -279,7 +448,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // Créer une nouvelle instance en précisant les traitements à exécuter (run)
             // This est l'objet qui implémente Runnable (run()), contenant les traitements
             this.thread = new Thread(this);
-            isRunning = true; // Indique le jeu est lancé
+            isMenuDemarrer = true; // Indique le jeu est lancé
             this.thread.start(); // Invoque la méthode run()
         }
     }
@@ -315,74 +484,110 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons
-        Personnage p1;
-        Personnage p2;
-        if ((!terrain.multiplayer))
-            p1 = terrain.getListeJoueurs().get(0).getPerso();
-        else
-            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+        if (isRunning) {
+            System.out.println("Is Running Key");
+            Personnage p1;
+            Personnage p2;
+            if ((!terrain.multiplayer))
+                p1 = terrain.getListeJoueurs().get(0).getPerso();
+            else
+                p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
 
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            p1.setRight(true);
-            p1.setInertRight(false);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            p1.setLeft(true);
-            p1.setInertLeft(false);
-        }
-        if (terrain.getListeJoueurs().size() == 2) {
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
-            if (e.getKeyCode() == KeyEvent.VK_D) {
-                p2.setRight(true);
-                p2.setInertRight(false);
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                p1.setRight(true);
+                p1.setInertRight(false);
             }
-            if (e.getKeyCode() == KeyEvent.VK_Q) {
-                p2.setLeft(true);
-                p2.setInertLeft(false);
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                p1.setLeft(true);
+                p1.setInertLeft(false);
+            }
+            if (terrain.getListeJoueurs().size() == 2) {
+                p2 = terrain.getListeJoueurs().get(1).getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    p2.setRight(true);
+                    p2.setInertRight(false);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    p2.setLeft(true);
+                    p2.setInertLeft(false);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()) {
+                p1.setSpace(true);// Si on a le droit de tirer et qu'on tire
+                p1.setTirPossible(false);// On a pas le droit de re-tirer
+                // On indique qu'on vient de tirer
+            }
+            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                pause();
             }
         }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()) {
-            p1.setSpace(true);// Si on a le droit de tirer et qu'on tire
-            p1.setTirPossible(false);// On a pas le droit de re-tirer
-            // On indique qu'on vient de tirer
-        }
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            pause();
-        }
+        if (isMenuDemarrer) {
+            System.out.println("Is Demarrer Key");
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                System.out.println(this.space);
+                if (this.space == 0) {
+                    isMenuDemarrer = false;
+                    isRunning = true;
+                    repaint();
+                }
+                if (this.space == 1) {
+                }
 
+                if (this.space == 2) {
+                }
+
+                if (this.space == 3) {
+                    Classement c = new Classement();
+                    try {
+                        c.afficherClassement();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                if (this.space == 4) {
+                    System.exit(0);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                this.space = (this.space == 4) ? 0 : this.space + 1;
+                System.out.println(this.space);
+            }
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) { // On relâche les boutons
-        Personnage p1;
-        Personnage p2;
-        if ((!terrain.multiplayer))
-            p1 = terrain.getListeJoueurs().get(0).getPerso();
-        else
-            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+        if (isRunning) {
+            Personnage p1;
+            Personnage p2;
+            if ((!terrain.multiplayer))
+                p1 = terrain.getListeJoueurs().get(0).getPerso();
+            else
+                p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
 
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            p1.setRight(false);
-            p1.setInertRight(true);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            p1.setLeft(false);
-            p1.setInertLeft(true);
-        }
-        if (terrain.getListeJoueurs().size() == 2) {
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
-            if (e.getKeyCode() == KeyEvent.VK_D) {
-                p2.setRight(false);
-                p2.setInertRight(true);
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+                p1.setRight(false);
+                p1.setInertRight(true);
             }
-            if (e.getKeyCode() == KeyEvent.VK_Q) {
-                p2.setLeft(false);
-                p2.setInertLeft(true);
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+                p1.setLeft(false);
+                p1.setInertLeft(true);
             }
-        }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            p1.setTirPossible(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
-            // On oblige donc le joueur à lâcher pour tirer
+            if (terrain.getListeJoueurs().size() == 2) {
+                p2 = terrain.getListeJoueurs().get(1).getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    p2.setRight(false);
+                    p2.setInertRight(true);
+                }
+                if (e.getKeyCode() == KeyEvent.VK_Q) {
+                    p2.setLeft(false);
+                    p2.setInertLeft(true);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+                p1.setTirPossible(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
+                // On oblige donc le joueur à lâcher pour tirer
+            }
         }
     }
 
