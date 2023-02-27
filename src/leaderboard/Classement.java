@@ -74,6 +74,22 @@ public class Classement extends LeaderBoard {
         return maxId;
     }
 
+    public int getMaxScoreOfId(String id) {
+        int identifiant = Integer.valueOf(id);
+        int maxScore = 0;
+        if (identifiant > getMaxId()) {
+            return -1;
+        }
+        for (String[] tabData : this.getLbData()) {
+            if (Integer.valueOf(tabData[0]) == identifiant) {
+                if (maxScore < Integer.valueOf(tabData[2])) {
+                    maxScore = Integer.valueOf(tabData[2]);
+                }
+            }
+        }
+        return maxScore;
+    }
+
     // Affichage dans la console
     public void afficherClassement() throws IOException {
         System.out.println("########## CLASSEMENT GLOBAL ##########");

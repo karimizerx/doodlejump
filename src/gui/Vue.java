@@ -8,7 +8,6 @@ import multiplayer.*;
 
 // Import de packages java
 import java.io.*;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.awt.*;
 import java.awt.image.*;
@@ -19,26 +18,26 @@ import javax.imageio.*;
 // S'occupe d'afficher les éléments du terrain
 public class Vue extends JPanel implements Runnable, KeyListener {
 
-    public static boolean isQuitte, isRunning, isMenuDemarrer, isMenuFin;
-    private final int width, height;
-    private ThreadMouvement threadMvt = null;
+    // Ces variables static boolean indique le statut actuel du panel
+    public static boolean isQuitte, isRunning, isMenuDemarrer, isMenuFin, isClassement;
+    private final int width, height; // Dimensions du panel
+    private ThreadMouvement threadMvt = null; // ???
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
+    // Le chemin vers le package qui d'images
     private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
-    private BufferedImage view, backgroundView, flecheView, terrainView, platformeBaseView, platformeMobileView,
-            scoreView, scoreBackgroundView,
-            projectileView;
-    private ArrayList<ArrayList<BufferedImage>> viewList, lbView;
+    private BufferedImage view, backgroundView, flecheView, pointView, terrainView, platformeBaseView,
+            platformeMobileView, scoreView, scoreBackgroundView, projectileView;
+    private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
-            buttonRetourMenu;
-    private int space = 0, xfleche, yfleche;
-    // isRight/Left gère les boutons appuyés, isInert gère le relâchement
-    private Terrain terrain;
-    private JFrame menuPause;
-    public double deltaTime = 10;
-    private JFrame frame;
+            buttonRetourMenu, doublePoint;
+    // La fleche est un curseur qui indique sur quel boutton on agit actuellement
+    private int fleche, xfleche, yfleche, wfleche, hfleche;
+    private int espacementMenuDemarrer, espacementMenuFin, espacementJeu, espacementClassement;
+    private Terrain terrain; // Le terrain sur lequel on joue
+    private JFrame menuPause; // Le menu pause
+    private double deltaTime; // Le temps nécessaire pour update le jeu
 
     public Vue(Game frame) {
-        this.frame = frame;
         this.width = frame.getWidth();
         this.height = frame.getHeight();
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
@@ -49,25 +48,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Méthodes de la classe
 
-    private void createPartie() {
-
-        // Initialisation des éléments
-        ArrayList<Joueur> ljou = new ArrayList<Joueur>();
-        for (int i = 0; i < 1; ++i) {
-            // L'image du perso doit être un carré. On prend la valeure la plus petite
-            double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
-            Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
-            String nomjoueur = "Mizer";
-            ljou.add(new Joueur(p, nomjoueur));
-
-        }
-        this.terrain = new Terrain(ljou, height, width, false, false, 0);
-
-    }
-
-    /// PARTIE MENU DEMARRER / PAUSE / FIN :
-
-    private ArrayList<BufferedImage> createImage(String mot) {
+    // PARTIE GENERALE
+    // Crée une liste d'images représentant un mot
+    private ArrayList<BufferedImage> createImageOfMot(String mot) {
+        // On crée une liste d'image qui va contenir toutes les lettres du mot
         ArrayList<BufferedImage> motView = new ArrayList<BufferedImage>();
         mot = mot.toLowerCase();
 
@@ -90,8 +74,34 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return motView;
     }
 
-    // Initialise toutes les images du menu
-    private void initMenuDemarrer() {
+    // Permet d'afficher un mot
+    private int afficheMot(Graphics2D g2, ArrayList<BufferedImage> mot, int x, int y, int w, int h, int ecart,
+            int espacement) {
+        for (int i = 0; i < mot.size(); ++i) {
+            BufferedImage lettreView = mot.get(i);
+            if (lettreView != null) {
+                g2.drawImage(lettreView, x, y, w, h, null);
+                x += ecart;
+            } else
+                x += espacement;
+        }
+        return x;
+    }
+
+    private void afficheDoublepoint(Graphics2D g2, int x, int y) {
+        int w = 7, h = 7;
+        y += 3;
+        for (int i = 0; i < 2; ++i) {
+            BufferedImage image = doublePoint.get(i);
+            if (image != null) {
+                g2.drawImage(image, x, y, w, h, null);
+            }
+            y += 15;
+        }
+    }
+
+    // On initialise toutes les images qui seront utilisées à plusieurs endroits
+    private void initGENERAL() {
         // view est l'image qui contiendra toutes les autres
         this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
         // Double try_catch pour gérer la différence entre windows & linux
@@ -99,102 +109,69 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             try {
                 this.backgroundView = ImageIO.read(new File(chemin + "/background/background1.png"));
                 this.flecheView = ImageIO.read(new File(chemin + "/icon/iconfleche.png"));
+                this.pointView = ImageIO.read(new File(chemin + "/icon/iconpoint.png"));
+
             } catch (Exception e) {
                 this.backgroundView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
                 this.flecheView = ImageIO.read(new File("src/gui/images/packBase/icon/iconfleche.png"));
+                this.pointView = ImageIO.read(new File("src/gui/images/packBase//icon/iconpoint.png"));
+
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        this.buttonJouer = createImage("Jouer en solo");
-        this.button2joueur = createImage("Jouer a 2");
-        this.buttonMultiJoueur = createImage("Mode multijoueurs");
-        this.buttonLb = createImage("Classement");
-        this.buttonQuitter = createImage("Quitter");
+        // On initialise ces 2 boutons qui seront ré-utiliser de nombreuses fois.
+        this.buttonQuitter = createImageOfMot("Quitter");
+        this.buttonRetourMenu = createImageOfMot("Revenir au menu");
+        // On initialise ce qui représente un double point ":"
+        this.doublePoint = new ArrayList<BufferedImage>();
+        doublePoint.add(pointView);
+        doublePoint.add(pointView);
     }
 
-    // Met à jour les images du menu
+    /// PARTIE MENU DEMARRER :
+    // Initialise toutes les images du menu DEMARRER
+    private void initMenuDemarrer() {
+        this.buttonJouer = createImageOfMot("Jouer en solo");
+        this.button2joueur = createImageOfMot("Jouer a 2");
+        this.buttonMultiJoueur = createImageOfMot("Mode multijoueurs");
+        this.buttonLb = createImageOfMot("Classement");
+    }
+
+    // Met à jour les images du menu DEMARRER
     private void updateMenuDemarrer() {
-        this.xfleche = (10 * width / 100) - 50;
-        if (space == 0)
-            yfleche = (10 * height / 100);
-        if (space == 1)
-            yfleche = (10 * height / 100) + 50;
-        if (space == 2)
-            yfleche = (10 * height / 100) + 100;
-        if (space == 3)
-            yfleche = (10 * height / 100) + 150;
-        if (space == 4)
-            yfleche = (10 * height / 100) + 200;
+        this.wfleche = 30;
+        this.hfleche = 30;
+        this.xfleche = (10 * width / 100) - 50; // La fleche se place toujours ici en x
+        // Son placement en y dépend de ce qu'elle pointe
+        this.yfleche = (10 * height / 100) + fleche * espacementMenuDemarrer;
     }
 
-    // Dessine toutes les images
+    // Dessine toutes les images du menu DEMARRER
     public void afficheMenuDemarrer() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         // Affichage terrain
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
-        int y = (10 * height / 100);
-        int x = (10 * width / 100) - 15;
-        int w = 30, h = 30;
         // Affichage des boutons
-        for (int i = 0; i < buttonJouer.size(); ++i) {
-            BufferedImage image = buttonJouer.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-                x += 20;
-            } else {
-                x += 15;
-            }
-        }
-        y = y + 50;
-        x = (10 * width / 100) - 15;
-        for (int i = 0; i < button2joueur.size(); ++i) {
-            BufferedImage image = button2joueur.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-                x += 20;
-            } else {
-                x += 15;
-            }
-        }
-        y = y + 50;
-        x = (10 * width / 100) - 15;
-        for (int i = 0; i < buttonMultiJoueur.size(); ++i) {
-            BufferedImage image = buttonMultiJoueur.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-                x += 20;
-            } else {
-                x += 15;
-            }
-        }
-        y = y + 50;
-        x = (10 * width / 100) - 15;
-        for (int i = 0; i < buttonLb.size(); ++i) {
-            BufferedImage image = buttonLb.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-                x += 20;
-            } else {
-                x += 15;
-            }
-        }
-        y = y + 50;
-        x = (10 * width / 100) - 15;
-        for (int i = 0; i < buttonQuitter.size(); ++i) {
-            BufferedImage image = buttonQuitter.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-                x += 20;
-            } else {
-                x += 15;
-            }
-        }
+        int x = (10 * width / 100), y = (10 * height / 100);
+        int w = 30, h = 30, espacement = 15, ecart = 20;
+        afficheMot(g2, buttonJouer, x, y, w, h, ecart, espacement);
+        x = (10 * width / 100);
+        y = y + espacementMenuDemarrer;
+        afficheMot(g2, button2joueur, x, y, w, h, ecart, espacement);
+        x = (10 * width / 100);
+        y = y + espacementMenuDemarrer;
+        afficheMot(g2, buttonMultiJoueur, x, y, w, h, ecart, espacement);
+        x = (10 * width / 100);
+        y = y + espacementMenuDemarrer;
+        afficheMot(g2, buttonLb, x, y, w, h, ecart, espacement);
+        x = (10 * width / 100);
+        y = y + espacementMenuDemarrer;
+        afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
 
         // Affichage de la fleche
-        g2.drawImage(flecheView, xfleche, yfleche, w, h, null);
+        g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
 
         // Affichage final
         Graphics g = getGraphics(); // Contexte graphique
@@ -202,47 +179,136 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g.dispose(); // On libère les ressource
     }
 
-    // Lance le menu
+    // Lance le menu DEMARRER
     private void runningMenuDemarrer() {
-        this.space = 0;
+        this.espacementMenuDemarrer = 50;
+        this.fleche = 0; // On pointe le premier bouton
         while (isMenuDemarrer) {
             updateMenuDemarrer();
             afficheMenuDemarrer();
         }
     }
 
-    // Initialise toutes les images du menu
+    /// PARTIE MENU FIN :
+    // Initialise toutes les images du menu FIN
     private void initMenuFin() {
         // view est l'image qui contiendra toutes les autres
-        this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
         // Double try_catch pour gérer la différence entre windows & linux
-        this.buttonRetourMenu = createImage("Revenir au menu");
+        this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
+        this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
+        if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur
+            // Ce qu'on va afficher pour le score en fin de partie :
+            Joueur j = terrain.getListeJoueurs().get(0);
+            String s = String.valueOf(j.getScore());
+            ArrayList<BufferedImage> phrase = createImageOfMot("Votre score est de ");
+            ArrayList<BufferedImage> score = createImageOfMot(s);
+            scoreFinalView.add(phrase);
+            scoreFinalView.add(score);
+
+            // Ce qu'on va afficher pour le meilleur score en fin de partie :
+            String hs = String.valueOf((new Classement()).getMaxScoreOfId(j.getId()));
+            ArrayList<BufferedImage> phrase1 = createImageOfMot("Le meilleur score est ");
+            ArrayList<BufferedImage> hscore = createImageOfMot(hs);
+            hightScoreView.add(phrase1);
+            hightScoreView.add(hscore);
+        }
+    }
+
+    // Met à jour les images du menu FIN
+    private void updateMenuFin() {
+        this.wfleche = 30;
+        this.hfleche = 30;
+        this.xfleche = (10 * width / 100) - 35; // La fleche se place toujours ici en x
+        // Son placement en y dépend de ce qu'elle pointe
+        this.yfleche = (40 * height / 100) + (fleche / 6) * espacementMenuFin;
+    }
+
+    // Dessine toutes les images du menu FIN
+    public void afficheFin() {
+        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        // Affichage terrain
+        g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
+
+        /// Affichage du score à cette partie :
+        int x0 = (10 * width / 100), y0 = (25 * height / 100);
+        int w0 = 30, h0 = 30, espacement0 = 15, ecart0 = 20;
+
+        // Affichage du score final :
+        for (int i = 0; i < scoreFinalView.size(); ++i) {
+            ArrayList<BufferedImage> ligne = scoreFinalView.get(i);
+            x0 = afficheMot(g2, ligne, x0, y0, w0, h0, ecart0, espacement0);
+        }
+
+        x0 = (10 * width / 100);
+        y0 = (25 * height / 100) + espacementMenuFin;
+
+        for (int i = 0; i < hightScoreView.size(); ++i) { // Affichage d'1 ligne du classement
+            ArrayList<BufferedImage> ligne = hightScoreView.get(i);
+            x0 = afficheMot(g2, ligne, x0, y0, w0, h0, ecart0, espacement0);
+        }
+
+        // Affichage des boutons
+        int x = (10 * width / 100), y = (40 * height / 100);
+        int w = 30, h = 30, espacement = 15, ecart = 20;
+        afficheMot(g2, buttonRetourMenu, x, y, w, h, ecart, espacement);
+        x = (10 * width / 100);
+        y = y + espacementMenuFin;
+        afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
+
+        // Affichage de la fleche
+        g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
+
+        // Affichage final
+        Graphics g = getGraphics(); // Contexte graphique
+        g.drawImage(view, 0, 0, this.width, this.height, null);
+        g.dispose(); // On libère les ressource
+    }
+
+    // Lance le menu FIN
+    private void runningMenuFin() {
+        this.espacementMenuFin = 50;
+        this.fleche = 5;
+        while (isMenuFin) {
+            updateMenuFin();
+            afficheFin();
+        }
+    }
+
+    /// PARTIE CLASSEMENT :
+    // Initialise toutes les images du menu CLASSEMENT
+    private void initClassement() {
         this.lbView = new ArrayList<ArrayList<BufferedImage>>();
     }
 
-    // Met à jour les images du menu
-    private void updateMenuFin() {
-        this.xfleche = (10 * width / 100) - 50;
-        if (space == 5)
-            yfleche = (80 * height / 100);
-        if (space == 6)
-            yfleche = (80 * height / 100) + 50;
+    // Met à jour les données du CLASSEMENT
+    private void updateClassement() throws IOException {
+        Joueur j = terrain.getListeJoueurs().get(0);
+        String score = String.valueOf(j.getScore());
+
+        // Mise à jour dans le Classement Global
+        Classement c = new Classement();
+        c.ajoutClassement(j.getId(), j.getNom(), score);
+
+        // Mise à jour dans le Classement Local
+        History h = new History();
+        h.ajoutClassement(j.getId(), j.getNom(), score);
     }
 
-    // Crée l'affichage à jour du classement Global
+    // Met à jour les images du CLASSEMENT
     private void updateClassementVue() {
         Classement c = new Classement();
         ArrayList<String[]> cl = c.getLbData();
 
+        lbView = new ArrayList<ArrayList<BufferedImage>>();
         int imax = (cl.size() > 10) ? 10 : cl.size();
         for (int i = 0; i < imax; ++i) {
             String n = cl.get(i)[1];
             String s = cl.get(i)[2];
 
-            ArrayList<BufferedImage> rank = createImage(String.valueOf(i + 1));
-            ArrayList<BufferedImage> name = createImage(n);
-            ArrayList<BufferedImage> score = createImage(s);
-            ArrayList<BufferedImage> espace = createImage(" ");
+            ArrayList<BufferedImage> rank = createImageOfMot(String.valueOf(i + 1));
+            ArrayList<BufferedImage> name = createImageOfMot(n);
+            ArrayList<BufferedImage> score = createImageOfMot(s);
+            ArrayList<BufferedImage> espace = createImageOfMot(" ");
 
             lbView.add(rank);
             lbView.add(espace);
@@ -251,64 +317,45 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             lbView.add(score);
             lbView.add(espace);
         }
+
+        this.wfleche = 30;
+        this.hfleche = 30;
+        this.xfleche = (10 * width / 100) - 35; // La fleche se place toujours ici en x
+        // Son placement en y dépend de ce qu'elle pointe
+        this.yfleche = (80 * height / 100) + (fleche / 8) * espacementClassement;
     }
 
-    // Dessine toutes les images
-    public void afficheFin() {
+    // Crée l'affichage à jour du classement Global
+    public void afficheClassement() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         // Affichage terrain
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
         // Affichage du classement
-        int y1 = (10 * height / 100);
-        int x1 = (10 * width / 100) - 15;
-        int w1 = 30, h1 = 30;
+        int x = (10 * width / 100), y = (20 * height / 100);
+        int w = 30, h = 30, espacement = 15, ecart = 20;
 
-        for (int z = 0; z < 10; ++z) {
-            System.out.println("Z = " + z);
-            for (int i = 0; i < 6; ++i) {
-                System.out.println("z;i : " + z + "," + i);
+        for (int z = 0; z < lbView.size(); z = z + 6) {
+            if (z / 6 >= 9)
+                x -= ecart;
+            for (int i = 0; i < 6; ++i) { // Affichage d'1 ligne du classement
                 ArrayList<BufferedImage> ligne = lbView.get(z + i);
-                for (int j = 0; j < ligne.size(); ++j) {
-                    BufferedImage image = ligne.get(j);
-                    if (image != null) {
-                        g2.drawImage(image, x1, y1, w1, h1, null);
-                        x1 += 20;
-                    } else {
-                        x1 += 15;
-                    }
-                }
+                x = afficheMot(g2, ligne, x, y, w, h, ecart, espacement);
             }
-            y1 = y1 + 50;
-            x1 = (10 * width / 100) - 15;
+            x = (10 * width / 100);
+            y += espacementClassement;
         }
 
         // Affichage des boutons
-        int y = (80 * height / 100);
-        int x = (10 * width / 100) - 15;
-        int w = 30, h = 30;
-        for (int i = 0; i < buttonRetourMenu.size(); ++i) {
-            BufferedImage image = buttonRetourMenu.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-                x += 20;
-            } else {
-                x += 15;
-            }
-        }
-        y = y + 50;
-        x = (10 * width / 100) - 15;
-        for (int i = 0; i < buttonQuitter.size(); ++i) {
-            BufferedImage image = buttonQuitter.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-                x += 20;
-            } else {
-                x += 15;
-            }
-        }
+        int x1 = (10 * width / 100), y1 = (80 * height / 100);
+        int w1 = 30, h1 = 30, espacement1 = 15, ecart1 = 20;
+        afficheMot(g2, buttonRetourMenu, x1, y1, w1, h1, ecart1, espacement1);
+        x1 = (10 * width / 100);
+        y1 = y1 + espacementClassement;
+        afficheMot(g2, buttonQuitter, x1, y1, w1, h1, ecart1, espacement1);
+
         // Affichage de la fleche
-        g2.drawImage(flecheView, xfleche, yfleche, w, h, null);
+        g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
 
         // Affichage final
         Graphics g = getGraphics(); // Contexte graphique
@@ -316,23 +363,36 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g.dispose(); // On libère les ressource
     }
 
-    // Lance le menu
-    private void runningMenuFin() {
-        this.space = 5;
-        updateClassementVue();
-        while (isMenuFin) {
-            updateMenuFin();
-            afficheFin();
+    private void runningClassement() {
+        this.fleche = 7;
+        this.espacementClassement = 50;
+        while (isClassement) {
+            updateClassementVue();
+            afficheClassement();
         }
     }
 
     /// PARTIE JEU :
+    // Crée une partie (en initialisant toutes les variables, i.e le terrain, ...)
+    private void createPartie() {
+        // Initialisation des éléments
+        ArrayList<Joueur> ljou = new ArrayList<Joueur>();
+        for (int i = 0; i < 1; ++i) {
+            // L'image du perso doit être un carré. On prend la valeure la plus petite
+            double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
+            Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
+            String nomjoueur = "Mizer";
+            ljou.add(new Joueur(p, nomjoueur));
 
-    // Initialise toutes les images du menu
+        }
+        this.terrain = new Terrain(ljou, height, width, false, false, 0);
+    }
+
+    // Initialise toutes les images du JEU
     private void initGame() {
-        // view est l'image qui contiendra toutes les autres
-        view = new BufferedImage((int) terrain.getWidth(), (int) terrain.getHeight(), BufferedImage.TYPE_INT_RGB);
-        viewList = new ArrayList<ArrayList<BufferedImage>>();
+        // Stock des listes qui elles-mêmes stockes les données d'image de chaque joueur
+        // et qui ne changent jamais, i.e le perso et le nom, contrairement au score
+        joueurDataList = new ArrayList<ArrayList<BufferedImage>>();
 
         // Double try_catch pour gérer la différence entre windows & linux
         try {
@@ -343,21 +403,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground1.png"));
                 projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
 
+                // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
                     Joueur joueur = terrain.getListeJoueurs().get(i);
                     String nom = joueur.getNom().toLowerCase();
-                    // On stock dans ListAux les images liées à chaque joueur et qui ne changent
-                    // jamais, i.e le perso et le nom, contrairement au score
-                    ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
-                    // L'élément de rang 0 contient l'image du perso
-                    viewListAux.add(ImageIO.read(new File(chemin + "/personnages/persoBase.png")));
-                    // Les autres contiennent les lettres du nom du joueur
-                    for (int j = 0; j < nom.length(); ++j) {
-                        char c = (nom.charAt(j) == ' ') ? '0' : nom.charAt(j);
-                        BufferedImage lv = ImageIO.read(new File(chemin + "/lettres/lettre" + c + ".png"));
-                        viewListAux.add(lv);
-                    }
-                    viewList.add(viewListAux);
+                    // On a une liste qui ne contient que l'image du perso
+                    ArrayList<BufferedImage> persoData = new ArrayList<BufferedImage>();
+                    persoData.add(ImageIO.read(new File(chemin + "/personnages/persoBase.png")));
+                    // Suivie d'une liste qui contient le nom du joueur (i.e toutes les lettres)
+                    ArrayList<BufferedImage> nomData = createImageOfMot(nom);
+                    joueurDataList.add(persoData);
+                    joueurDataList.add(nomData);
                 }
             } catch (Exception e) {
                 terrainView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
@@ -367,22 +423,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 scoreBackgroundView = ImageIO.read(new File("src/gui/images/packBase/background/scoreBackground1.png"));
                 projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
 
+                // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
                     Joueur joueur = terrain.getListeJoueurs().get(i);
                     String nom = joueur.getNom().toLowerCase();
-                    // On stock dans ListAux les images liées à chaque joueur et qui ne changent
-                    // jamais, i.e le perso et le nom, contrairement au score
-                    ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
-                    // L'élément de rang 0 contient l'image du perso
-                    viewListAux.add(ImageIO.read(new File("src/gui/images/packBase/personnages/persoBase.png")));
-                    // Les autres contiennent les lettres du nom du joueur
-                    for (int j = 0; j < nom.length(); ++j) {
-                        char c = (nom.charAt(j) == ' ') ? '0' : nom.charAt(j);
-                        BufferedImage lv = ImageIO
-                                .read(new File("src/gui/images/packBase/lettres/lettre" + c + ".png"));
-                        viewListAux.add(lv);
-                    }
-                    viewList.add(viewListAux);
+                    // On a une liste qui ne contient que l'image du perso
+                    ArrayList<BufferedImage> persoData = new ArrayList<BufferedImage>();
+                    persoData.add(ImageIO.read(new File("src/gui/images/packBase/personnages/persoBase.png")));
+                    // Suivie d'une liste qui contient le nom du joueur (i.e toutes les lettres)
+                    ArrayList<BufferedImage> nomData = createImageOfMot(nom);
+                    joueurDataList.add(persoData);
+                    joueurDataList.add(nomData);
                 }
             }
         } catch (Exception e) {
@@ -427,8 +478,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Dessine toutes les images
     public void afficheGame() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
+        int tw = (int) terrain.getWidth(), th = (int) terrain.getHeight();
         // Affichage terrain
-        g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
+        g2.drawImage(terrainView, 0, 0, tw, th, null);
 
         // Affichage des plateformes
         for (Plateforme pf : terrain.getPlateformesListe()) {
@@ -439,35 +491,24 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Affichage du Score : seulement s'il n'y a qu'un joueur
         if (terrain.getListeJoueurs().size() == 1) {
             String score = String.valueOf(terrain.getListeJoueurs().get(0).getScore());
-            int sw = (int) (terrain.getWidth() * 0.09375), sh = (int) (terrain.getHeight() * 0.0536062378);
+            int sw = (int) (tw * 0.09375), sh = (int) (th * 0.0536062378);
             g2.drawImage(scoreBackgroundView, 2, 2, sw + (sw / 2 * (score.length() - 1)), sh, null);
-            for (int i = 0; i < score.length(); ++i) {
-                try {
-                    try {
-                        scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
-
-                    } catch (Exception e) {
-                        scoreView = ImageIO
-                                .read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                int x = (int) (terrain.getWidth() * 0.0078125); // Variable pour adapter en fonction de la résolution
-                g2.drawImage(scoreView, x + (5 * x * i), 5, x * 10, x * 10, null);
-            }
-
+            ArrayList<BufferedImage> scoreView = createImageOfMot(score);
+            int x = (int) (tw * 0.0078125); // Variable pour adapter en fonction de la résolution
+            afficheMot(g2, scoreView, x, 5, x * 10, x * 10, 5 * x, 0);
         }
 
         // Affichage des personnages + Nom
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            ArrayList<BufferedImage> jImData = viewList.get(i); // On récupère les données liées au joueur
+        for (int i = 0; i < terrain.getListeJoueurs().size(); i = i + 2) {
+            // On récupère les données liées au joueur
+            BufferedImage jPersoData = joueurDataList.get(i).get(0);
+            ArrayList<BufferedImage> jNomData = joueurDataList.get(i + 1);
             Personnage p = terrain.getListeJoueurs().get(i).getPerso();
-            g2.drawImage(jImData.get(0), (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
-            int c = (int) ((15 * (jImData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
-            for (int j = 1; j < jImData.size(); ++j) {
-                g2.drawImage(jImData.get(j), (int) (p.getX() - c + (15 * (j - 1))), (int) p.getY() - 15, 15, 15, null);
-            }
+
+            // Affichage du personnage :
+            g2.drawImage(jPersoData, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
+            int c = (int) ((20 * (jNomData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
+            afficheMot(g2, jNomData, (int) (p.getX() - c), (int) p.getY() - 15, 20, 20, 15, 10);
         }
         for (Joueur j : terrain.getListeJoueurs()) {
             Personnage pers = j.getPerso();
@@ -494,23 +535,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return isFin;
     }
 
-    private void updateClassement() throws IOException {
-        Joueur j = terrain.getListeJoueurs().get(0);
-        String score = String.valueOf(j.getScore());
-        System.out.println("Score à cette manche : " + j.getScore());
-
-        // Mise à jour dans le Classement Global
-        Classement c = new Classement();
-        c.ajoutClassement(j.getId(), j.getNom(), score);
-        c.afficherClassement();
-
-        // Mise à jour dans le Classement Local
-        History h = new History();
-        h.ajoutClassement(j.getId(), j.getNom(), score);
-        h.afficherClassement();
-    }
-
     private void runningGame() {
+        this.deltaTime = 10;
         // Gestion de l'ups constant
         double cnt = 0.0; // Compteur du nombre d'update
         double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
@@ -546,28 +572,42 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 // Le composant doit être afficheable (OK grâce à addNotify())
                 this.requestFocusInWindow();
 
+                initGENERAL();
+
                 // Initialisation des images
-                initMenuDemarrer();
-                initMenuFin();
-                runningMenuDemarrer();
-
-                createPartie();
-                initGame();
-                if (terrain.multiplayer) { // Si on est en mode multijoueur
-                    Thread t = new Thread(new ThreadMouvement(terrain)); // ???
-                    t.start();
+                // Si on est au niveau du menu démarrer
+                if (isMenuDemarrer && !isClassement && !isRunning && !isMenuFin) {
+                    initMenuDemarrer(); // On initialise les images
+                    runningMenuDemarrer(); // On lance le menu DEMARRER
                 }
-
-                runningGame();
-
-                if (endGame()) { // Si c'est la fin du jeu
-                    if (terrain.getListeJoueurs().size() == 1) // S'il n'y a qu'1 joueur, on affiche le score/LB
-                        updateClassement();
+                // Si on cliqué sur "Classement"
+                if (!isMenuDemarrer && isClassement && !isRunning && !isMenuFin) {
+                    initClassement(); // On initialise les images
+                    runningClassement(); // On lance le CLASSEMENT
+                }
+                // Si on a cliqué sur "Jouer solo"
+                if (!isMenuDemarrer && !isClassement && isRunning && !isMenuFin) {
+                    createPartie(); // On crée une partie
+                    initGame(); // On initialise les images
+                    if (terrain.multiplayer) { // Si on est en mode multijoueur
+                        Thread t = new Thread(new ThreadMouvement(terrain)); // ???
+                        t.start();
+                    }
+                    runningGame(); // On lance le JEU (en ups constant)
+                }
+                // Si c'est la fin du jeu
+                if (!isMenuDemarrer && !isClassement && !isRunning && !isMenuFin && endGame()) {
+                    isMenuDemarrer = false; // On met à jour toutes les variables boolean
+                    isClassement = false;
                     isRunning = false;
                     isMenuFin = true;
-                    runningMenuFin();
+                    updateClassement(); // On met à jour le classement et l'historique
                 }
-                System.out.println(isQuitte);
+                // Si on a fini le jeu sans erreur
+                if (!isMenuDemarrer && !isClassement && !isRunning && isMenuFin) {
+                    initMenuFin(); // On initialise les images
+                    runningMenuFin(); // On lance le menu FIN
+                }
             }
             System.exit(0);
         } catch (Exception e) {
@@ -661,62 +701,79 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         if (isMenuDemarrer) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                System.out.println(this.space);
-                if (this.space == 0) {
+                if (this.fleche == 0) { // Joueur Solo
                     isMenuDemarrer = false;
+                    isMenuFin = false;
+                    isClassement = false;
                     isRunning = true;
                     repaint();
                 }
-                if (this.space == 1) {
+                if (this.fleche == 1) { // Joueur à 2
                 }
 
-                if (this.space == 2) {
+                if (this.fleche == 2) { // Multijoueur
                 }
 
-                if (this.space == 3) {
-                    Classement c = new Classement();
-                    try {
-                        c.afficherClassement();
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
+                if (this.fleche == 3) { // Classement
+                    isRunning = false;
+                    isMenuFin = false;
+                    isClassement = true;
+                    isMenuDemarrer = false;
                 }
-                if (this.space == 4) {
+                if (this.fleche == 4) { // Quitter
                     isQuitte = true;
                     System.exit(0);
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_UP) {
-                this.space = (this.space == 0) ? 4 : this.space - 1;
-                System.out.println(this.space);
+                this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                this.space = (this.space == 4) ? 0 : this.space + 1;
-                System.out.println(this.space);
+                this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
             }
         }
 
         if (isMenuFin) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                System.out.println(this.space);
-                if (this.space == 5) {
+                if (this.fleche == 5) {
                     isRunning = false;
                     isMenuFin = false;
+                    isClassement = false;
                     isMenuDemarrer = true;
                     repaint();
                 }
-                if (this.space == 6) {
+                if (this.fleche == 6) {
                     isQuitte = true;
                     System.exit(0);
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_UP) {
-                this.space = (this.space == 5) ? 6 : this.space - 1;
-                System.out.println(this.space);
+                this.fleche = (this.fleche == 5) ? 6 : this.fleche - 1;
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                this.space = (this.space == 6) ? 5 : this.space + 1;
-                System.out.println(this.space);
+                this.fleche = (this.fleche == 6) ? 5 : this.fleche + 1;
+            }
+        }
+
+        if (isClassement) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (this.fleche == 7) {
+                    isRunning = false;
+                    isMenuFin = false;
+                    isClassement = false;
+                    isMenuDemarrer = true;
+                    repaint();
+                }
+                if (this.fleche == 8) {
+                    isQuitte = true;
+                    System.exit(0);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                this.fleche = (this.fleche == 7) ? 8 : this.fleche - 1;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                this.fleche = (this.fleche == 8) ? 7 : this.fleche + 1;
             }
         }
     }
