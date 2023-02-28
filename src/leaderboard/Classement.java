@@ -7,35 +7,8 @@ import java.io.*;
 public class Classement extends LeaderBoard {
 
     public Classement() {
+        // Initialisation des variables
         super("classement.csv");
-        try { // Initialise les ArrayList sur lesquelles on travail & l'en-tête
-            lectureFicher();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Sert à lire et enregistrer les données du fichier
-    @Override
-    void lectureFicher() throws IOException {
-        /// Ajout chaque ligne du fichier à la liste ligneCSV
-        // La classe BufferedReader, jumelée à FileReader, permet de lire
-        // des entrées deséquences de caractères.
-        // BufferedReader est utilisée pour sa méthode readLine.
-        BufferedReader lecteur = new BufferedReader(new FileReader(this.getFichier()));
-        for (String ligne = lecteur.readLine(); ligne != null; ligne = lecteur.readLine()) {
-            this.getLigneCSV().add(ligne);
-        }
-        this.setEntete(this.getLigneCSV().get(0)); // On récupère l'en-tête, on suppose que le fichier n'est jamais vide
-        this.getLigneCSV().remove(0); // On retire l'en-tête
-
-        lecteur.close(); // On libère les ressources
-
-        /// Ajout de toutes les colonnes de chaque ligne à la liste classement
-        for (String ligne : this.getLigneCSV()) { // On lit chaque ligne du fichier
-            String[] ligneData = ligne.split(","); // Et on place les données de chaque colonne dans un tableau
-            this.getLbData().add(ligneData);
-        }
     }
 
     // Ajout d'une ligne au classement

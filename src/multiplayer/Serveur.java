@@ -58,7 +58,7 @@ public class Serveur implements Runnable {
                 in = new ObjectOutputStream(client.serveur.getOutputStream());
                 in.writeObject(terrain.getPlateformesListe());
                 in.writeObject(terrain.getMyPlayer());
-                in.writeObject(terrain.pause);
+                in.writeObject(terrain.isPause());
 
             } catch (Exception e) {
                 e.printStackTrace();

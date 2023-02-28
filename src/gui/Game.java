@@ -1,17 +1,10 @@
 package gui;
 
-import java.io.*;
-import java.util.ArrayList;
+// Import de packages java :
 import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.JFrame;
-import javax.imageio.*;
-import javax.swing.JTextArea;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
-
-import gameobjects.*;
 
 public class Game extends JFrame {
 
