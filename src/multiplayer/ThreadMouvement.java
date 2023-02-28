@@ -25,7 +25,8 @@ public class ThreadMouvement implements Runnable {
                 Serveur serveur=terrain.host;
                 serveur.sendTerrain(terrain);
                 getPlayers(serveur);
-                System.out.println("ThreadMouvement.run() done");
+                // System.out.println("ThreadMouvement.run() done");
+                // serveur.printStatus();
             }else{
                 terrain.client.sendJoueur(terrain.getMyPlayer());//le client envoi le mvt de son joueur
                 terrain.client.receiveTerrain(terrain);    

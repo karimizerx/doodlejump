@@ -20,6 +20,7 @@ public class JoueurConnecte {
     public JoueurConnecte(Socket serveur,int c){
         this.serveur=serveur;
         this.id=c;
+        System.out.println("JoueurConnecte.JoueurConnecte() constructeur end");
     }
 
     protected void setServeur(Socket a){
@@ -36,11 +37,15 @@ public class JoueurConnecte {
         try {
             this.serveur=new Socket(ServerName,port);   
             System.out.println("JoueurConnecte.connecter() success"); 
-        } catch (Exception e) {
+            serveur.setKeepAlive(true);
+        }catch(SocketException s){
+            s.printStackTrace();
+        }catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Echec de connexion","Erreur",JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(-1);
         }
+        
         // getId();
         System.out.println("JoueurConnecte.connecter()");
     }
@@ -58,11 +63,15 @@ public class JoueurConnecte {
             terrain.isMenu=(boolean)in.readObject();
             terrain.pause=(boolean)in.readObject();
         }catch (ClassNotFoundException c){
-            // c.printStackTrace();
+            c.printStackTrace();
             System.out.println("classe perdu");
+        }catch(SocketException e){
+            
+            System.out.println("JoueurConnecte.receiveTerrain()");
+            System.out.println("JoueurConnecte.receiveTerrain() catch, am I connected: "+serveur.isConnected()+" am i closed: "+serveur.isClosed()+" am i isInputShutdown:"+serveur.isInputShutdown());
+            // receiveTerrain(terrain);
+            e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("JoueurConnecte.receiveTerrain() catch, am I connected: "+serveur.isConnected());
-            // e.printStackTrace();
             // System.exit(-1);
         }
     }

@@ -4,6 +4,7 @@ package multiplayer;
 
 import java.net.*;
 import java.util.ArrayList;
+import java.util.concurrent.Callable;
 import java.io.*;
 import javax.swing.*;
 
@@ -11,7 +12,7 @@ import gameobjects.Joueur;
 import gameobjects.Personnage;
 import gameobjects.Terrain;
 
-public class Serveur implements Runnable {
+public class Serveur{
 
     private ServerSocket serveurSocket;
     private ArrayList<JoueurConnecte> clients=new ArrayList<JoueurConnecte>();
@@ -42,6 +43,7 @@ public class Serveur implements Runnable {
             System.out.println("Serveur.accept() apres");
         }catch(Exception e){
             e.printStackTrace();
+            System.out.println("Serveur.accept(), failed");
         }
     }
 
@@ -73,24 +75,34 @@ public class Serveur implements Runnable {
 
     public volatile boolean end=false; 
 
-    @Override 
-    public void run(){
-        int c=1;
-        try {  
-            clients=new ArrayList<JoueurConnecte>();
-            while (!end) {    
-                System.out.println("Serveur.run() 0");
-                JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),++c);
-                System.out.println("Serveur.run() 1");
-                clients.add(a);
-                // sendInt(c, a);
-            }                
-            } catch (IOException e) { 
-            JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
-            System.exit(-1);
-        }  
-    }
-
+    public Callable<Integer> callable=new Callable<Integer>(){
+        @Override
+        public Integer call(){
+            int c=1;
+            ArrayList<ThreadHandeler> l=new ArrayList<ThreadHandeler>();
+            try {  
+                clients=new ArrayList<JoueurConnecte>();
+                while (!end) {    
+                    System.out.println("Serveur.run() 0");
+                    JoueurConnecte a =new JoueurConnecte(serveurSocket.accept(),++c);
+                    //TODO: probleme est ici
+                    l.add(new ThreadHandeler(a,c));
+                    new Thread(l.get(l.size()-1)).start();
+                    // accept();
+                    // sendInt(c, a);
+                    System.out.println("clients added, c="+c);
+                }                
+                } catch (Exception e) { 
+                JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
+                System.exit(-1);
+            } 
+            for (ThreadHandeler thread : l) {
+                thread.start=true;
+            }
+            System.out.println("le serveur est "+(serveurSocket.isClosed())); 
+            return c;
+        }
+    };
     private void sendInt(int c, JoueurConnecte a) {
         DataOutputStream out;
         try{
@@ -118,41 +130,7 @@ public class Serveur implements Runnable {
         return l;
     }
 
-    public volatile boolean start=false;
-    
-    public Thread commence= new Thread(new Runnable() {
-            public void run(){
-                DataOutputStream out;
-                System.out.println("Serveur.enclosing_method() before while");
-                while(!start){
-                // System.out.println("Serveur.enclosing_method() in while");
 
-                for(JoueurConnecte client : clients){
-                System.out.println("Serveur.enclosing_method() in for");
-
-                    try {
-                        out =  new DataOutputStream(client.serveur.getOutputStream());
-                        System.out.println("Serveur.enclosing_method() will send "+start);
-                        out.writeBoolean(start);
-                        System.out.println("Serveur.enclosing_method() has sent "+start);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } 
-                }
-            }
-            System.out.println("Serveur.enclosing_method() after while");
-            for(JoueurConnecte client : clients){
-                try {
-                    out =  new DataOutputStream(client.serveur.getOutputStream());
-                    out.writeBoolean(start);
-                    out.writeInt(clients.indexOf(client));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } 
-            }
-        }
-        
-        });
     
 
 
@@ -172,9 +150,9 @@ public class Serveur implements Runnable {
         return null;
     }
 
-
-    
-
+    void printStatus(){
+        System.out.println("le serveur est closed ??"+(serveurSocket.isClosed())); 
+    }
 
 
 

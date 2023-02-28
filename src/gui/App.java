@@ -115,7 +115,7 @@ public class App extends JFrame {
     private JPanel createMenuMulti() {
         // Initalisation du panel
         JPanel m = new JPanel();
-        m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
+        m.setLayout(new GridLayout(2, 0)); 
         m.setPreferredSize(new Dimension(150, 150));
 
         // Initialisation & ajout des élements dans le panel
@@ -148,17 +148,26 @@ public class App extends JFrame {
             m.add(label2);
             m.add(nomjoueur);
             m.add(end);
-            Thread t=new Thread(s);
-            t.start();
-            s.commence.start();
+            Runnable run = () -> {
+                try {
+                    this.nbj=s.callable.call();
+                    System.out.println("Returned " + nbj);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
+            new Thread(run).start();
+            
             System.out.println("App.createMenuHost() end");
             //TODO fix this
 
         } catch (IOException e) { 
             JOptionPane.showMessageDialog(null,"Aucun joueur n'a essayé pas de se connecter","Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
             System.exit(-1);
-        }  
-        this.nbj=c;
+        }  catch(Exception e){
+            e.printStackTrace();
+            System.exit(-1);
+        }
         System.out.println(c);
         return m;
     }
@@ -171,8 +180,8 @@ public class App extends JFrame {
         this.buttonPlay=new JButton("Jouer");
         this.buttonPlay.addActionListener(e ->{
             // On crée une nouvelle fenêtre de jeu
-            s.start=true;
             s.end=true;
+            System.out.println(c);
             DoodleJumpheur = createDJ();
             DoodleJumpheur.setVisible(true);
             this.dispose();
@@ -206,11 +215,11 @@ public class App extends JFrame {
 
     public JPanel createWaitingMenu(){
         JPanel m = new JPanel();
-        m.setLayout(new GridLayout(2, 0)); // +1 pour le bouton Play
+        m.setLayout(new GridLayout(2, 1)); // +1 pour le bouton Play
         m.setPreferredSize(new Dimension(170, 100));
         JLabel text=new JLabel("Waiting for host to start game");
-        System.out.println(text.getText());
         m.add(text);
+        System.out.println(text.getText());
         t.start();
         System.out.println("App.createWaitingMenu()");
         return m;
@@ -391,6 +400,7 @@ public class App extends JFrame {
             }catch(Exception e){
                 e.printStackTrace();
             }
+            
             System.out.println("DoodlePheur");
             DoodleJumpheur = createDJ();
             DoodleJumpheur.setVisible(true);
