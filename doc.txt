@@ -36,7 +36,6 @@ Documentation du projet de programmation : ED1A
                 La méthode "collides_plateforme(Plateforme pf, double deltaTime)" gère la collision entre le personnage et une plateforme. Si collision il y a, alors la vitesse en y change, toujours proportionnelle au deltaTime.
                 La méthode "collides_item(Items it, double deltaTime)" gère un cas suplémentaire mais est sensiblement identique.
                         
-
     ・Plateforme :
         ├── Type : Abstract.
         ├── Classes représentées : PlateformeBase, MovingPlateforme,...
@@ -61,16 +60,57 @@ Documentation du projet de programmation : ED1A
         └── Description :
             ├── Représente une plateforme mobile. C'est une Plateforme avec une vitesse en x (horizontale).
             ├── Le champs "dx" représente la vitesse de la plateforme en x.
-            └── 
+            └── La méthode "move(Terrain t)" fait bouger la plateforme en x.
 
-    ・Items [Abstract] : [Fusee, Helicoptere]
-        Représente les items, ce sont des objets qui dure un certains temps.
+    ・Items :
+        ├── Type : Abstract.
+        ├── Classes représentées : Fusée, Hélicoptère,...
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   ├── double x, y, width, height, saut.
+        │   └── boolean isNeedPied.
+        └── Description : 
+            ├── Représente un item. C'est un GameObjet avec un saut.
+            └── Le champs "saut" est une constante qui indique de combien le personnage va sauter en cas de collision. Constante différente en fonction de l'item.
+                Le champ "isNeedPied" gère la collision. Il indique si le personnage doit collisionner l'item avec les pieds (ex: ressort...) ou pas forcément (ex : fusée...).
 
-    ・Fusee & Helicoptere: 
-        Représente une fusee/helicoptere, qui est un item.
+    ・Fusee & Helicoptere :
+        ├── Extends : Item.
+        ├── Attributs : 
+        │   ├── double x, y, width, height, saut.
+        │   └── boolean isNeedPied.
+        └── Description : 
+            ├── Représente une Fusée/Hélicoptère.
+            └── La méthode "move" fait bouger l'item en x et y.
+    
+    ・Projectile :
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   └── double x, y, width, height, dx, dy. 
+        └── Description : 
+            ├── Représente un projectile. C'est un GameObject avec une vitesse en x et en y.
+            └── La méthode "limiteProjectile" gère le débordement (la sortie) du projectile par rapport aux limites du terrain.
+                La méthode "collides_monster" gère la collision entre le projectile et un monstre.
 
-    ・Moveable [Interface] : [Personnage, MovingPlateforme]
-       Gère la mobilité (en modifiant les coordonnées), avec temps passé.
+    ・Terrain :
+        ├── Attributs :
+        │   ├── ArrayList<Plateforme> plateformesListe.
+        │   ├── ArrayList<Joueur> ListeJoueurs.
+        │   ├── final double height, width.
+        │   ├── double diff_plateformes, difficulty.
+        │   ├── boolean pause, multiplayer, isHost.
+        │   ├── Serveur host.
+        │   ├── JoueurConnecte client.
+        │   └── final int playerID.
+        └── Description :
+            ├── Représente le terrain d'une GAME. Cette classe gère tous les composant d'une partie.
+            ├── Le champs "plateformesListe" conttient la liste de toutes les plateformes présentent sur le terrain.
+            ├── Le champs "ListeJoueurs" conttient la liste de tous les joueurs présents sur le terrain.
+            ├── Les champs "width, height" représentent la dimension du terrain. Celle-ci ne change jamais (final).
+            ├── Le champs "difficulty" représente la difficulté du jeu. Plus on avance, plus celle-ci augmente jusqu'à un maximum.
+            ├── Le champs "diff_plateformes" représente la différence en y entre 2 plateformes. Plus difficulty augmente, plus la différence est grande.
+            ├── Le champs
+            
 
     
 ### Modélisation du projet :

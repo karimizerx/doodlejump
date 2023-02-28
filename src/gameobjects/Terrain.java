@@ -22,7 +22,7 @@ public class Terrain {
     public boolean isHost;
     public Serveur host = null;
     public JoueurConnecte client = null;
-    public final int playerID;// si cest zero; il est host ou il est pas multijoueur
+    public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
 
     public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer, int id) {
         // Initialisation des champs
@@ -110,7 +110,7 @@ public class Terrain {
         for (int i = 0; i < p.getListProjectiles().size(); ++i) {
             Projectile pro = p.getListProjectiles().get(i);
             pro.setY(pro.getY() + pro.getDy());
-            if (pro.limite()) {
+            if (pro.limiteProjectile()) {
                 p.getListProjectiles().remove(pro);
             }
         }
