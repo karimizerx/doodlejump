@@ -34,11 +34,14 @@ public abstract class LeaderBoard {
         }
     }
 
+    // Ajout d'une ligne au classement
+    abstract void ajoutClassement(String id, String nom, String score) throws IOException;
+
     // Sert à lire et enregistrer les données du fichier
     protected void lectureFicher() throws IOException {
         /// Ajout chaque ligne du fichier à la liste ligneCSV
         // La classe BufferedReader, jumelée à FileReader, permet de lire
-        // des entrées deséquences de caractères.
+        // des entrées de séquences de caractères.
         // BufferedReader est utilisée pour sa méthode readLine.
         BufferedReader lecteur = new BufferedReader(new FileReader(this.getFichier()));
         for (String ligne = lecteur.readLine(); ligne != null; ligne = lecteur.readLine()) {
@@ -55,9 +58,6 @@ public abstract class LeaderBoard {
             this.getLbData().add(ligneData);
         }
     }
-
-    // Ajout d'une ligne au classement
-    abstract void ajoutClassement(String id, String nom, String score) throws IOException;
 
     /// Protected car visibles que par les classes
     // Trient une ArrayList par ordre décroissant
