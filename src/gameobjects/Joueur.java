@@ -9,10 +9,9 @@ import leaderboard.*;
 // Cette classe représente la personne qui joue.
 public class Joueur implements Serializable {
 
-    private String id;
+    private String id, nom;
     private int score;
     private Personnage perso;
-    private String nom;
 
     public Joueur(Personnage p, String name) {
         History h = new History();
@@ -24,7 +23,7 @@ public class Joueur implements Serializable {
         }
         this.perso = p;
         this.score = 0;
-        this.nom = name; // Nom par défaut est Mizer ou 1er au classement
+        this.nom = name; // Nom par défaut est Mizer ou nom de la dernière partie.
     }
 
     // Getter & Setter

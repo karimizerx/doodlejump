@@ -8,6 +8,24 @@ Documentation du projet de programmation : ED1A
 ## Partie 1 : Classes qui gèrent une partie :
 
 /gameobjects :
+    ・Joueur :
+        ├── Implements : Serializable.
+        ├── Attributs :
+        │   ├── String id, nom.
+        │   ├── Personnage p.
+        │   └── int score.
+        └── Description :
+            ├── Représente un joueur, i.e la personne qui joue.
+            ├── Chaque joueur possède, localement, un identifiant unique (champs "id"). Le nom, lui, peut varier au gré du joueur.
+            └── Le constructeur crée un joueur à partir d'un personnage et d'un nom. Et pas à partir d'un identifiant.
+                    En effet, le constructeur calcul lui-même cet identifiant, on regardant l'historique des parties locales dans "history.csv".
+                    Si le joueur a déjà joué une partie, alors il a déjà un identifiant attitré (qui ne change pas entre 2 parties). Le constructeur récupère alors l'identifiant de la dernière partie.
+                    Si le joueur n'a jamais joué de partie, le constructeur récupère l'identifiant le plus grand dans le classement (qui contient tous les scores de tous les joueurs), puis il assigne au joueur j l'identifiant maxId + 1.
+                    L'identifiant vaut bien évidement 0 si personne n'a jamais joué au jeu, i.e history.csv & classement.csv sont vides.
+                    Enfin, concernant le nom, il y a 3 possibilitées. Soit le joueur inscrit un nom au début de la partie. Alors celui-ci lui est affecté.
+                    Sinon, s'il n'inscrit rien, on essaye de récupérer le nom utilisé lors de la dernière partie. S'il existe, alors celui-ci lui est affecté.
+                    Sinon, si le joueur joue pour la première fois et n'entre pas de nom avant de jouer, on lui affecte le nom par défaut "MIZER".
+
     ・GameObject :
         ├── Implements : Serializable.
         ├── Type : Abstract.
