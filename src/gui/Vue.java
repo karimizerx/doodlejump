@@ -638,7 +638,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Gestion des boutons
 
     private void pause() {
-        this.terrain.pause = !this.terrain.pause;
+        this.terrain.setPause(!this.terrain.isPause());
         this.menuPause = new JFrame();
         this.menuPause.setBounds((int) terrain.getWidth() * 3 / 2 - 50, (int) terrain.getHeight() / 2 - 60, 150, 120);
         this.menuPause.setResizable(false);
@@ -654,7 +654,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         cont.addActionListener(ev -> {
             this.menuPause.dispose();
-            this.terrain.pause = !this.terrain.pause;
+            this.terrain.setPause(!this.terrain.isPause());
         });
 
         exit.addActionListener(ev -> {

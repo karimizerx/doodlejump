@@ -17,8 +17,8 @@ public class Terrain {
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
 
-    public boolean multiplayer;
-    public boolean isHost;
+    private boolean pause;
+    public boolean multiplayer, isHost;
     public Serveur host = null;
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
@@ -228,6 +228,14 @@ public class Terrain {
 
     public void setJoueur(ArrayList<Joueur> l) {
         ListeJoueurs = l;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 
 }

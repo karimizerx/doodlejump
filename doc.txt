@@ -165,7 +165,30 @@ Documentation du projet de programmation : ED1A
             ├── Le constructeur prend un fichier en argument est initialise les variables.
             ├── Les méthodes abstract "lectureFicher()" & "ajoutClassement" servent respectivement à lire le fichier & ajouter une sauvegarde au fichier (i.e id + nom + score). Ces méthodes sont redéfinies dans chaque sous-classes.
             ├── Les méthodes "getMaxScore" & "getMaxIndex" sont utilisées dans la méthode "classer()" qui sert ) trier le fichier en fonction des scores. Ces méthodes sont protected car visibles que par les sous-classes.
-            ├── La méthode "afficherLbData" affiche l'ensemble des données du fichier dans le terminal.
+            └── La méthode "afficherLbData" affiche l'ensemble des données du fichier dans le terminal.
+
+
+    ・Classement :
+        ├── Type : Abstract.
+        ├── Classes représentées : Classement, History.
+        ├── Attributs :
+        │   ├── final String separateur.
+        │   ├── String entete, chemin;
+        │   ├── File fichier;
+        │   ├── ArrayList<String> ligneCSV;
+        │   └── ArrayList<String[]> lbData;
+        └── Description :
+            ├── C'est un objet qui sert à sauvegarder, stocker et manipuler des données de score (locales ou globales).
+            ├── Le champ "separateur" indique quel est le type de séparateur dans le fichier csv. Celui-ci ne change pas (final).
+            ├── Le champ "entete" indique quel est l'en-tête du fichier csv, càd la première ligne qui indique à quoi correspond chaque colonne du fichier.
+            ├── Le champ "chemin" est le chemin vers le dossier qui contient les fichiers sur lesquels on travail.
+            ├── Le champ "fichier" est le fichier sur lequel on travail.
+            ├── Le champ "ligneCSV" est une liste de String, chaque String représentant une ligne du fichier.
+            └── Le champ "lbData" est une liste de tableau de chaine de caractères. Chaque tableau représente une ligne du fichier, avec pour élément [0] = identifiant, [1] = Nom, [2] = Score.
+            ├── Le constructeur prend un fichier en argument est initialise les variables.
+            ├── Les méthodes abstract "lectureFicher()" & "ajoutClassement" servent respectivement à lire le fichier & ajouter une sauvegarde au fichier (i.e id + nom + score). Ces méthodes sont redéfinies dans chaque sous-classes.
+            ├── Les méthodes "getMaxScore" & "getMaxIndex" sont utilisées dans la méthode "classer()" qui sert ) trier le fichier en fonction des scores. Ces méthodes sont protected car visibles que par les sous-classes.
+            └── La méthode "afficherLbData" affiche l'ensemble des données du fichier dans le terminal.
 ### Modélisation du projet :
 └── src
     ├── gameobjects /// Toutes les classes qui gère une partie
