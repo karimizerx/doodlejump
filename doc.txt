@@ -142,8 +142,12 @@ Documentation du projet de programmation : ED1A
                     Pour donner cette impression de monter quand on saute, on a décidé arbitrairement que lorsque la tête du personnage atteint la moitié de l'écran en y, toutes les plateformes s'abaissent.
                     À ce moment là, on met à jour la difficulté, le score, et on descend les plateformes, en s'assurant qu'elles restent bien dans le cadre. Dans le cas contraire, on !!!!!!!!!!!!!!!!!!! ELYO EXPLICATION !!!!!!!!!!!!!!!!!!
                     Enfin, on gère la collision entre le personnage et les plateformes, ainsi que le débordement avec "limite(Personnage p)".
-            
-## Partie 2 : Classes qui gèrent la sauvegarde des scores :
+
+## Partie 2 : Classes qui gèrent l'affichage :
+/gui :
+    ・Vue :
+
+## Partie 3 : Classes qui gèrent la sauvegarde des scores :
 /leaderBoard :
     ・LeaderBoard :
         ├── Type : Abstract.
@@ -163,14 +167,18 @@ Documentation du projet de programmation : ED1A
             ├── Le champ "ligneCSV" est une liste de String, chaque String représentant une ligne du fichier.
             └── Le champ "lbData" est une liste de tableau de chaine de caractères. Chaque tableau représente une ligne du fichier, avec pour élément [0] = identifiant, [1] = Nom, [2] = Score.
             ├── Le constructeur prend un fichier en argument est initialise les variables.
-            ├── Les méthodes abstract "lectureFicher()" & "ajoutClassement" servent respectivement à lire le fichier & ajouter une sauvegarde au fichier (i.e id + nom + score). Ces méthodes sont redéfinies dans chaque sous-classes.
+            ├── La méthode "lectureFichier()" sert à lire les données d'un fichier et à les stocker dans différentes variables (c.f attributs).
+                    On commence par ajouter toutes les lignes du fichiers dans "ligneCSV".
+                    La classe BufferedReader, jumelée à FileReader, permet de lire des entrées de séquences de caractères. BufferedReader est utilisée pour sa méthode readLine.
+                    En supposant que le fichier contient toujours au moins l'en-tête, on récupère celui-ci, avant de libérer les ressources du lecteur.
+                    Ensuite on ajoute, les données de chaque colonnes & chaque lignes du fichier dans lbData, comme expliqué ci-dessus. Cela nous permet de travailler exclusivement sur une ArrayList, plutôt que sur un fichier.
+            ├── La méthode abstract "ajoutClassement" sert à ajouter une sauvegarde au fichier (i.e id + nom + score). Cette méthode est redéfinie dans chaque sous-classes.
             ├── Les méthodes "getMaxScore" & "getMaxIndex" sont utilisées dans la méthode "classer()" qui sert ) trier le fichier en fonction des scores. Ces méthodes sont protected car visibles que par les sous-classes.
             └── La méthode "afficherLbData" affiche l'ensemble des données du fichier dans le terminal.
 
 
-    ・Classement :
-        ├── Type : Abstract.
-        ├── Classes représentées : Classement, History.
+    ・History :
+        ├── Extends : LeaderBoard.
         ├── Attributs :
         │   ├── final String separateur.
         │   ├── String entete, chemin;
@@ -178,17 +186,32 @@ Documentation du projet de programmation : ED1A
         │   ├── ArrayList<String> ligneCSV;
         │   └── ArrayList<String[]> lbData;
         └── Description :
-            ├── C'est un objet qui sert à sauvegarder, stocker et manipuler des données de score (locales ou globales).
-            ├── Le champ "separateur" indique quel est le type de séparateur dans le fichier csv. Celui-ci ne change pas (final).
-            ├── Le champ "entete" indique quel est l'en-tête du fichier csv, càd la première ligne qui indique à quoi correspond chaque colonne du fichier.
-            ├── Le champ "chemin" est le chemin vers le dossier qui contient les fichiers sur lesquels on travail.
-            ├── Le champ "fichier" est le fichier sur lequel on travail.
-            ├── Le champ "ligneCSV" est une liste de String, chaque String représentant une ligne du fichier.
-            └── Le champ "lbData" est une liste de tableau de chaine de caractères. Chaque tableau représente une ligne du fichier, avec pour élément [0] = identifiant, [1] = Nom, [2] = Score.
-            ├── Le constructeur prend un fichier en argument est initialise les variables.
-            ├── Les méthodes abstract "lectureFicher()" & "ajoutClassement" servent respectivement à lire le fichier & ajouter une sauvegarde au fichier (i.e id + nom + score). Ces méthodes sont redéfinies dans chaque sous-classes.
-            ├── Les méthodes "getMaxScore" & "getMaxIndex" sont utilisées dans la méthode "classer()" qui sert ) trier le fichier en fonction des scores. Ces méthodes sont protected car visibles que par les sous-classes.
-            └── La méthode "afficherLbData" affiche l'ensemble des données du fichier dans le terminal.
+            ├── C'est un objet qui sauvegarde les données de chaque parties, les unes à la suite des autres, tel un système de log. Il est utilisé pour ça mais aussi pour récupérer les données de la dernière partie aisément.
+            └── La méthode "ajoutClassement(String id, String nom, String score)" permet d'ajouter les données d'une partie.
+                    On commence par ajouter à la liste des données du fichier lbData un tableau contenant l'id, le nom et le score lors de la dernière partie.
+                    La classe BufferedWriter, jumelée à FileWriter, permet d'écrire des séquences de caractères dans le fichier. Mais celle-ci efface toutes les données et réécrit.
+                    On commence donc par ajouter l'en-tête au fichier, suivit de la mêthode newLine() de BufferedWriter qui passe elle-même à la ligne suivante, peut importe le délimiteur.
+                    Puis, pour chaque ligne dans lbData (i.e chaque tableau de String), on écrit l'id, le séparateur, le nom, le séparateur, le score et un newLigne().
+                    On libère les ressources du writer à la fin. C'est ainsi qu'on a réécrit toutes les données + les nouvelles dans le fichier history.csv.
+
+
+        ・Classement :
+        ├── Extends : LeaderBoard.
+        ├── Attributs :
+        │   ├── final String separateur.
+        │   ├── String entete, chemin;
+        │   ├── File fichier;
+        │   ├── ArrayList<String> ligneCSV;
+        │   └── ArrayList<String[]> lbData;
+        └── Description :
+            ├── C'est un objet qui sauvegarde les données de chaque parties, de façon triées, pour tous les joueurs (c'est un classement global).
+            └── La méthode "ajoutClassement(String id, String nom, String score)" permet d'ajouter les données d'une partie.
+                    Elle fonctionne exactement de la même manière que celle de history, à une différence près : juste avant de commencer à écrire dans le fichier, on le classe avec la méthode "LeaderBoard.classer".
+                La méthode "getMaxId" renvoie le plus grand identifiant présent dans le classement. Cette méthode est utilisée pour créer un nouvel identifiant local.
+                La méthode "getMaxScoreOfId(String id)" renvoie le plus haut score pour un identifiant donné.
+
+## Partie 4 : Classes qui gèrent le mode multijoueur :
+!!!!!!!!!!! EXPLICATION FARES !!!!!!!!!
 ### Modélisation du projet :
 └── src
     ├── gameobjects /// Toutes les classes qui gère une partie
