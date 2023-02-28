@@ -143,7 +143,15 @@ Documentation du projet de programmation : ED1A
                     À ce moment là, on met à jour la difficulté, le score, et on descend les plateformes, en s'assurant qu'elles restent bien dans le cadre. Dans le cas contraire, on !!!!!!!!!!!!!!!!!!! ELYO EXPLICATION !!!!!!!!!!!!!!!!!!
                     Enfin, on gère la collision entre le personnage et les plateformes, ainsi que le débordement avec "limite(Personnage p)".
             
-
+## Partie 2 : Classes qui gèrent la sauvegarde des scores :
+/leaderBoard :
+    ・LeaderBoard :
+        ├── Type : Abstract.
+        ├── Attributs :
+        │   ├── final String separateur.
+        │   ├── Personnage p.
+        │   └── int score.
+        └── Description :
     
 ### Modélisation du projet :
 └── src

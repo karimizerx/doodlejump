@@ -2,17 +2,16 @@ package leaderboard;
 
 // Import de packages java
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 // Un LeaderBoard est un objet défini pour stocker les données de score.
 public abstract class LeaderBoard {
 
     private final String separateur;
-    private String entete;
+    private String entete, chemin;
     private File fichier;
     private ArrayList<String> ligneCSV;
     private ArrayList<String[]> lbData;
-    private String chemin;
 
     public LeaderBoard(String nomFichier) {
         // On initialise les attributs
