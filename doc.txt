@@ -98,18 +98,32 @@ Documentation du projet de programmation : ED1A
         │   ├── ArrayList<Joueur> ListeJoueurs.
         │   ├── final double height, width.
         │   ├── double diff_plateformes, difficulty.
-        │   ├── boolean pause, multiplayer, isHost.
+        │   ├── boolean multiplayer, isHost.
         │   ├── Serveur host.
         │   ├── JoueurConnecte client.
         │   └── final int playerID.
         └── Description :
             ├── Représente le terrain d'une GAME. Cette classe gère tous les composant d'une partie.
+            │
             ├── Le champs "plateformesListe" conttient la liste de toutes les plateformes présentent sur le terrain.
             ├── Le champs "ListeJoueurs" conttient la liste de tous les joueurs présents sur le terrain.
             ├── Les champs "width, height" représentent la dimension du terrain. Celle-ci ne change jamais (final).
-            ├── Le champs "difficulty" représente la difficulté du jeu. Plus on avance, plus celle-ci augmente jusqu'à un maximum.
+            ├── Le champs "difficulty" représente la difficulté du jeu. Plus on avance, plus celle-ci augmente jusqu'à un maximum. La difficulté affecte la densité des plateformes et la probabilité qu'un item bonus/malus apparaisse.
             ├── Le champs "diff_plateformes" représente la différence en y entre 2 plateformes. Plus difficulty augmente, plus la différence est grande.
-            ├── Le champs
+            └── Les champs "multiplayer", "isHost", "host", "client" "playerID" !!!!!!!!! EXPLICATION CHEZ FARES !!!!!!!!!!!
+            │
+            ├── Le constructeur initialise les variables et fait appel à la méthode "generateObstacles()".
+            ├── La méthode "generateObstacles()" crée la liste des plateformes. Les dimensions sont adaptées à toutes les résolutions. !!!!!!!!! EXPLICATION CHEZ ELYO !!!!!!!!!!
+            ├── La méthode "highestPlateforme()" renvoie la plateforme la plus haute sur le terrain.
+            ├── La méthode "limite(Personnage)" gère le cas où le personnage déborde d'un côté ou l'autre du terrain. Si plus de la moitié du personnage déborde d'un côté, alors il réapparaît de l'autre côté.
+            ├── La méthode "update(double deltaTime)" met à jour les variables du jeu. Elle appelle, pour tous les joueurs, la méthode "update(Joueur j, double deltaTime)".
+            └── La méthode "update(Joueur j, double deltaTime)" met à jour les variables du jeu pour un joueur j donné.
+                    Cette méthode commence par gérer le ralentissement du personnage, en mettant à jour sa vitesse dy et sa position en y.
+                    Ensuite, si les pieds du personnage touche le bas de la fenêtre, le jeu se termine.
+                    Puis, elle se charge de mettre à jour la position de tous les projectiles lancés par le joueur.
+                    Pour donner cette impression de monter quand on saute, on a décidé arbitrairement que lorsque la tête du personnage atteint la moitié de l'écran en y, toutes les plateformes s'abaissent.
+                    À ce moment là, on met à jour la difficulté, le score, et on descend les plateformes, en s'assurant qu'elles restent bien dans le cadre. Dans le cas contraire, on !!!!!!!!!!!!!!!!!!! ELYO EXPLICATION !!!!!!!!!!!!!!!!!!
+                    Enfin, on gère la collision entre le personnage et les plateformes, ainsi que le débordement avec "limite(Personnage p)".
             
 
     

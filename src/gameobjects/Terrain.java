@@ -16,7 +16,6 @@ public class Terrain {
     private double diff_plateformes; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
-    public boolean pause;
 
     public boolean multiplayer;
     public boolean isHost;
@@ -30,7 +29,6 @@ public class Terrain {
         this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
-        this.pause = false;
         this.diff_plateformes = 41040 / this.height;
         this.multiplayer = multiplayer;
         this.isHost = host;
@@ -42,7 +40,7 @@ public class Terrain {
         generateObstacles();
     }
 
-    // Crée la liste des plateformes (avec un nbPlateformes en entrée)
+    // Crée la liste des plateformes
     private void generateObstacles() {
         // Taille des plateformes en fonction de la taille de la fenêtre
         double w = this.width * 0.09375, h = 0.0194931774 * this.height;
@@ -107,6 +105,8 @@ public class Terrain {
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
             Vue.isRunningGame = false;
         }
+
+        // Affichage des projectiles :
         for (int i = 0; i < p.getListProjectiles().size(); ++i) {
             Projectile pro = p.getListProjectiles().get(i);
             pro.setY(pro.getY() + pro.getDy());
@@ -180,14 +180,6 @@ public class Terrain {
 
     public void setDiff_plateformes(double diff_plateformes) {
         this.diff_plateformes = diff_plateformes;
-    }
-
-    public boolean isPause() {
-        return pause;
-    }
-
-    public void setPause(boolean pause) {
-        this.pause = pause;
     }
 
     public boolean isMultiplayer() {
