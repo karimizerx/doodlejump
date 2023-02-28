@@ -93,6 +93,6 @@ public class Classement extends LeaderBoard {
     // Affichage dans la console
     public void afficherClassement() throws IOException {
         System.out.println("########## CLASSEMENT GLOBAL ##########");
-        super.afficherClassement(this.getLbData());
+        super.afficherLbData(this.getLbData());
     }
 }

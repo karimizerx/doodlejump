@@ -69,6 +69,6 @@ public class History extends LeaderBoard {
     // Affichage dans la console
     public void afficherClassement() throws IOException {
         System.out.println("########## HISTORIQUE DE SCORE (LOCAL) ##########");
-        super.afficherClassement(this.getLbData());
+        super.afficherLbData(this.getLbData());
     }
 }

@@ -67,7 +67,7 @@ public abstract class LeaderBoard {
     }
 
     // Affichage dans la console
-    protected void afficherClassement(ArrayList<String[]> cl) throws IOException {
+    protected void afficherLbData(ArrayList<String[]> cl) throws IOException {
         for (int i = 0; i < cl.size(); ++i) {
             String nom = cl.get(i)[1];
             String score = cl.get(i)[2];
