@@ -1,11 +1,10 @@
 package gameobjects;
 
 // Import de packages java
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 // Import d'autres dossiers
-import gui.Vue;
+import gui.*;
 import multiplayer.*;
 
 public class Terrain {
@@ -106,7 +105,7 @@ public class Terrain {
 
         // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
-            Vue.isRunning = false;
+            Vue.isRunningGame = false;
         }
         for (int i = 0; i < p.getListProjectiles().size(); ++i) {
             Projectile pro = p.getListProjectiles().get(i);

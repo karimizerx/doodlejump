@@ -15,11 +15,11 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.imageio.*;
 
-// S'occupe d'afficher les éléments du terrain
+// S'occupe de tout l'affichage du jeu, des menus jusqu'à une partie.
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique le statut actuel du panel
-    public static boolean isQuitte, isRunning, isMenuDemarrer, isMenuFin, isClassement;
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuFin, isClassement;
     private final int width, height; // Dimensions du panel
     private ThreadMouvement threadMvt = null; // ???
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
@@ -32,6 +32,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             buttonRetourMenu, doublePoint;
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     private int fleche, xfleche, yfleche, wfleche, hfleche;
+    // Les espacement représente les sauts de ligne respectif à chaque statut
     private int espacementMenuDemarrer, espacementMenuFin, espacementJeu, espacementClassement;
     private Terrain terrain; // Le terrain sur lequel on joue
     private JFrame menuPause; // Le menu pause
@@ -296,28 +297,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Met à jour les images du CLASSEMENT
     private void updateClassementVue() {
-        Classement c = new Classement();
-        ArrayList<String[]> cl = c.getLbData();
-
-        lbView = new ArrayList<ArrayList<BufferedImage>>();
-        int imax = (cl.size() > 10) ? 10 : cl.size();
-        for (int i = 0; i < imax; ++i) {
-            String n = cl.get(i)[1];
-            String s = cl.get(i)[2];
-
-            ArrayList<BufferedImage> rank = createImageOfMot(String.valueOf(i + 1));
-            ArrayList<BufferedImage> name = createImageOfMot(n);
-            ArrayList<BufferedImage> score = createImageOfMot(s);
-            ArrayList<BufferedImage> espace = createImageOfMot(" ");
-
-            lbView.add(rank);
-            lbView.add(espace);
-            lbView.add(name);
-            lbView.add(espace);
-            lbView.add(score);
-            lbView.add(espace);
-        }
-
         this.wfleche = 30;
         this.hfleche = 30;
         this.xfleche = (10 * width / 100) - 35; // La fleche se place toujours ici en x
@@ -363,9 +342,33 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g.dispose(); // On libère les ressource
     }
 
+    // Fait tourner
     private void runningClassement() {
         this.fleche = 7;
         this.espacementClassement = 50;
+
+        // On récupère les données du classementque l'on va afficher
+        Classement c = new Classement();
+        ArrayList<String[]> cl = c.getLbData();
+
+        int imax = (cl.size() > 10) ? 10 : cl.size();
+        for (int i = 0; i < imax; ++i) {
+            String n = cl.get(i)[1];
+            String s = cl.get(i)[2];
+
+            ArrayList<BufferedImage> rank = createImageOfMot(String.valueOf(i + 1));
+            ArrayList<BufferedImage> name = createImageOfMot(n);
+            ArrayList<BufferedImage> score = createImageOfMot(s);
+            ArrayList<BufferedImage> espace = createImageOfMot(" ");
+
+            lbView.add(rank);
+            lbView.add(espace);
+            lbView.add(name);
+            lbView.add(espace);
+            lbView.add(score);
+            lbView.add(espace);
+        }
+
         while (isClassement) {
             updateClassementVue();
             afficheClassement();
@@ -441,7 +444,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    // Met à jour l'affichage
+    // Met à jour l'affichage du JEU
     private void updateGame(double dTime) {
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
             Joueur j = terrain.getListeJoueurs().get(i);
@@ -467,15 +470,15 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 p.setInertLeft(false);
                 p.setDx(0);
             }
-            if (p.isSpace() && p.isTirPossible()) { // Si on tire, on ne tire plus
+            if (p.isShoot() && p.iscanShoot()) { // Si on tire, on ne tire plus
                 p.tirer(0.046875 * terrain.getWidth(), 0.02923397661 * terrain.getHeight(), 0, -deltaTime);
-                p.setSpace(false);
+                p.setShoot(false);
             }
         }
         terrain.update(dTime);
     }
 
-    // Dessine toutes les images
+    // Dessine toutes les images du JEU
     public void afficheGame() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         int tw = (int) terrain.getWidth(), th = (int) terrain.getHeight();
@@ -535,13 +538,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return isFin;
     }
 
+    // Fait tourner le JEU (avec ups constant)
     private void runningGame() {
         this.deltaTime = 10;
         // Gestion de l'ups constant
         double cnt = 0.0; // Compteur du nombre d'update
         double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
         long t0 = System.currentTimeMillis(); // Temps actuel
-        while (isRunning) { // Tant que le jeu tourne
+        while (isRunningGame) { // Tant que le jeu tourne
             if (!terrain.isPause()) { // Tant qu'on appuie pas sur pause
                 long t1 = System.currentTimeMillis();
                 long t = t1 - t0;
@@ -560,56 +564,57 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    // Fait tourner le jeu
+    // Fait tourner le jeu Doodle Jump au complet
     // Cette méthode contient les traitements
     @Override
     public void run() {
         try {
-            while (!isQuitte) {
-
-                // Demande à ce que ce composant obtienne le focus.
+            while (!isQuitte) { // Tant qu'on a pas quitter le jeu :
+                // Cette méthode (ci dessous) demande à ce que ce composant obtienne le focus.
                 // Le focus est le fait qu'un composant soit sélectionné ou pas.
                 // Le composant doit être afficheable (OK grâce à addNotify())
                 this.requestFocusInWindow();
 
+                // ETAPE 1 : On initialise les images qui ne changent pas en fonction du statut
                 initGENERAL();
 
-                // Initialisation des images
-                // Si on est au niveau du menu démarrer
-                if (isMenuDemarrer && !isClassement && !isRunning && !isMenuFin) {
-                    initMenuDemarrer(); // On initialise les images
-                    runningMenuDemarrer(); // On lance le menu DEMARRER
+                // ETAPE 2 : On gère les différent statut du jeu !
+                // Si on est au niveau du menu DEMARRER :
+                if (isMenuDemarrer && !isClassement && !isRunningGame && !isMenuFin) {
+                    initMenuDemarrer(); // On initialise les images du menu DEMARRER.
+                    runningMenuDemarrer(); // On lance le menu DEMARRER.
                 }
-                // Si on cliqué sur "Classement"
-                if (!isMenuDemarrer && isClassement && !isRunning && !isMenuFin) {
-                    initClassement(); // On initialise les images
-                    runningClassement(); // On lance le CLASSEMENT
+                // Si on a cliqué sur le boutton "Classement" :
+                if (!isMenuDemarrer && isClassement && !isRunningGame && !isMenuFin) {
+                    initClassement(); // On initialise les images du CLASSEMENT.
+                    runningClassement(); // On lance le CLASSEMENT.
                 }
-                // Si on a cliqué sur "Jouer solo"
-                if (!isMenuDemarrer && !isClassement && isRunning && !isMenuFin) {
-                    createPartie(); // On crée une partie
-                    initGame(); // On initialise les images
+                // Si on a cliqué sur le boutton "Jouer solo" :
+                if (!isMenuDemarrer && !isClassement && isRunningGame && !isMenuFin) {
+                    createPartie(); // On crée une partie.
+                    initGame(); // On initialise les images de la GAME.
                     if (terrain.multiplayer) { // Si on est en mode multijoueur
                         Thread t = new Thread(new ThreadMouvement(terrain)); // ???
                         t.start();
                     }
-                    runningGame(); // On lance le JEU (en ups constant)
+                    runningGame(); // On lance la GAME (en ups constant).
                 }
-                // Si c'est la fin du jeu
-                if (!isMenuDemarrer && !isClassement && !isRunning && !isMenuFin && endGame()) {
-                    isMenuDemarrer = false; // On met à jour toutes les variables boolean
+                // Si c'est la fin de la GAME (quelqu'un a perdu) :
+                if (!isMenuDemarrer && !isClassement && !isRunningGame && !isMenuFin && endGame()) {
+                    // On met à jour toutes les variables boolean.
+                    isMenuDemarrer = false;
                     isClassement = false;
-                    isRunning = false;
+                    isRunningGame = false;
                     isMenuFin = true;
-                    updateClassement(); // On met à jour le classement et l'historique
+                    updateClassement(); // On met à jour le classement et l'historique.
                 }
-                // Si on a fini le jeu sans erreur
-                if (!isMenuDemarrer && !isClassement && !isRunning && isMenuFin) {
-                    initMenuFin(); // On initialise les images
-                    runningMenuFin(); // On lance le menu FIN
+                // Si on a fini la GAME sans erreur :
+                if (!isMenuDemarrer && !isClassement && !isRunningGame && isMenuFin) {
+                    initMenuFin(); // On initialise les images du menu FIN.
+                    runningMenuFin(); // On lance le menu FIN.
                 }
             }
-            System.exit(0);
+            System.exit(0); // Si on a quitté le jeu, on ferme tout le programme.
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -661,8 +666,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons repaint();
-
-        if (isRunning) {
+        if (isRunningGame) {
             Personnage p1;
             Personnage p2;
             if ((!terrain.multiplayer))
@@ -689,10 +693,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     p2.setInertLeft(false);
                 }
             }
-            if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()) {
-                p1.setSpace(true);// Si on a le droit de tirer et qu'on tire
-                p1.setTirPossible(false);// On a pas le droit de re-tirer
-                // On indique qu'on vient de tirer
+            // Si on a le droit de tirer et qu'on tire :
+            if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.iscanShoot()) {
+                p1.setShoot(true); // On indique qu'on vient de tirer.
+                p1.setcanShoot(false);// On a pas le droit de re-tirer.
             }
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 pause();
@@ -705,7 +709,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     isMenuDemarrer = false;
                     isMenuFin = false;
                     isClassement = false;
-                    isRunning = true;
+                    isRunningGame = true;
                     repaint();
                 }
                 if (this.fleche == 1) { // Joueur à 2
@@ -715,7 +719,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 }
 
                 if (this.fleche == 3) { // Classement
-                    isRunning = false;
+                    isRunningGame = false;
                     isMenuFin = false;
                     isClassement = true;
                     isMenuDemarrer = false;
@@ -736,7 +740,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (isMenuFin) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if (this.fleche == 5) {
-                    isRunning = false;
+                    isRunningGame = false;
                     isMenuFin = false;
                     isClassement = false;
                     isMenuDemarrer = true;
@@ -758,7 +762,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (isClassement) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if (this.fleche == 7) {
-                    isRunning = false;
+                    isRunningGame = false;
                     isMenuFin = false;
                     isClassement = false;
                     isMenuDemarrer = true;
@@ -780,7 +784,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyReleased(KeyEvent e) { // On relâche les boutons
-        if (isRunning) {
+        if (isRunningGame) {
             Personnage p1;
             Personnage p2;
             if ((!terrain.multiplayer))
@@ -808,7 +812,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                p1.setTirPossible(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
+                p1.setcanShoot(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
                 // On oblige donc le joueur à lâcher pour tirer
             }
         }

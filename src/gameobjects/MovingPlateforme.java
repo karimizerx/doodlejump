@@ -10,6 +10,7 @@ public class MovingPlateforme extends Plateforme {
         this.dx = dx;
     }
 
+    // Méthodes de la classe :
     public void move(Terrain t) { // Modifie la position en x
         this.setX(this.getX() + dx);
         if (this.getX() >= t.getWidth() - this.getWidth() || this.getX() <= 0) {

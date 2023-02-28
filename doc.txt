@@ -1,23 +1,67 @@
-Documentation du projet de programmation : ED1A 
+Documentation du projet de programmation : ED1A
 
-/src/
-contient le code source du jeu
+### Description de toutes les classes :
+
+/src : 
+    ─> contient le code source du jeu.
+
+## Partie 1 : Classes qui gèrent une partie :
 
 /gameobjects :
-    ・GameObject [Abstract] : [Items, Personnage, Plateforme]
-        Représente les différents types d'objets, par des coordonnées et des dimensions.
+    ・GameObject :
+        ├── Implements : Serializable.
+        ├── Type : Abstract.
+        ├── Classes représentées : Items, Personnage, Plateforme, Projectile.
+        ├── Attributs :
+        |   └── double x, y, width, height.
+        └── Description :
+                Représente les différents types d'objets d'une GAME, par des coordonnées et des dimensions.
 
     ・Personnage :
-        Représente un personnage, c'est un objet avec une vitesse en x et en y.
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   ├── double x, y, width, height, dx, dy. 
+        │   ├── boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot.
+        │   └── ArrayList<Projectile> listProjectiles.
+        └── Description : 
+            ├── Représente un personnage. C'est un GameObjet avec une vitesse en x et en y.
+            ├── Les champs "isRight" & "isLeft" indique si le joueur appuye sur les boutons droite/gauche ou pas. Ils servent à faire bouger le personnage.
+            │   Les champs "isInertRight" & "isInertLeft" gèrent l'inertie, càd que le relâchement du bouton implique un ralentissement de la vitesse du personnage en x, et non un arrêt net.
+            │   Les champs "isShoot" et "canShoot" sont liés aux projectiles. isShoot indique si le personnage vient de tirer, & canShoot indique si le personnage à le droit de tirer. Ces champs fonctionnent comme ceci :
+            │       Si on a le droit de tirer et que l'on tire (i.e on apuie sur le bouton "tirer"), alors on indique que l'on vient de lancer le processus de tir et que l'on a plus le droit de tirer.
+            │       Si on lâche le bouton "tirer", alors on a de nouveau le droit de "tirer".
+            │       Si (isShoot && iscanShoot), i.e on vient de lancer le processus de tir & on a le droit de tirer (càd dès qu'on relâche le bouton "tirer"), alors on tire et on indique qu'on ne tir plus. 
+            │   Le champs "listProjectiles" stock tous les projectiles lancés par le personnage et qui sont toujours sur le terrain.
+            └── La méthode "tirer(double w, double h, double vx, double vy)" ajoute un projectile à la liste des projectiles.
+                La méthode "collides_plateforme(Plateforme pf, double deltaTime)" gère la collision entre le personnage et une plateforme. Si collision il y a, alors la vitesse en y change, toujours proportionnelle au deltaTime.
+                La méthode "collides_item(Items it, double deltaTime)" gère un cas suplémentaire mais est sensiblement identique.
+                        
 
-    ・Plateforme [Abstract] : [PlateformeBase,...]
-        Représente une plateforme, c'est un objet avec une constante de saut.
+    ・Plateforme :
+        ├── Type : Abstract.
+        ├── Classes représentées : PlateformeBase, MovingPlateforme,...
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   └── double x, y, width, height, saut.
+        └── Description : 
+            ├── Représente une plateforme. C'est un GameObjet avec un saut.
+            └── Le champs "saut" est une constante qui indique de combien le personnage va sauter en cas de collision. Constante différente en fonction de la plateforme.
 
     ・PlateformeBase :
-        Représente les plateforme de type basique.
+        ├── Extends : Plateforme.
+        ├── Attributs : 
+        │   └── double x, y, width, height, saut.
+        └── Description : 
+            └── Représente une plateforme basique.
 
     ・MovingPlateforme :
-        Représente une plateforme qui bouge, à l'horizontale.
+        ├── Extends : Plateforme.
+        ├── Attributs : 
+        │   └── double x, y, width, height, saut, dx.
+        └── Description :
+            ├── Représente une plateforme mobile. C'est une Plateforme avec une vitesse en x (horizontale).
+            ├── Le champs "dx" représente la vitesse de la plateforme en x.
+            └── 
 
     ・Items [Abstract] : [Fusee, Helicoptere]
         Représente les items, ce sont des objets qui dure un certains temps.
@@ -29,24 +73,47 @@ contient le code source du jeu
        Gère la mobilité (en modifiant les coordonnées), avec temps passé.
 
     
-
-src
-    ├── gameobjects
+### Modélisation du projet :
+└── src
+    ├── gameobjects /// Toutes les classes qui gère une partie
     │   ├── Fusee.java
     │   ├── GameObject.java
     │   ├── Helicoptere.java
-    │   ├── Items.java
-    │   ├── Joueur.java
-    │   ├── Moveable.java
+    │   ├── Items.java // (ABS) Représente un item.
+    │   ├── Joueur.java // Représente un joueur.
     │   ├── MovingPlateforme.java
     │   ├── Personnage.java
     │   ├── PlateformeBase.java
-    │   ├── Plateforme.java
-    │   └── Terrain.java
-    └── gui
-        ├── App.java
-        ├── images
-        │   ├── background.png
-        │   ├── doodle.png
-        │   └── plateforme.png
-        └── Vue.java
+    │   ├── Plateforme.java // (ABS) Représente une plateforme.
+    │   ├── Projectile.java
+    │   └── Terrain.java // (MAIN) Gère tous les éléments d'une partie.
+    ├── gui
+    │   ├── App.java
+    │   ├── Game.java // Représente la fenêtre générale qui contient vue.
+    │   ├── Vue.java // (JPanel) S'occupe de tout ce qui est lié à l'affichage.
+    │   └── images // Stocke les différents pack de skin
+    │       └── packBase // Exemple de pack de skin (tous les packs ont la même structure)
+    │           ├── background
+    │           │   └──> Contient les différents background.
+    │           ├── chiffres
+    │           │   └──> Contient des images de chiffres.
+    │           ├── icon
+    │           │   └──> Contient différents icones.
+    │           ├── lettres
+    │           │   └──> Contient des images de lettres. 
+    │           ├── personnages
+    │           │   └──> Contient les différents skin du personnage.
+    │           ├── plateformes
+    │           │   └──> Contient les différents types de plateformes.
+    │           └── items
+    |               └──> Contient les différents items du jeu.
+    ├── leaderboard // Contient les classes qui gère la sauvegarde des scores et tout ce qui est lié au classement.
+    │   ├── classement.csv // Fichier (trié) qui contient les scores de tous les joueurs (classement globale).
+    │   ├── Classement.java
+    │   ├── history.csv // Fichier (non trié) qui fait offiche de "log locale". Contient l'historique des parties du joueur local.
+    │   ├── History.java
+    │   └── LeaderBoard.java // (ABS) Sert à représenter le classement et l'historique.
+    └── multiplayer
+        ├── JoueurConnecte.java
+        ├── Serveur.java
+        └── ThreadMouvement.java
