@@ -19,14 +19,18 @@ import multiplayer.Serveur;
 public class App extends JFrame {
     JFrame DoodleJumpheur; // La fenêtre de jeu
     JPanel menu, menu2; // Menu démarrer
+    
     JButton buttonSolo, button2joueur, buttonMulti, buttonLeaderboard, buttonExit, buttonPlay;
-    JButton h = new JButton("Host"), c = new JButton("Connecter-vous");JButton end=new JButton("start");
+    JButton h = new JButton("Host"); 
+    JButton c = new JButton("Connecter-vous");
+    JButton end=new JButton("start");
+    
     int width = Toolkit.getDefaultToolkit().getScreenSize().width; // Largeur de l'écran
     int height = Toolkit.getDefaultToolkit().getScreenSize().height; // Longueur de l'écran
     int nbj; // Nombre de joueurs
     boolean multiplayer=false,host=false;
     ArrayList<String> names=new ArrayList<String>();
-    Serveur s=new Serveur();
+    Serveur s;
     JoueurConnecte j=new JoueurConnecte();
 
     public App() {
@@ -142,22 +146,41 @@ public class App extends JFrame {
         try {  
             s=new Serveur();
             System.out.println("App.createMenuHost()");
-            label1.setText(s.start()[0]);
-            label2.setText(s.start()[1]);
+            String[] arg=s.start();
+            label1.setText(arg[0]);
+            label2.setText(arg[1]);
             m.add(label1);
             m.add(label2);
             m.add(nomjoueur);
             m.add(end);
-            Runnable run = () -> {
+            end.addActionListener(e ->{
+                System.out.println("entrée dans App.gestionEvent()");
+                s.end=true;
+                // int c=0;
+                // while(!(menu.getComponent(c) instanceof JTextArea)){c++;System.out.println("App.gestionEvent() dans le while pour le nom");}    
+                System.out.println("App.gestionEvent() end est vrai");       
+                this.menu.setVisible(false);     
+                // JTextArea jtxt = (JTextArea) menu.getComponent(c);
+                // names.add(jtxt.getText().equals("Entrez votre nom") ? "Mizer" : jtxt.getText());
+                names.add("host");
+                names.addAll(s.getNames());
+                this.menu2=createFinalMenu();
+                this.menu2.setVisible(true);
+                this.add(this.menu2);
+                int mpw2 = (int) this.menu.getPreferredSize().getWidth();
+                int mph2 = (int) this.menu.getPreferredSize().getHeight();
+                this.menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
+            });
+            new Thread(new Runnable() {
+                public void run(){
                 try {
-                    this.nbj=s.callable.call();
+                    App.this.nbj=s.callable.call()+1;
                     System.out.println("Returned " + nbj);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            };
-            new Thread(run).start();
-            
+                System.out.println("App.createMenuHost()");
+            }}).start();
             System.out.println("App.createMenuHost() end");
             //TODO fix this
 
@@ -180,8 +203,7 @@ public class App extends JFrame {
         this.buttonPlay=new JButton("Jouer");
         this.buttonPlay.addActionListener(e ->{
             // On crée une nouvelle fenêtre de jeu
-            s.end=true;
-            System.out.println(c);
+            System.out.println(nbj);
             DoodleJumpheur = createDJ();
             DoodleJumpheur.setVisible(true);
             this.dispose();
@@ -244,13 +266,14 @@ public class App extends JFrame {
         // Initialisation des éléments
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
         for (int i = 0; i < nbj; ++i) {
-            System.out.println("App.createDJ() boucle i="+nbj);
+            System.out.println("App.createDJ() boucle i="+i);
             Personnage p = new Personnage(DJ.getWidth() / 2, DJ.getHeight() - 100, 100, 100, -10);
             String nomjoueur="";
             if(!multiplayer){
                 JTextArea jtxt = (JTextArea) menu2.getComponent(i);
                 nomjoueur = (jtxt.getText().equals("Entrez votre nom")) ? "Mizer" : jtxt.getText();
-            }else if(host) nomjoueur=names.get(i);
+            }else if(host) 
+                nomjoueur=names.get(i);
             ljou.add(new Joueur(p, nomjoueur));
             System.out.println(nomjoueur);
         }
@@ -324,21 +347,24 @@ public class App extends JFrame {
         });
 
 
-        end.addActionListener(e ->{
-            s.end=true;
-            int c=0;
-            while(!(menu.getComponent(c) instanceof JTextArea)){c++;}           
-            this.menu.setVisible(false);     
-            JTextArea jtxt = (JTextArea) menu.getComponent(c);
-            names.add(jtxt.getText().equals("Entrez votre nom") ? "Mizer" : jtxt.getText());
-            names.addAll(s.getNames());
-            this.menu2=createFinalMenu();
-            this.menu2.setVisible(true);
-            this.add(this.menu2);
-            int mpw2 = (int) this.menu.getPreferredSize().getWidth();
-            int mph2 = (int) this.menu.getPreferredSize().getHeight();
-            this.menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
-        });
+        // end.addActionListener(e ->{
+        //     System.out.println("entrée dans App.gestionEvent()");
+        //     s.end=true;
+        //     // int c=0;
+        //     // while(!(menu.getComponent(c) instanceof JTextArea)){c++;System.out.println("App.gestionEvent() dans le while pour le nom");}    
+        //     System.out.println("App.gestionEvent() end est vrai");       
+        //     this.menu.setVisible(false);     
+        //     // JTextArea jtxt = (JTextArea) menu.getComponent(c);
+        //     // names.add(jtxt.getText().equals("Entrez votre nom") ? "Mizer" : jtxt.getText());
+        //     names.add("host");
+        //     names.addAll(s.getNames());
+        //     this.menu2=createFinalMenu();
+        //     this.menu2.setVisible(true);
+        //     this.add(this.menu2);
+        //     int mpw2 = (int) this.menu.getPreferredSize().getWidth();
+        //     int mph2 = (int) this.menu.getPreferredSize().getHeight();
+        //     this.menu2.setBounds((this.getWidth() / 2) - (mpw2 / 2), (this.getHeight() / 2) - mph2, mpw2, mph2);
+        // });
 
         buttonExit.addActionListener(e -> {
             System.exit(0);
@@ -378,11 +404,11 @@ public class App extends JFrame {
 
 
     Thread t=new Thread(new Runnable() {
-        public volatile boolean waiting=true;
+        public volatile boolean waiting;
         public void run(){
-            
+            waiting=true;
             while(waiting){
-                System.out.println("App.createWaitingMenu().new Runnable() {...}.run()");
+                // System.out.println("App.createWaitingMenu().new Runnable() {...}.run()");
                 DataInputStream in;
                 boolean tmp=true;
                 try {
@@ -391,15 +417,15 @@ public class App extends JFrame {
                     waiting=tmp;
                 } catch (Exception e) {
                     // e.printStackTrace();
-                    waiting=false;
                 }
             }
-            try{
-                DataInputStream in=new DataInputStream(j.getServeur().getInputStream());
-                j.id=in.readInt();
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+            // try{
+            //     DataInputStream in=new DataInputStream(j.getServeur().getInputStream());
+            //     j.id=in.readInt();
+            //     System.out.println(j.id);
+            // }catch(Exception e){
+            //     e.printStackTrace();
+            // }
             
             System.out.println("DoodlePheur");
             DoodleJumpheur = createDJ();

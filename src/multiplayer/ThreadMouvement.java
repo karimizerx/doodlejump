@@ -39,7 +39,7 @@ public class ThreadMouvement implements Runnable {
     private void getPlayers(Serveur serveur) {
         ArrayList<Joueur> list=new ArrayList<Joueur>();
         list.add(terrain.getMyPlayer());
-        for(int i=1;i<terrain.getListeJoueurs().size();i++){
+        for(int i=1;i<terrain.getListeJoueurs().size()-1;i++){
             list.add(terrain.getHost().getJoueur(i));
         }
         terrain.setJoueur(list);

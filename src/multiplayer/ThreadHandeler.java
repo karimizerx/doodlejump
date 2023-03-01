@@ -20,14 +20,15 @@ public class ThreadHandeler implements Runnable {
         while(!start){
             // System.out.println("Serveur.enclosing_method() in while");
             // System.out.println("nombre total de joueur " +clients.size());
-            System.out.println("Serveur.enclosing_method() in for");
+            // System.out.println("Serveur.enclosing_method() in for");
             try {
                 out =  new DataOutputStream(client.serveur.getOutputStream());
-                System.out.println("Serveur.enclosing_method() will send "+start);
-                out.writeBoolean(start);
-                System.out.println("Serveur.enclosing_method() has sent "+start);
+                // System.out.println("Serveur.enclosing_method() will send "+!start);
+                out.writeBoolean(!start);
+                // System.out.println("Serveur.enclosing_method() has sent "+!start);
             } catch (Exception e) {
                 e.printStackTrace();
+                System.exit(-1);
             } 
     }
     System.out.println("Serveur.enclosing_method() after while");
@@ -35,9 +36,10 @@ public class ThreadHandeler implements Runnable {
             System.out.println("Serveur.enclosing_method() inside try");
             out =  new DataOutputStream(client.serveur.getOutputStream());
             out.writeBoolean(start);
-            out.writeInt(pos);
+            // out.writeInt(pos);
         } catch (Exception e) {
             e.printStackTrace();
         } 
+    System.out.println("ThreadHandeler.run() fin de la thread");
     }   
 }
