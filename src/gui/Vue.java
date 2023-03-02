@@ -75,7 +75,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 platformeMobileView = ImageIO
                         .read(new File("src/gui/images/packBase/plateformes/plateformeMobile.png"));
                 scoreBackgroundView = ImageIO.read(new File("src/gui/images/packBase/background/scoreBackground1.png"));
-                projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
+                projectileView = ImageIO.read(new File( "src/gui/images/packBase/projectile.png"));
 
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
                     Joueur joueur = terrain.getListeJoueurs().get(i);
@@ -124,7 +124,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
                     } catch (Exception e) {
                         scoreView = ImageIO
-                                .read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
+                                .read(new File( "src/gui/images/packBase/chiffres/ch" + score.charAt(i) + ".png"));
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
