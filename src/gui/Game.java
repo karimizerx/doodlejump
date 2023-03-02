@@ -29,7 +29,7 @@ public class Game extends JFrame {
         this.setVisible(false);
 
         // Ajout des éléments à la fenêtre
-        this.vue = new Vue(this);
+        this.vue = new Vue(this, "packBase");
         this.add(vue);
     }
 

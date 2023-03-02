@@ -19,30 +19,34 @@ import javax.imageio.*;
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique le statut actuel du panel
-    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuFin, isClassement;
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuFin, isClassement, isMenuPause;
     private final int width, height; // Dimensions du panel
-    private ThreadMouvement threadMvt = null; // ???
-    private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    // Le chemin vers le package qui d'images
-    private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
-    private BufferedImage view, backgroundView, flecheView, pointView, terrainView, platformeBaseView,
-            platformeMobileView, scoreView, scoreBackgroundView, projectileView;
-    private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
-    private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
-            buttonRetourMenu, doublePoint;
+    // Les espacement représente les sauts de ligne respectif à chaque statut
+    private int espacementMenuDemarrer, espacementMenuFin, espacementClassement, nbJoueur;
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     private int fleche, xfleche, yfleche, wfleche, hfleche;
-    // Les espacement représente les sauts de ligne respectif à chaque statut
-    private int espacementMenuDemarrer, espacementMenuFin, espacementJeu, espacementClassement, nbJoueur;
-    private Terrain terrain; // Le terrain sur lequel on joue
     private JFrame menuPause; // Le menu pause
+    private String chemin, winchemin; // Le chemin vers le package d'images (win = version windows)
+    private BufferedImage view, backgroundView, flecheView, pointView, terrainView, platformeBaseView,
+            platformeMobileView, scoreBackgroundView, projectileView;
+    private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
+            buttonRetourMenu, doublePoint;
+    private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
+    private Terrain terrain; // Le terrain sur lequel on joue
     private double deltaTime; // Le temps nécessaire pour update le jeu
+    private ThreadMouvement threadMvt = null; // ???
+    private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
 
-    public Vue(Game frame) {
+    public Vue(Game frame, String skin) {
+        // Taille du panel
         this.width = frame.getWidth();
         this.height = frame.getHeight();
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
-        // Taille du panel
+
+        // Initialisation des chemins
+        this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
+        this.winchemin = "src/gui/images/" + skin + "/";
+
         // Gestion d'évènements boutons
         this.addKeyListener(this);
     }
@@ -54,9 +58,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private ArrayList<BufferedImage> createImageOfMot(String mot) {
         // On crée une liste d'image qui va contenir toutes les lettres du mot
         ArrayList<BufferedImage> motView = new ArrayList<BufferedImage>();
-        mot = mot.toLowerCase();
+        mot = mot.toLowerCase(); // On met toutes les lettres en minuscules pour ne pas avoir d'erreur
 
-        for (int i = 0; i < mot.length(); ++i) {
+        for (int i = 0; i < mot.length(); ++i) { // Pour chaque lettre du mot
             char c = mot.charAt(i);
             try {
                 try {
@@ -65,22 +69,23 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     motView.add(lv);
                 } catch (Exception e) {
                     BufferedImage lv = (c == ' ') ? null
-                            : ImageIO.read(new File("src/gui/images/packBase/lettres/lettre" + c + ".png"));
+                            : ImageIO.read(new File(winchemin + "/lettres/lettre" + c + ".png"));
                     motView.add(lv);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return motView;
+        return motView; // Cette méthode ne gère pas les caractères spéciaux (excepté " ").
     }
 
     // Permet d'afficher un mot
     private int afficheMot(Graphics2D g2, ArrayList<BufferedImage> mot, int x, int y, int w, int h, int ecart,
             int espacement) {
+        // L'écart = l'espace entre 2 lettre, l'espacement = le caractère espace
         for (int i = 0; i < mot.size(); ++i) {
             BufferedImage lettreView = mot.get(i);
-            if (lettreView != null) {
+            if (lettreView != null) { // Si c'est null, c'est égal à espace
                 g2.drawImage(lettreView, x, y, w, h, null);
                 x += ecart;
             } else
@@ -89,6 +94,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return x;
     }
 
+    // Permet d'afficher un double point
     private void afficheDoublepoint(Graphics2D g2, int x, int y) {
         int w = 7, h = 7;
         y += 3;
@@ -113,9 +119,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 this.pointView = ImageIO.read(new File(chemin + "/icon/iconpoint.png"));
 
             } catch (Exception e) {
-                this.backgroundView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
-                this.flecheView = ImageIO.read(new File("src/gui/images/packBase/icon/iconfleche.png"));
-                this.pointView = ImageIO.read(new File("src/gui/images/packBase//icon/iconpoint.png"));
+                this.backgroundView = ImageIO.read(new File(winchemin + "background/background1.png"));
+                this.flecheView = ImageIO.read(new File(winchemin + "/icon/iconfleche.png"));
+                this.pointView = ImageIO.read(new File(winchemin + "/icon/iconpoint.png"));
 
             }
         } catch (Exception e) {
@@ -418,12 +424,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     joueurDataList.add(nomData);
                 }
             } catch (Exception e) {
-                terrainView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
-                platformeBaseView = ImageIO.read(new File("src/gui/images/packBase/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO
-                        .read(new File("src/gui/images/packBase/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File("src/gui/images/packBase/background/scoreBackground1.png"));
-                projectileView = ImageIO.read(new File("src/gui/images/packBase/projectile.png"));
+                terrainView = ImageIO.read(new File(winchemin + "/background/background1.png"));
+                platformeBaseView = ImageIO.read(new File(winchemin + "/plateformes/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File(winchemin + "/plateformes/plateformeMobile.png"));
+                scoreBackgroundView = ImageIO.read(new File(winchemin + "/background/scoreBackground1.png"));
+                projectileView = ImageIO.read(new File(winchemin + "/projectile.png"));
 
                 // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
@@ -431,7 +436,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     String nom = joueur.getNom().toLowerCase();
                     // On a une liste qui ne contient que l'image du perso
                     ArrayList<BufferedImage> persoData = new ArrayList<BufferedImage>();
-                    persoData.add(ImageIO.read(new File("src/gui/images/packBase/personnages/persoBase.png")));
+                    persoData.add(ImageIO.read(new File(winchemin + "/personnages/persoBase.png")));
                     // Suivie d'une liste qui contient le nom du joueur (i.e toutes les lettres)
                     ArrayList<BufferedImage> nomData = createImageOfMot(nom);
                     joueurDataList.add(persoData);
@@ -512,6 +517,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             int c = (int) ((20 * (jNomData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
             afficheMot(g2, jNomData, (int) (p.getX() - c), (int) p.getY() - 15, 20, 20, 15, 10);
         }
+
+        // Affichage des projectiles
         for (Joueur j : terrain.getListeJoueurs()) {
             Personnage pers = j.getPerso();
             for (Projectile pro : pers.getListProjectiles()) {
@@ -568,19 +575,20 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     @Override
     public void run() {
         try {
-            while (!isQuitte) { // Tant qu'on a pas quitter le jeu :
-                // Cette méthode (ci dessous) demande à ce que ce composant obtienne le focus.
-                // Le focus est le fait qu'un composant soit sélectionné ou pas.
-                // Le composant doit être afficheable (OK grâce à addNotify())
-                this.requestFocusInWindow();
+            // Cette méthode (ci dessous) demande à ce que ce composant obtienne le focus.
+            // Le focus est le fait qu'un composant soit sélectionné ou pas.
+            // Le composant doit être afficheable (OK grâce à addNotify())
+            this.requestFocusInWindow();
 
-                // ETAPE 1 : On initialise les images qui ne changent pas en fonction du statut
-                initGENERAL();
+            // ETAPE 1 : On initialise les images qui ne changent pas en fonction du statut
+            initGENERAL();
+            initMenuDemarrer(); // On initialise les images du menu DEMARRER.
+
+            while (!isQuitte) { // Tant qu'on a pas quitter le jeu :
 
                 // ETAPE 2 : On gère les différent statut du jeu !
                 // Si on est au niveau du menu DEMARRER :
                 if (isMenuDemarrer && !isClassement && !isRunningGame && !isMenuFin) {
-                    initMenuDemarrer(); // On initialise les images du menu DEMARRER.
                     runningMenuDemarrer(); // On lance le menu DEMARRER.
                 }
                 // Si on a cliqué sur le boutton "Classement" :
