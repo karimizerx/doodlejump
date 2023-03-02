@@ -59,11 +59,16 @@ public class JoueurConnecte {
         ObjectInputStream in;
         try {
             in = new ObjectInputStream(serveur.getInputStream());
-            terrain.setPlateformesListe((ArrayList<Plateforme>)in.readObject());
-            terrain.setJoueur((ArrayList<Joueur>)in.readObject());
             terrain.isEsc=(boolean)in.readObject();
             terrain.isMenu=(boolean)in.readObject();
             terrain.pause=(boolean)in.readObject();
+            terrain.setPlateformesListe((ArrayList<Plateforme>)in.readObject());
+            terrain.setJoueur((ArrayList<Joueur>)in.readObject());
+            in.reset();
+        }catch (StreamCorruptedException s) {
+            System.out.println(s.getMessage());
+            s.printStackTrace();
+            
         }catch (ClassNotFoundException c){
             c.printStackTrace();
             System.out.println("classe perdu");

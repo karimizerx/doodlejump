@@ -7,6 +7,7 @@ import javax.swing.plaf.nimbus.*;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -407,22 +408,23 @@ public class App extends JFrame {
         public volatile boolean waiting;
         public void run(){
             waiting=true;
+            ObjectInputStream in=null;
             while(waiting){
                 // System.out.println("App.createWaitingMenu().new Runnable() {...}.run()");
-                DataInputStream in;
                 boolean tmp=true;
                 try {
-                    in=new DataInputStream(j.getServeur().getInputStream());
-                    tmp=in.readBoolean();
+                    in=new ObjectInputStream(j.getServeur().getInputStream());
+                    tmp=(boolean)(in.readObject());
                     waiting=tmp;
                 } catch (Exception e) {
-                    // e.printStackTrace();
+                    e.printStackTrace();
                 }
             }
+
             // try{
-            //     DataInputStream in=new DataInputStream(j.getServeur().getInputStream());
-            //     j.id=in.readInt();
-            //     System.out.println(j.id);
+                // new DataInputStream(j.getServeur().getInputStream());
+                // j.id=in.readInt();
+                // System.out.println(j.id);
             // }catch(Exception e){
             //     e.printStackTrace();
             // }

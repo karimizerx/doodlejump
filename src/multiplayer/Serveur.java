@@ -24,7 +24,7 @@ import gameobjects.Terrain;
 public class Serveur{
 
     private ServerSocket serveurSocket;
-    private ArrayList<JoueurConnecte> clients=new ArrayList<JoueurConnecte>();
+    public ArrayList<JoueurConnecte> clients=new ArrayList<JoueurConnecte>();
 
     public Serveur(){ 
         serveurSocket=null;
@@ -67,11 +67,11 @@ public class Serveur{
         for(JoueurConnecte client : clients){
             try {
                 in =  new ObjectOutputStream(client.serveur.getOutputStream());
-                in.writeObject(terrain.getPlateformesListe());
-                in.writeObject(terrain.getListeJoueurs());
                 in.writeObject(terrain.isEsc);
                 in.writeObject(terrain.isMenu);
                 in.writeObject(terrain.pause);
+                in.writeObject(terrain.getPlateformesListe());
+                in.writeObject(terrain.getListeJoueurs());
 
             } catch (Exception e) {
                 e.printStackTrace();

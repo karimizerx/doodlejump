@@ -7,6 +7,7 @@ import gameobjects.Personnage;
 import gameobjects.Plateforme;
 import gameobjects.PlateformeBase;
 import gameobjects.Terrain;
+import multiplayer.JoueurConnecte;
 import multiplayer.ThreadMouvement;
 
 import java.awt.*;
@@ -18,6 +19,8 @@ import java.awt.event.MouseEvent;
 import java.awt.image.*;
 import javax.imageio.*;
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class Vue extends JPanel implements Runnable, KeyListener{
 
@@ -135,16 +138,25 @@ public class Vue extends JPanel implements Runnable, KeyListener{
 
     @Override
     public void run() {
+        ArrayList<ThreadMouvement> threadsmvt=new ArrayList<ThreadMouvement>();
         try {
             // Demande à ce que ce composant obtienne le focus.
             // Le focus est le fait qu'un composant soit sélectionné ou pas.
             // Le composant doit être afficheable (OK grâce à addNotify())
             this.requestFocusInWindow();
             init(); // Initialisation des images
-            Thread t=new Thread();
             if(terrain.multiplayer){
-                t=new Thread(new ThreadMouvement(terrain));
-                t.start();
+                if(terrain.isHost){
+                    for (JoueurConnecte j :terrain.host.clients) {
+                        threadsmvt.add(new ThreadMouvement(terrain, j));
+                    }
+                    for (ThreadMouvement threadmvt : threadsmvt) {
+                        new Thread(threadmvt).start();
+                    }
+                }else {
+                    threadsmvt.add((new ThreadMouvement(terrain,terrain.client)));
+                    new Thread(threadsmvt.get(0)).start();;
+                }
             }
             while (isRunning) { // Tant que le jeu tourne
                 if (!terrain.pause) // Tant qu'on appuie pas sur pause
@@ -162,7 +174,9 @@ public class Vue extends JPanel implements Runnable, KeyListener{
                     c.afficherClassement();
                 }
                 if(terrain.multiplayer) {
-                    threadMvt.running=false;
+                    for (ThreadMouvement threadmvt : threadsmvt) {
+                        threadmvt.running=false;
+                    }
                     if(terrain.isHost)terrain.getHost().fermerLeServeur();
                     else terrain.client.deconnecter();
                 }
