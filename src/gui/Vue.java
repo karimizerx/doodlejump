@@ -33,7 +33,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     private int fleche, xfleche, yfleche, wfleche, hfleche;
     // Les espacement représente les sauts de ligne respectif à chaque statut
-    private int espacementMenuDemarrer, espacementMenuFin, espacementJeu, espacementClassement;
+    private int espacementMenuDemarrer, espacementMenuFin, espacementJeu, espacementClassement, nbJoueur;
     private Terrain terrain; // Le terrain sur lequel on joue
     private JFrame menuPause; // Le menu pause
     private double deltaTime; // Le temps nécessaire pour update le jeu
@@ -380,13 +380,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private void createPartie() {
         // Initialisation des éléments
         ArrayList<Joueur> ljou = new ArrayList<Joueur>();
-        for (int i = 0; i < 1; ++i) {
+        for (int i = 0; i < nbJoueur; ++i) {
             // L'image du perso doit être un carré. On prend la valeure la plus petite
             double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
             Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
             String nomjoueur = "Mizer";
             ljou.add(new Joueur(p, nomjoueur));
-
         }
         this.terrain = new Terrain(ljou, height, width, false, false, 0);
     }
@@ -502,11 +501,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         // Affichage des personnages + Nom
-        for (int i = 0; i < terrain.getListeJoueurs().size(); i = i + 2) {
+        for (int i = 0; i < terrain.getListeJoueurs().size() * 2; i = i + 2) {
             // On récupère les données liées au joueur
             BufferedImage jPersoData = joueurDataList.get(i).get(0);
             ArrayList<BufferedImage> jNomData = joueurDataList.get(i + 1);
-            Personnage p = terrain.getListeJoueurs().get(i).getPerso();
+            Personnage p = terrain.getListeJoueurs().get(i / 2).getPerso();
 
             // Affichage du personnage :
             g2.drawImage(jPersoData, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
@@ -706,6 +705,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (isMenuDemarrer) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if (this.fleche == 0) { // Joueur Solo
+                    this.nbJoueur = 1;
                     isMenuDemarrer = false;
                     isMenuFin = false;
                     isClassement = false;
@@ -713,6 +713,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     repaint();
                 }
                 if (this.fleche == 1) { // Joueur à 2
+                    this.nbJoueur = 2;
+                    isMenuDemarrer = false;
+                    isMenuFin = false;
+                    isClassement = false;
+                    isRunningGame = true;
+                    repaint();
                 }
 
                 if (this.fleche == 2) { // Multijoueur
