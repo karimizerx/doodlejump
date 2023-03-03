@@ -2,13 +2,12 @@ package gui;
 
 // Import d'autres dossiers
 import gameobjects.*;
-import leaderboard.Classement;
-import leaderboard.History;
+import leaderboard.*;
 import multiplayer.*;
 
 // Import de packages java
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
@@ -19,7 +18,7 @@ import javax.imageio.*;
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique le statut actuel du panel
-    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuFin, isClassement, isMenuPause;
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenu2, isMenuFin, isClassement, isMenuPause;
     private final int width, height; // Dimensions du panel
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
@@ -28,11 +27,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
             pointView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
-            buttonRetourMenu, doublePoint, messageFin;
+            buttonRetourMenu, doublePoint, messageFin, messageNom;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
     private Terrain terrain; // Le terrain sur lequel on joue
     private double deltaTime; // Le temps nécessaire pour update le jeu
-    private ThreadMouvement threadMvt = null; // ???
+    private ThreadMouvement threadMvt; // ???
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
 
     public Vue(Game frame, String skin) {
@@ -41,6 +40,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.height = frame.getHeight();
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
 
+        this.threadMvt = null;
         // Initialisation des chemins
         this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
         this.winchemin = "src/gui/images/" + skin + "/";
@@ -148,7 +148,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private void updateMenuDemarrer() {
         this.wfleche = 30;
         this.hfleche = 30;
-        this.xfleche = (10 * width / 100) - 50; // La fleche se place toujours ici en x
+        this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
         // Son placement en y dépend de ce qu'elle pointe
         this.yfleche = (10 * height / 100) + fleche * sautLigne;
     }
@@ -160,19 +160,19 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
         // Affichage des boutons
-        int x = (10 * width / 100), y = (10 * height / 100);
+        int x = (9 * width / 100), y = (10 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
         afficheMot(g2, buttonJouer, x, y, w, h, ecart, espacement);
-        x = (10 * width / 100);
+        x = (9 * width / 100);
         y = y + sautLigne;
         afficheMot(g2, button2joueur, x, y, w, h, ecart, espacement);
-        x = (10 * width / 100);
+        x = (9 * width / 100);
         y = y + sautLigne;
         afficheMot(g2, buttonMultiJoueur, x, y, w, h, ecart, espacement);
-        x = (10 * width / 100);
+        x = (9 * width / 100);
         y = y + sautLigne;
         afficheMot(g2, buttonLb, x, y, w, h, ecart, espacement);
-        x = (10 * width / 100);
+        x = (9 * width / 100);
         y = y + sautLigne;
         afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
 
@@ -192,6 +192,51 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         while (isMenuDemarrer) {
             updateMenuDemarrer();
             afficheMenuDemarrer();
+        }
+    }
+
+    /// PARTIE MENU 2 (Nom...) :
+    // Initialise toutes les images du menu 2
+    private void initMenu2() {
+        this.messageNom = createImageOfMot("Votre nom ");
+    }
+
+    // Met à jour les images du menu 2
+    private void updateMenu2() {
+        this.wfleche = 30;
+        this.hfleche = 30;
+        this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
+        // Son placement en y dépend de ce qu'elle pointe
+        this.yfleche = (10 * height / 100) + fleche * sautLigne;
+    }
+
+    // Dessine toutes les images du menu 2
+    public void afficheMenu2() {
+        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        // Affichage terrain
+        g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
+
+        // Affichage des boutons
+        int x = (10 * width / 100), y = (10 * height / 100);
+        int w = 30, h = 30, espacement = 15, ecart = 20;
+        afficheMot(g2, messageNom, x, y, w, h, ecart, espacement);
+
+        // Affichage de la fleche
+        g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
+
+        // Affichage final
+        Graphics g = getGraphics(); // Contexte graphique
+        g.drawImage(view, 0, 0, this.width, this.height, null);
+        g.dispose(); // On libère les ressource
+    }
+
+    // Lance le menu 2
+    private void runningMenu2() {
+        this.sautLigne = 50;
+        this.fleche = 0; // On pointe le premier bouton
+        while (isMenu2) {
+            updateMenu2();
+            afficheMenu2();
         }
     }
 
@@ -255,7 +300,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.hfleche = 30;
         this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (12 * height / 100) + sautLigne * (6 + (fleche / 6));
+        this.yfleche = (12 * height / 100) + sautLigne * (6 + fleche);
     }
 
     // Dessine toutes les images du menu FIN
@@ -312,7 +357,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Lance le menu FIN
     private void runningMenuFin() {
         this.sautLigne = 50;
-        this.fleche = 5;
+        this.fleche = 0;
         while (isMenuFin) {
             updateMenuFin();
             afficheFin();
@@ -355,9 +400,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private void updateClassementVue() {
         this.wfleche = 30;
         this.hfleche = 30;
-        this.xfleche = (10 * width / 100) - 35; // La fleche se place toujours ici en x
+        this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (80 * height / 100) + (fleche / 8) * sautLigne;
+        this.yfleche = (12 * height / 100) + ((4 + lbView.size() / 3) + fleche) * sautLigne;
     }
 
     // Crée l'affichage à jour du classement Global
@@ -410,7 +455,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Fait tourner
     private void runningClassement() {
-        this.fleche = 7;
+        this.fleche = 0;
         this.sautLigne = 50;
 
         // On récupère les données du classementque l'on va afficher
@@ -643,16 +688,26 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
                 // ETAPE 2 : On gère les différent statut du jeu !
                 // Si on est au niveau du menu DEMARRER :
-                if (isMenuDemarrer && !isClassement && !isRunningGame && !isMenuFin) {
+                if (isMenuDemarrer && !isClassement && !isMenu2 && !isRunningGame && !isMenuFin) {
                     runningMenuDemarrer(); // On lance le menu DEMARRER.
                 }
                 // Si on a cliqué sur le boutton "Classement" :
-                if (!isMenuDemarrer && isClassement && !isRunningGame && !isMenuFin) {
+                if (!isMenuDemarrer && isClassement && !isMenu2 && !isRunningGame && !isMenuFin) {
                     initClassement(); // On initialise les images du CLASSEMENT.
                     runningClassement(); // On lance le CLASSEMENT.
                 }
                 // Si on a cliqué sur le boutton "Jouer solo" :
-                if (!isMenuDemarrer && !isClassement && isRunningGame && !isMenuFin) {
+                /*
+                 * if (!isMenuDemarrer && !isClassement && isMenu2 && !isRunningGame &&
+                 * !isMenuFin) {
+                 * createPartie(); // On crée une partie.
+                 * initGame(); // On initialise les images de la GAME.
+                 * initMenu2();
+                 * runningMenu2();
+                 * }
+                 */
+                // Si on a lancé une GAME :
+                if (!isMenuDemarrer && !isClassement && !isMenu2 && isRunningGame && !isMenuFin) {
                     createPartie(); // On crée une partie.
                     initGame(); // On initialise les images de la GAME.
                     if (terrain.multiplayer) { // Si on est en mode multijoueur
@@ -662,7 +717,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     runningGame(); // On lance la GAME (en ups constant).
                 }
                 // Si c'est la fin de la GAME (quelqu'un a perdu) :
-                if (!isMenuDemarrer && !isClassement && !isRunningGame && !isMenuFin && endGame()) {
+                if (!isMenuDemarrer && !isClassement && !isMenu2 && !isRunningGame && !isMenuFin && endGame()) {
                     // On met à jour toutes les variables boolean.
                     isMenuDemarrer = false;
                     isClassement = false;
@@ -770,30 +825,26 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 if (this.fleche == 0) { // Joueur Solo
                     this.nbJoueur = 1;
                     isMenuDemarrer = false;
-                    isMenuFin = false;
-                    isClassement = false;
+                    // isMenu2 = true;
                     isRunningGame = true;
-                    repaint();
                 }
                 if (this.fleche == 1) { // Joueur à 2
                     this.nbJoueur = 2;
                     isMenuDemarrer = false;
-                    isMenuFin = false;
-                    isClassement = false;
+                    // isMenu2 = true;
                     isRunningGame = true;
-                    repaint();
                 }
 
                 if (this.fleche == 2) { // Multijoueur
+                    System.out.println("Inch'Allah on aura le mode multijoueur !");
                 }
 
                 if (this.fleche == 3) { // Classement
-                    isRunningGame = false;
-                    isMenuFin = false;
                     isClassement = true;
                     isMenuDemarrer = false;
                 }
                 if (this.fleche == 4) { // Quitter
+                    System.out.println("À la prochaine !");
                     isQuitte = true;
                     System.exit(0);
                 }
@@ -808,45 +859,59 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         if (isMenuFin) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.fleche == 5) {
-                    isRunningGame = false;
+                if (this.fleche == 0) { // Retour au menu DEMARRER
                     isMenuFin = false;
-                    isClassement = false;
                     isMenuDemarrer = true;
-                    repaint();
                 }
-                if (this.fleche == 6) {
+                if (this.fleche == 1) { // Quitter
+                    System.out.println("À la prochaine !");
                     isQuitte = true;
                     System.exit(0);
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_UP) {
-                this.fleche = (this.fleche == 5) ? 6 : this.fleche - 1;
+                this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                this.fleche = (this.fleche == 6) ? 5 : this.fleche + 1;
+                this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
             }
         }
 
         if (isClassement) {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.fleche == 7) {
-                    isRunningGame = false;
-                    isMenuFin = false;
+                if (this.fleche == 0) { // Retour au menu DEMARRER
                     isClassement = false;
                     isMenuDemarrer = true;
-                    repaint();
                 }
-                if (this.fleche == 8) {
+                if (this.fleche == 1) { // Quitter
                     isQuitte = true;
                     System.exit(0);
                 }
             }
             if (e.getKeyCode() == KeyEvent.VK_UP) {
-                this.fleche = (this.fleche == 7) ? 8 : this.fleche - 1;
+                this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
             }
             if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                this.fleche = (this.fleche == 8) ? 7 : this.fleche + 1;
+                this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
+            }
+        }
+
+        if (isMenu2) {
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (this.fleche == 0) { // Retour au menu DEMARRER
+                    // isMenu2 = false;
+                    // isRunningGame = true;
+                }
+                if (this.fleche == 1) { // Quitter
+                    isQuitte = true;
+                    System.exit(0);
+                }
+            }
+            if (e.getKeyCode() == KeyEvent.VK_UP) {
+                this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
+            }
+            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
             }
         }
     }

@@ -145,7 +145,57 @@ Documentation du projet de programmation : ED1A
 
 ## Partie 2 : Classes qui gèrent l'affichage :
 /gui :
+    ・Game :
+        ├── Extends : JFrame.
+        ├── Attributs :
+        │   ├── Vue vue.
+        │   └── final int ecranw, ecranh, framew, frameh.
+        └── Description :
+                ├── Représente la fenêtre de l'application.
+                ├── Le champ vue représente la vue de l'application (voir Partie 2 => Classe Vue).
+                ├── Les autres champs entiers représentent les dimensions de l'écran à partir desquels on obtient les dimensions de la fenêtre.
+                ├── Le constructeur initialise une fenêtre avec son nom, ses dimensions.
+                ├── La fenêtre ne peut être redimensionnée.
+                ├── En cas de fermuture par la croix, cela ferme toutes les fenêtres et termine le programme.
+                ├── "this.setLocationRelativeTo(null)" place la fenêtre au centre du bureau (null).
+                ├── Enfin, on ajoute une nouvelle vue (avec son skin en argument).
+                └── Le main se charge de créer cette fenêtre et de la rendre visible.
+
     ・Vue :
+        ├── Extends : JPanel.
+        ├── Implements : Runnable, KeyListener.
+        ├── Attributs :
+        │   ├── static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenu2, isMenuFin, isClassement, isMenuPause.
+        │   ├── final int width, height.
+        │   ├── int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur.
+        │   ├── JFrame menuPause.
+        │   ├── String chemin, winchemin.
+        │   ├── BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView, pointView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView.
+        │   ├── ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter, buttonRetourMenu, doublePoint, messageFin, messageNom?.
+        │   ├── ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView.
+        │   ├── Terrain terrain.
+        │   ├── double deltaTime.
+        │   ├── ThreadMouvement threadMvt.
+        │   └── Thread thread.
+        └── Description :
+                ├── Représente le composant de type panel qui se charge de tout l'affichage.
+                │
+                ├── Les champs static boolean représentent les statuts de l'application. Un statut indique à l'instant T où se trouve-t-on / ce que nous faisons / l'état de l'application.
+                        Le champs "isQuitte" indique si l'on a quitté l'application. S'il est true, il implique la fermeture de l'application (voir run()).
+                        Le champs "isRunningGame" indique que l'on est en pleine partie.
+                        Le champs "isMenuDemarrer" indique que l'on se trouve au niveau du menu DEMARRER.
+                        Le champs "isMenu2" indique que l'on se trouve au niveau du 2nd menu (menu où l'on entre son nom et/ou d'autres informations).
+                        Le champs "isMenuFin" indique que l'on se trouve au niveau du menu FIN (visible à la fin d'une partie).
+                        Le champs "isClassement" indique que l'on se trouve au niveau du CLASSEMENT.
+                        Chaque statut possède plusieurs méthodes qui lui son associées.
+                    Les champs
+                ├── Les autres champs entiers représentent les dimensions de l'écran à partir desquels on obtient les dimensions de la fenêtre.
+                ├── Le constructeur initialise une fenêtre avec son nom, ses dimensions.
+                ├── La fenêtre ne peut être redimensionnée.
+                ├── En cas de fermuture par la croix, cela ferme toutes les fenêtres et termine le programme.
+                ├── "this.setLocationRelativeTo(null)" place la fenêtre au centre du bureau (null).
+                ├── Enfin, on ajoute une nouvelle vue (avec son skin en argument).
+                └── Le main se charge de créer cette fenêtre et de la rendre visible.
 
 ## Partie 3 : Classes qui gèrent la sauvegarde des scores :
 /leaderBoard :
