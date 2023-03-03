@@ -113,11 +113,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
-                this.backgroundView = ImageIO.read(new File(chemin + "/background/background1.png"));
+                this.backgroundView = ImageIO.read(new File(chemin + "/background/background.png"));
                 this.flecheView = ImageIO.read(new File(chemin + "/icon/iconfleche.png"));
 
             } catch (Exception e) {
-                this.backgroundView = ImageIO.read(new File(winchemin + "background/background1.png"));
+                this.backgroundView = ImageIO.read(new File(winchemin + "background/background.png"));
                 this.flecheView = ImageIO.read(new File(winchemin + "/icon/iconfleche.png"));
 
             }
@@ -475,7 +475,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    /// PARTIE JEU :
+    /// PARTIE GAME :
     // Crée une partie (en initialisant toutes les variables, i.e le terrain, ...)
     private void createPartie() {
         // Initialisation des éléments
@@ -490,7 +490,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.terrain = new Terrain(ljou, height, width, false, false, 0);
     }
 
-    // Initialise toutes les images du JEU
+    // Initialise toutes les images de la GAME
     private void initGame() {
         // Stock des listes qui elles-mêmes stockes les données d'image de chaque joueur
         // et qui ne changent jamais, i.e le perso et le nom, contrairement au score
@@ -499,7 +499,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
-                terrainView = ImageIO.read(new File(chemin + "/background/background1.png"));
+                terrainView = ImageIO.read(new File(chemin + "/background/terrainBackground.png"));
                 platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
                 scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground1.png"));
@@ -518,7 +518,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     joueurDataList.add(nomData);
                 }
             } catch (Exception e) {
-                terrainView = ImageIO.read(new File(winchemin + "/background/background1.png"));
+                terrainView = ImageIO.read(new File(winchemin + "/background/terrainBackground.png"));
                 platformeBaseView = ImageIO.read(new File(winchemin + "/plateformes/plateformeBase.png"));
                 platformeMobileView = ImageIO.read(new File(winchemin + "/plateformes/plateformeMobile.png"));
                 scoreBackgroundView = ImageIO.read(new File(winchemin + "/background/scoreBackground1.png"));
@@ -542,7 +542,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    // Met à jour l'affichage du JEU
+    // Met à jour l'affichage de la GAME
     private void updateGame(double dTime) {
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
             Joueur j = terrain.getListeJoueurs().get(i);
@@ -576,10 +576,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         terrain.update(dTime);
     }
 
-    // Dessine toutes les images du JEU
+    // Dessine toutes les images de la GAME
     public void afficheGame() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         int tw = (int) terrain.getWidth(), th = (int) terrain.getHeight();
+
         // Affichage terrain
         g2.drawImage(terrainView, 0, 0, tw, th, null);
 
@@ -627,7 +628,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g.dispose(); // On libère les ressource
     }
 
-    // Gère le cas de fin du jeu
+    // Gère le cas de fin de la GAME
     private boolean endGame() {
         boolean isFin = false;
         // Si un joueur à perdu, c'est fini
@@ -638,7 +639,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return isFin;
     }
 
-    // Fait tourner le JEU (avec ups constant)
+    // Fait tourner la GAME (avec ups constant)
     private void runningGame() {
         this.deltaTime = 10;
         // Gestion de l'ups constant

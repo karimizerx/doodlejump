@@ -170,212 +170,6 @@ Documentation du projet de programmation : ED1A
         │   ├── int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur.
         │   ├── JFrame menuPause.
         │   ├── String chemin, winchemin.
-        │   ├── BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView, pointView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView.
-        │   ├── ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter, buttonRetourMenu, doublePoint, messageFin, messageNom?.
-        │   ├── ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView.
-        │   ├── Terrain terrain.
-        │   ├── double deltaTime.
-        │   ├── ThreadMouvement threadMvt.
-        │   └── Thread thread.
-        └── Description :
-                ├── Représente le composant de type panel qui se charge de tout l'affichage.
-                │
-                ├── Les champs static boolean représentent les statuts de l'application. Un statut indique à l'instant T où se trouve-t-on / ce que nous faisons / l'état de l'application.
-                        Le champs "isQuitte" indique si l'on a quitté l'application. S'il est true, il implique la fermeture de l'application (voir run()).
-                        Le champs "isRunningGame" indique que l'on est en pleine partie.
-                        Le champs "isMenuDemarrer" indique que l'on se trouve au niveau du menu DEMARRER.
-                        Le champs "isMenu2" indique que l'on se trouve au niveau du 2nd menu (menu où l'on entre son nom et/ou d'autres informations).
-                        Le champs "isMenuFin" indique que l'on se trouve au niveau du menu FIN (visible à la fin d'une partie).
-                        Le champs "isClassement" indique que l'on se trouve au niveau du CLASSEMENT.
-                        Chaque statut possède plusieurs méthodes qui lui son associées.
-                ├── Les champs width & height représentent la dimension du panel.
-                ├── Afin de représenter l'équivalent des boutons, mais de façon imagées, nous avons décidé d'afficher le titre du bonton (ex: "Jouer solo"), pointé par une flêche.
-                        La flêche indique sur quel bouton on pointe actuellement.
-                        Le champs "fleche" est un entiier qui, pour un statut donné, indique sur quel "bouton" on pointe actuellement. (Voir KeyListener)
-                        Les champs xfleche, yfleche, wfleche & hfleche représentent les coordonnées de l'image de la flêche ainsi que ses dimensions.
-                ├── Le champs "sautLigne" représente le saut de ligne. Par exemple, lorsque l'on affiche les boutons du menu DEMARRER, il indique combien on doit ajouter au y du bouton précédent pour afficher le bouton suivant.
-                ├── Le champs "nbJoueur" indique le nombre de joueurs dans la partie.
-                ├── Le champs "menuPause" représente une petite fenêtre qui s'ouvre pour mettre pause. !!!!!!!!!!!!!!!!!!!!!! A CHANGER !!!!!!!!!!!!
-                ├── Les champs "chemin" & "winchemin" représentent le chemin qui contient les pack d'images (win chemin étant la version pour windows).
-                ├── Il y a ensuite plusieurs images (BufferedImage) :
-                        L'image view représente l'image générale, dans laquelle on dessine toutes les autres. Cela vaut pour tous les affichages.
-                        Les autres champs sont des images qui seront réutilisées plus tard.
-                ├── Les champs de type ArrayList<BufferedImage> représentent des mots ou ensembles de mots. Chaque lettres étant représentée par une image de cette ArrayList. Les boutons ne sont donc que des images.
-                ├── Les champs de type ArrayList<ArrayList<BufferedImage>> représentent des ensembles d'ensembles de mots. Par exemple, lbView contient toutes les images de l'affichage du classement. Chaque ArrayList<BufferedImage> contient un rang, un nom ou un score.
-                ├── Le champs "terrain" représente le terrain d'une GAME, soit la classe qui gère tous les composants d'une GAME.
-                ├── Le champs "deltaTime" est le temps choisit pour effectuer chaque update lors de la GAME. Il est utilisé dans l'update par secondes constant (ups constant).
-                ├── Le champs "threadMvt" !!!!!!!!!!!!!!!!!!!!!!! EXPLICATION FARES !!!!!!!!!!!!!!!!!!!Documentation du projet de programmation : ED1A
-
-### Description de toutes les classes :
-
-/src : 
-    ─> contient le code source du jeu.
-
-## Partie 1 : Classes qui gèrent une partie :
-
-/gameobjects :
-    ・Joueur :
-        ├── Implements : Serializable.
-        ├── Attributs :
-        │   ├── String id, nom.
-        │   ├── Personnage p.
-        │   └── int score.
-        └── Description :
-            ├── Représente un joueur, i.e la personne qui joue.
-            ├── Chaque joueur possède, localement, un identifiant unique (champs "id"). Le nom, lui, peut varier au gré du joueur.
-            └── Le constructeur crée un joueur à partir d'un personnage et d'un nom. Et pas à partir d'un identifiant.
-                    En effet, le constructeur calcul lui-même cet identifiant, on regardant l'historique des parties locales dans "history.csv".
-                    Si le joueur a déjà joué une partie, alors il a déjà un identifiant attitré (qui ne change pas entre 2 parties). Le constructeur récupère alors l'identifiant de la dernière partie.
-                    Si le joueur n'a jamais joué de partie, le constructeur récupère l'identifiant le plus grand dans le classement (qui contient tous les scores de tous les joueurs), puis il assigne au joueur j l'identifiant maxId + 1.
-                    L'identifiant vaut bien évidement 0 si personne n'a jamais joué au jeu, i.e history.csv & classement.csv sont vides.
-                    Enfin, concernant le nom, il y a 3 possibilitées. Soit le joueur inscrit un nom au début de la partie. Alors celui-ci lui est affecté.
-                    Sinon, s'il n'inscrit rien, on essaye de récupérer le nom utilisé lors de la dernière partie. S'il existe, alors celui-ci lui est affecté.
-                    Sinon, si le joueur joue pour la première fois et n'entre pas de nom avant de jouer, on lui affecte le nom par défaut "MIZER".
-
-    ・GameObject :
-        ├── Implements : Serializable.
-        ├── Type : Abstract.
-        ├── Classes représentées : Items, Personnage, Plateforme, Projectile.
-        ├── Attributs :
-        |   └── double x, y, width, height.
-        └── Description :
-                Représente les différents types d'objets d'une GAME, par des coordonnées et des dimensions.
-
-    ・Personnage :
-        ├── Extends : GameObject.
-        ├── Attributs : 
-        │   ├── double x, y, width, height, dx, dy. 
-        │   ├── boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot.
-        │   └── ArrayList<Projectile> listProjectiles.
-        └── Description : 
-            ├── Représente un personnage. C'est un GameObjet avec une vitesse en x et en y.
-            ├── Les champs "isRight" & "isLeft" indique si le joueur appuye sur les boutons droite/gauche ou pas. Ils servent à faire bouger le personnage.
-            │   Les champs "isInertRight" & "isInertLeft" gèrent l'inertie, càd que le relâchement du bouton implique un ralentissement de la vitesse du personnage en x, et non un arrêt net.
-            │   Les champs "isShoot" et "canShoot" sont liés aux projectiles. isShoot indique si le personnage vient de tirer, & canShoot indique si le personnage à le droit de tirer. Ces champs fonctionnent comme ceci :
-            │       Si on a le droit de tirer et que l'on tire (i.e on apuie sur le bouton "tirer"), alors on indique que l'on vient de lancer le processus de tir et que l'on a plus le droit de tirer.
-            │       Si on lâche le bouton "tirer", alors on a de nouveau le droit de "tirer".
-            │       Si (isShoot && iscanShoot), i.e on vient de lancer le processus de tir & on a le droit de tirer (càd dès qu'on relâche le bouton "tirer"), alors on tire et on indique qu'on ne tir plus. 
-            │   Le champs "listProjectiles" stock tous les projectiles lancés par le personnage et qui sont toujours sur le terrain.
-            └── La méthode "tirer(double w, double h, double vx, double vy)" ajoute un projectile à la liste des projectiles.
-                La méthode "collides_plateforme(Plateforme pf, double deltaTime)" gère la collision entre le personnage et une plateforme. Si collision il y a, alors la vitesse en y change, toujours proportionnelle au deltaTime.
-                La méthode "collides_item(Items it, double deltaTime)" gère un cas suplémentaire mais est sensiblement identique.
-                        
-    ・Plateforme :
-        ├── Type : Abstract.
-        ├── Classes représentées : PlateformeBase, MovingPlateforme,...
-        ├── Extends : GameObject.
-        ├── Attributs : 
-        │   └── double x, y, width, height, saut.
-        └── Description : 
-            ├── Représente une plateforme. C'est un GameObjet avec un saut.
-            └── Le champs "saut" est une constante qui indique de combien le personnage va sauter en cas de collision. Constante différente en fonction de la plateforme.
-
-    ・PlateformeBase :
-        ├── Extends : Plateforme.
-        ├── Attributs : 
-        │   └── double x, y, width, height, saut.
-        └── Description : 
-            └── Représente une plateforme basique.
-
-    ・MovingPlateforme :
-        ├── Extends : Plateforme.
-        ├── Attributs : 
-        │   └── double x, y, width, height, saut, dx.
-        └── Description :
-            ├── Représente une plateforme mobile. C'est une Plateforme avec une vitesse en x (horizontale).
-            ├── Le champs "dx" représente la vitesse de la plateforme en x.
-            └── La méthode "move(Terrain t)" fait bouger la plateforme en x.
-
-    ・Items :
-        ├── Type : Abstract.
-        ├── Classes représentées : Fusée, Hélicoptère,...
-        ├── Extends : GameObject.
-        ├── Attributs : 
-        │   ├── double x, y, width, height, saut.
-        │   └── boolean isNeedPied.
-        └── Description : 
-            ├── Représente un item. C'est un GameObjet avec un saut.
-            └── Le champs "saut" est une constante qui indique de combien le personnage va sauter en cas de collision. Constante différente en fonction de l'item.
-                Le champ "isNeedPied" gère la collision. Il indique si le personnage doit collisionner l'item avec les pieds (ex: ressort...) ou pas forcément (ex : fusée...).
-
-    ・Fusee & Helicoptere :
-        ├── Extends : Item.
-        ├── Attributs : 
-        │   ├── double x, y, width, height, saut.
-        │   └── boolean isNeedPied.
-        └── Description : 
-            ├── Représente une Fusée/Hélicoptère.
-            └── La méthode "move" fait bouger l'item en x et y.
-    
-    ・Projectile :
-        ├── Extends : GameObject.
-        ├── Attributs : 
-        │   └── double x, y, width, height, dx, dy. 
-        └── Description : 
-            ├── Représente un projectile. C'est un GameObject avec une vitesse en x et en y.
-            └── La méthode "limiteProjectile" gère le débordement (la sortie) du projectile par rapport aux limites du terrain.
-                La méthode "collides_monster" gère la collision entre le projectile et un monstre.
-
-    ・Terrain :
-        ├── Attributs :
-        │   ├── ArrayList<Plateforme> plateformesListe.
-        │   ├── ArrayList<Joueur> ListeJoueurs.
-        │   ├── final double height, width.
-        │   ├── double diff_plateformes, difficulty.
-        │   ├── boolean multiplayer, isHost.
-        │   ├── Serveur host.
-        │   ├── JoueurConnecte client.
-        │   └── final int playerID.
-        └── Description :
-            ├── Représente le terrain d'une GAME. Cette classe gère tous les composant d'une partie.
-            │
-            ├── Le champs "plateformesListe" conttient la liste de toutes les plateformes présentent sur le terrain.
-            ├── Le champs "ListeJoueurs" conttient la liste de tous les joueurs présents sur le terrain.
-            ├── Les champs "width, height" représentent la dimension du terrain. Celle-ci ne change jamais (final).
-            ├── Le champs "difficulty" représente la difficulté du jeu. Plus on avance, plus celle-ci augmente jusqu'à un maximum. La difficulté affecte la densité des plateformes et la probabilité qu'un item bonus/malus apparaisse.
-            ├── Le champs "diff_plateformes" représente la différence en y entre 2 plateformes. Plus difficulty augmente, plus la différence est grande.
-            └── Les champs "multiplayer", "isHost", "host", "client" "playerID" !!!!!!!!! EXPLICATION CHEZ FARES !!!!!!!!!!!
-            │
-            ├── Le constructeur initialise les variables et fait appel à la méthode "generateObstacles()".
-            ├── La méthode "generateObstacles()" crée la liste des plateformes. Les dimensions sont adaptées à toutes les résolutions. !!!!!!!!! EXPLICATION CHEZ ELYO !!!!!!!!!!
-            ├── La méthode "highestPlateforme()" renvoie la plateforme la plus haute sur le terrain.
-            ├── La méthode "limite(Personnage)" gère le cas où le personnage déborde d'un côté ou l'autre du terrain. Si plus de la moitié du personnage déborde d'un côté, alors il réapparaît de l'autre côté.
-            ├── La méthode "update(double deltaTime)" met à jour les variables du jeu. Elle appelle, pour tous les joueurs, la méthode "update(Joueur j, double deltaTime)".
-            └── La méthode "update(Joueur j, double deltaTime)" met à jour les variables du jeu pour un joueur j donné.
-                    Cette méthode commence par gérer le ralentissement du personnage, en mettant à jour sa vitesse dy et sa position en y.
-                    Ensuite, si les pieds du personnage touche le bas de la fenêtre, le jeu se termine.
-                    Puis, elle se charge de mettre à jour la position de tous les projectiles lancés par le joueur.
-                    Pour donner cette impression de monter quand on saute, on a décidé arbitrairement que lorsque la tête du personnage atteint la moitié de l'écran en y, toutes les plateformes s'abaissent.
-                    À ce moment là, on met à jour la difficulté, le score, et on descend les plateformes, en s'assurant qu'elles restent bien dans le cadre. Dans le cas contraire, on !!!!!!!!!!!!!!!!!!! ELYO EXPLICATION !!!!!!!!!!!!!!!!!!
-                    Enfin, on gère la collision entre le personnage et les plateformes, ainsi que le débordement avec "limite(Personnage p)".
-
-## Partie 2 : Classes qui gèrent l'affichage :
-/gui :
-    ・Game :
-        ├── Extends : JFrame.
-        ├── Attributs :
-        │   ├── Vue vue.
-        │   └── final int ecranw, ecranh, framew, frameh.
-        └── Description :
-                ├── Représente la fenêtre de l'application.
-                ├── Le champ vue représente la vue de l'application (voir Partie 2 => Classe Vue).
-                ├── Les autres champs entiers représentent les dimensions de l'écran à partir desquels on obtient les dimensions de la fenêtre.
-                ├── Le constructeur initialise une fenêtre avec son nom, ses dimensions.
-                ├── La fenêtre ne peut être redimensionnée.
-                ├── En cas de fermuture par la croix, cela ferme toutes les fenêtres et termine le programme.
-                ├── "this.setLocationRelativeTo(null)" place la fenêtre au centre du bureau (null).
-                ├── Enfin, on ajoute une nouvelle vue (avec son skin en argument).
-                └── Le main se charge de créer cette fenêtre et de la rendre visible.
-
-    ・Vue :
-        ├── Extends : JPanel.
-        ├── Implements : Runnable, KeyListener.
-        ├── Attributs :
-        │   ├── static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenu2, isMenuFin, isClassement, isMenuPause.
-        │   ├── final int width, height.
-        │   ├── int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur.
-        │   ├── JFrame menuPause.
-        │   ├── String chemin, winchemin.
         │   ├── BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView.
         │   ├── ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter, buttonRetourMenu, titreStatut, messageNom?.
         │   ├── ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView.
@@ -461,8 +255,29 @@ Documentation du projet de programmation : ED1A
                         └── Cette variable indique s'il on a quitté l'application, i.e on a quelque part appuyé sur le bouton "Quitter". Dès lors, la méthode "System.exit(0)" est appelée. Celle-ci met fin complètement au programme & ferme toutes les fenêtres.
                     
                 C/ isRunningGame // Statut "en cours de partie".
-                    ├── "initGame()" initialise d'abord joueurDataList
-                    └──
+                    ├── createPartie() crée une partie pour nbJoueur joueurs. Elle initialise les joueurs, leurs personnage ainsi que le terrain.
+                    ├── "initGame()" initialise d'abord joueurDataList, qui est une ArrayList d'ArrayList de BufferedImage. Cette liste stock des listes qui contiennent les données d'image de chaque joueur, & qui ne changent jamais.
+                            i.e l'image du personnage (1ère liste) puis le nom (2e liste). On n'y stock donc pas le score.
+                            Ensuite, par un double try_catch, on initialise certaines images qui elles aussi ne changent pas mais n'apparaissent que dans le jeu (le terrain, les plateformes...).
+                    ├── "updateClassement(double deltaTime)" met à jour l'affichage de la GAME.
+                            Pour chaque joueur, on gère les boutons droite, gauche & tir de projectile, avec inertie pour les déplacements du personnages. La vitesse & le ralentissement du personnage sont adaptés à toutes les résolutions.
+                            Pour le tir, se référer à la classe Personnage.
+                            Enfin, on appelle la fonction update du terrain qui update toutes les variables.
+                    ├── "afficheGame()" affiche toutes les images d'une GAME.
+                            On commence par afficher le background du terrain, suivi des plateformes, puis le score (seulement s'il n'y a qu'un joueur), suivi du/des personnage.s et de leurs noms, avant d'afficher les projectiles de chaque personnage.
+                            On termine par l'affichage générale, càd le contexte graphique générale dans lequel on dessine l'image de view, avant de libérer les ressources (g.dispose()).
+                    ├── "endGame()" est une méthode supplémentaire qui renvoie true si l'un des joueurs à perdu, i.e les pieds de son personnage ont touché le "sol" (le bas de).
+                    └── "runningGame()" fait tourner la GAME en utilisant la méthode de l'ups constant. Explications :
+                            L'idée est de faire un nombre d'update constant, peu importe la machine, les temps de calcul...
+                            Pour cela, on utilise un deltaTime (qui ici vaut 10 ms). C'est le temps nécessaire pour faire une update. Une fois ce temps écoulé, on effectue une update. Autrement dit, on effectue 1 update / 10 ms.
+                            Pour cela, on a un compteur du nombre d'update (double cnt) ainsi qu'un accumulateur qui va gérer les pertes de temps. En effet, supposont qu'il s'est écoulé 29 ms depuis la dernière update. Dans ce cas, on va effectuer 2 update. S'il s'écoule ensuite 2 ms, alors acc = 11 donc on peut effectuer une nouvelle update.
+                            "long t0" est le temps actuel. Puis, temps que le jeur tourne, on récupère le temps à l'instant T (dans t1). On met à jour t0, et on ajoute le temps écoulé à l'accumulateur acc += t1 - t0.
+                            Si l'accumulateur est > deltaTime (i.e on peut update), on met à jour les variables.
+                            À chaque fois que l'on update, on retire 1 deltaTime à l'accumulateur & on incrémente le compteur d'1 deltaTime.
+                            Si le reste dans l'accumulateur est > 0 et < deltaTime, cela signifique que l'on a un retard, qui reste stocké dans l'accumulateur (dans le cas précédent, acc  = 29 => acc - 2 update = 9ms. On stock ces 9 ms).
+                            Et quoi qu'il arrive, on continue d'afficher.
+
+                            L'ups constant rend le jeu plus fluide, et est la meilleure façon de faire. 
 
 
 
