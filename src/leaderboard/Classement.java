@@ -63,6 +63,14 @@ public class Classement extends LeaderBoard {
         return maxScore;
     }
 
+    public int getMaxScoreGlobal() {
+        int max = 0;
+        for (int i = 0; i <= getMaxId(); ++i) {
+            max = (max < getMaxScoreOfId(String.valueOf(i))) ? getMaxScoreOfId(String.valueOf(i)) : max;
+        }
+        return max;
+    }
+
     // Affichage dans la console
     public void afficherClassement() throws IOException {
         System.out.println("########## CLASSEMENT GLOBAL ##########");

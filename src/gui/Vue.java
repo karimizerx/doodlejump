@@ -21,16 +21,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Ces variables static boolean indique le statut actuel du panel
     public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuFin, isClassement, isMenuPause;
     private final int width, height; // Dimensions du panel
-    // Les espacement représente les sauts de ligne respectif à chaque statut
-    private int espacementMenuDemarrer, espacementMenuFin, espacementClassement, nbJoueur;
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
-    private int fleche, xfleche, yfleche, wfleche, hfleche;
+    private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
     private JFrame menuPause; // Le menu pause
     private String chemin, winchemin; // Le chemin vers le package d'images (win = version windows)
     private BufferedImage view, backgroundView, flecheView, pointView, terrainView, platformeBaseView,
             platformeMobileView, scoreBackgroundView, projectileView;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
-            buttonRetourMenu, doublePoint;
+            buttonRetourMenu, doublePoint, messageFin;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
     private Terrain terrain; // Le terrain sur lequel on joue
     private double deltaTime; // Le temps nécessaire pour update le jeu
@@ -107,6 +105,13 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    private int afficheDoublepoint2(Graphics2D g2, int x, int y, int w, int h) {
+        g2.setColor(Color.BLACK);
+        g2.fillOval(x, y + h / 2, w, h);
+        g2.fillOval(x, y + h / 2 + 2 * h, w, h);
+        return x + w;
+    }
+
     // On initialise toutes les images qui seront utilisées à plusieurs endroits
     private void initGENERAL() {
         // view est l'image qui contiendra toutes les autres
@@ -151,7 +156,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.hfleche = 30;
         this.xfleche = (10 * width / 100) - 50; // La fleche se place toujours ici en x
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (10 * height / 100) + fleche * espacementMenuDemarrer;
+        this.yfleche = (10 * height / 100) + fleche * sautLigne;
     }
 
     // Dessine toutes les images du menu DEMARRER
@@ -165,16 +170,16 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         int w = 30, h = 30, espacement = 15, ecart = 20;
         afficheMot(g2, buttonJouer, x, y, w, h, ecart, espacement);
         x = (10 * width / 100);
-        y = y + espacementMenuDemarrer;
+        y = y + sautLigne;
         afficheMot(g2, button2joueur, x, y, w, h, ecart, espacement);
         x = (10 * width / 100);
-        y = y + espacementMenuDemarrer;
+        y = y + sautLigne;
         afficheMot(g2, buttonMultiJoueur, x, y, w, h, ecart, espacement);
         x = (10 * width / 100);
-        y = y + espacementMenuDemarrer;
+        y = y + sautLigne;
         afficheMot(g2, buttonLb, x, y, w, h, ecart, espacement);
         x = (10 * width / 100);
-        y = y + espacementMenuDemarrer;
+        y = y + sautLigne;
         afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
 
         // Affichage de la fleche
@@ -188,7 +193,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Lance le menu DEMARRER
     private void runningMenuDemarrer() {
-        this.espacementMenuDemarrer = 50;
+        this.sautLigne = 50;
         this.fleche = 0; // On pointe le premier bouton
         while (isMenuDemarrer) {
             updateMenuDemarrer();
@@ -203,21 +208,50 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
         this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
+        this.messageFin = createImageOfMot("Game Over");
+
         if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur
             // Ce qu'on va afficher pour le score en fin de partie :
             Joueur j = terrain.getListeJoueurs().get(0);
             String s = String.valueOf(j.getScore());
-            ArrayList<BufferedImage> phrase = createImageOfMot("Votre score est de ");
+            ArrayList<BufferedImage> phrase = createImageOfMot("Votre score ");
             ArrayList<BufferedImage> score = createImageOfMot(s);
             scoreFinalView.add(phrase);
             scoreFinalView.add(score);
 
             // Ce qu'on va afficher pour le meilleur score en fin de partie :
             String hs = String.valueOf((new Classement()).getMaxScoreOfId(j.getId()));
-            ArrayList<BufferedImage> phrase1 = createImageOfMot("Le meilleur score est ");
+            ArrayList<BufferedImage> phrase1 = createImageOfMot("Votre meilleur score ");
             ArrayList<BufferedImage> hscore = createImageOfMot(hs);
+            String hs2 = String.valueOf((new Classement()).getMaxScoreGlobal());
+            ArrayList<BufferedImage> phrase2 = createImageOfMot("Meilleur score global ");
+            ArrayList<BufferedImage> hscore2 = createImageOfMot(hs2);
             hightScoreView.add(phrase1);
             hightScoreView.add(hscore);
+            hightScoreView.add(phrase2);
+            hightScoreView.add(hscore2);
+        }
+
+        if (terrain.getListeJoueurs().size() == 2) { // S'il y a 2 joueurs
+            // On adapte l'initialisation de sorte à ce que la fonction d'affichage ne
+            // change pas
+            Joueur j0 = terrain.getListeJoueurs().get(0), j1 = terrain.getListeJoueurs().get(1);
+            int sc0 = j0.getScore(), sc1 = j1.getScore();
+            String s0 = String.valueOf(sc0), s1 = String.valueOf(sc1);
+            ArrayList<BufferedImage> phrase = createImageOfMot("Score de " + j0.getNom() + " ");
+            ArrayList<BufferedImage> score = createImageOfMot(s0);
+            scoreFinalView.add(phrase);
+            scoreFinalView.add(score);
+
+            ArrayList<BufferedImage> phrase1 = createImageOfMot("Score de " + j1.getNom() + " ");
+            ArrayList<BufferedImage> hscore = createImageOfMot(s1);
+            String winner = (sc0 == sc1) ? "Aucun" : (sc0 > sc1) ? j0.getNom() : j1.getNom();
+            ArrayList<BufferedImage> phrase2 = createImageOfMot("Vainqueur ");
+            ArrayList<BufferedImage> hscore2 = createImageOfMot(winner);
+            hightScoreView.add(phrase1);
+            hightScoreView.add(hscore);
+            hightScoreView.add(phrase2);
+            hightScoreView.add(hscore2);
         }
     }
 
@@ -225,9 +259,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private void updateMenuFin() {
         this.wfleche = 30;
         this.hfleche = 30;
-        this.xfleche = (10 * width / 100) - 35; // La fleche se place toujours ici en x
+        this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (40 * height / 100) + (fleche / 6) * espacementMenuFin;
+        this.yfleche = (12 * height / 100) + sautLigne * (6 + (fleche / 6));
     }
 
     // Dessine toutes les images du menu FIN
@@ -236,36 +270,47 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Affichage terrain
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
-        /// Affichage du score à cette partie :
-        int x0 = (10 * width / 100), y0 = (25 * height / 100);
-        int w0 = 30, h0 = 30, espacement0 = 15, ecart0 = 20;
-
-        // Affichage du score final :
-        for (int i = 0; i < scoreFinalView.size(); ++i) {
-            ArrayList<BufferedImage> ligne = scoreFinalView.get(i);
-            x0 = afficheMot(g2, ligne, x0, y0, w0, h0, ecart0, espacement0);
-        }
-
-        x0 = (10 * width / 100);
-        y0 = (25 * height / 100) + espacementMenuFin;
-
-        for (int i = 0; i < hightScoreView.size(); ++i) { // Affichage d'1 ligne du classement
-            ArrayList<BufferedImage> ligne = hightScoreView.get(i);
-            x0 = afficheMot(g2, ligne, x0, y0, w0, h0, ecart0, espacement0);
-        }
-
-        // Affichage des boutons
-        int x = (10 * width / 100), y = (40 * height / 100);
+        /// Affichage du message final :
+        int x = (35 * width / 100), y = (12 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
+        afficheMot(g2, messageFin, x, y, w, h, ecart, espacement);
+        /// Affichage des scores :
+        // Affichage du score à cette partie :
+        y += sautLigne * 2;
+        x = (9 * width / 100);
+        x = afficheMot(g2, scoreFinalView.get(0), x, y, w, h, ecart, espacement);
+        x = afficheDoublepoint2(g2, x, y, 7, 7);
+        x += espacement;
+        x = afficheMot(g2, scoreFinalView.get(1), x, y, w, h, ecart, espacement);
+
+        // Affichage du meilleur score local :
+        y += sautLigne;
+        x = (9 * width / 100);
+        x = afficheMot(g2, hightScoreView.get(0), x, y, w, h, ecart, espacement);
+        x = afficheDoublepoint2(g2, x, y, 7, 7);
+        x += espacement;
+        x = afficheMot(g2, hightScoreView.get(1), x, y, w, h, ecart, espacement);
+
+        // Affichage du meilleur score global :
+        y += sautLigne;
+        x = (9 * width / 100);
+        x = afficheMot(g2, hightScoreView.get(2), x, y, w, h, ecart, espacement);
+        x = afficheDoublepoint2(g2, x, y, 7, 7);
+        x += espacement;
+        x = afficheMot(g2, hightScoreView.get(3), x, y, w, h, ecart, espacement);
+
+        /// Affichage des boutons :
+        y += sautLigne * 2;
+        x = (9 * width / 100);
         afficheMot(g2, buttonRetourMenu, x, y, w, h, ecart, espacement);
-        x = (10 * width / 100);
-        y = y + espacementMenuFin;
+        x = (9 * width / 100);
+        y += sautLigne;
         afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
 
-        // Affichage de la fleche
+        /// Affichage de la fleche
         g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
 
-        // Affichage final
+        /// Affichage final
         Graphics g = getGraphics(); // Contexte graphique
         g.drawImage(view, 0, 0, this.width, this.height, null);
         g.dispose(); // On libère les ressource
@@ -273,7 +318,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Lance le menu FIN
     private void runningMenuFin() {
-        this.espacementMenuFin = 50;
+        this.sautLigne = 50;
         this.fleche = 5;
         while (isMenuFin) {
             updateMenuFin();
@@ -307,7 +352,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.hfleche = 30;
         this.xfleche = (10 * width / 100) - 35; // La fleche se place toujours ici en x
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (80 * height / 100) + (fleche / 8) * espacementClassement;
+        this.yfleche = (80 * height / 100) + (fleche / 8) * sautLigne;
     }
 
     // Crée l'affichage à jour du classement Global
@@ -328,7 +373,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 x = afficheMot(g2, ligne, x, y, w, h, ecart, espacement);
             }
             x = (10 * width / 100);
-            y += espacementClassement;
+            y += sautLigne;
         }
 
         // Affichage des boutons
@@ -336,7 +381,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         int w1 = 30, h1 = 30, espacement1 = 15, ecart1 = 20;
         afficheMot(g2, buttonRetourMenu, x1, y1, w1, h1, ecart1, espacement1);
         x1 = (10 * width / 100);
-        y1 = y1 + espacementClassement;
+        y1 = y1 + sautLigne;
         afficheMot(g2, buttonQuitter, x1, y1, w1, h1, ecart1, espacement1);
 
         // Affichage de la fleche
@@ -351,7 +396,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Fait tourner
     private void runningClassement() {
         this.fleche = 7;
-        this.espacementClassement = 50;
+        this.sautLigne = 50;
 
         // On récupère les données du classementque l'on va afficher
         Classement c = new Classement();
@@ -390,7 +435,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // L'image du perso doit être un carré. On prend la valeure la plus petite
             double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
             Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
-            String nomjoueur = "Mizer";
+            String nomjoueur = "Mizer " + i;
             ljou.add(new Joueur(p, nomjoueur));
         }
         this.terrain = new Terrain(ljou, height, width, false, false, 0);
