@@ -188,7 +188,246 @@ Documentation du projet de programmation : ED1A
                         Le champs "isMenuFin" indique que l'on se trouve au niveau du menu FIN (visible à la fin d'une partie).
                         Le champs "isClassement" indique que l'on se trouve au niveau du CLASSEMENT.
                         Chaque statut possède plusieurs méthodes qui lui son associées.
-                    Les champs
+                ├── Les champs width & height représentent la dimension du panel.
+                ├── Afin de représenter l'équivalent des boutons, mais de façon imagées, nous avons décidé d'afficher le titre du bonton (ex: "Jouer solo"), pointé par une flêche.
+                        La flêche indique sur quel bouton on pointe actuellement.
+                        Le champs "fleche" est un entiier qui, pour un statut donné, indique sur quel "bouton" on pointe actuellement. (Voir KeyListener)
+                        Les champs xfleche, yfleche, wfleche & hfleche représentent les coordonnées de l'image de la flêche ainsi que ses dimensions.
+                ├── Le champs "sautLigne" représente le saut de ligne. Par exemple, lorsque l'on affiche les boutons du menu DEMARRER, il indique combien on doit ajouter au y du bouton précédent pour afficher le bouton suivant.
+                ├── Le champs "nbJoueur" indique le nombre de joueurs dans la partie.
+                ├── Le champs "menuPause" représente une petite fenêtre qui s'ouvre pour mettre pause. !!!!!!!!!!!!!!!!!!!!!! A CHANGER !!!!!!!!!!!!
+                ├── Les champs "chemin" & "winchemin" représentent le chemin qui contient les pack d'images (win chemin étant la version pour windows).
+                ├── Il y a ensuite plusieurs images (BufferedImage) :
+                        L'image view représente l'image générale, dans laquelle on dessine toutes les autres. Cela vaut pour tous les affichages.
+                        Les autres champs sont des images qui seront réutilisées plus tard.
+                ├── Les champs de type ArrayList<BufferedImage> représentent des mots ou ensembles de mots. Chaque lettres étant représentée par une image de cette ArrayList. Les boutons ne sont donc que des images.
+                ├── Les champs de type ArrayList<ArrayList<BufferedImage>> représentent des ensembles d'ensembles de mots. Par exemple, lbView contient toutes les images de l'affichage du classement. Chaque ArrayList<BufferedImage> contient un rang, un nom ou un score.
+                ├── Le champs "terrain" représente le terrain d'une GAME, soit la classe qui gère tous les composants d'une GAME.
+                ├── Le champs "deltaTime" est le temps choisit pour effectuer chaque update lors de la GAME. Il est utilisé dans l'update par secondes constant (ups constant).
+                ├── Le champs "threadMvt" !!!!!!!!!!!!!!!!!!!!!!! EXPLICATION FARES !!!!!!!!!!!!!!!!!!!Documentation du projet de programmation : ED1A
+
+### Description de toutes les classes :
+
+/src : 
+    ─> contient le code source du jeu.
+
+## Partie 1 : Classes qui gèrent une partie :
+
+/gameobjects :
+    ・Joueur :
+        ├── Implements : Serializable.
+        ├── Attributs :
+        │   ├── String id, nom.
+        │   ├── Personnage p.
+        │   └── int score.
+        └── Description :
+            ├── Représente un joueur, i.e la personne qui joue.
+            ├── Chaque joueur possède, localement, un identifiant unique (champs "id"). Le nom, lui, peut varier au gré du joueur.
+            └── Le constructeur crée un joueur à partir d'un personnage et d'un nom. Et pas à partir d'un identifiant.
+                    En effet, le constructeur calcul lui-même cet identifiant, on regardant l'historique des parties locales dans "history.csv".
+                    Si le joueur a déjà joué une partie, alors il a déjà un identifiant attitré (qui ne change pas entre 2 parties). Le constructeur récupère alors l'identifiant de la dernière partie.
+                    Si le joueur n'a jamais joué de partie, le constructeur récupère l'identifiant le plus grand dans le classement (qui contient tous les scores de tous les joueurs), puis il assigne au joueur j l'identifiant maxId + 1.
+                    L'identifiant vaut bien évidement 0 si personne n'a jamais joué au jeu, i.e history.csv & classement.csv sont vides.
+                    Enfin, concernant le nom, il y a 3 possibilitées. Soit le joueur inscrit un nom au début de la partie. Alors celui-ci lui est affecté.
+                    Sinon, s'il n'inscrit rien, on essaye de récupérer le nom utilisé lors de la dernière partie. S'il existe, alors celui-ci lui est affecté.
+                    Sinon, si le joueur joue pour la première fois et n'entre pas de nom avant de jouer, on lui affecte le nom par défaut "MIZER".
+
+    ・GameObject :
+        ├── Implements : Serializable.
+        ├── Type : Abstract.
+        ├── Classes représentées : Items, Personnage, Plateforme, Projectile.
+        ├── Attributs :
+        |   └── double x, y, width, height.
+        └── Description :
+                Représente les différents types d'objets d'une GAME, par des coordonnées et des dimensions.
+
+    ・Personnage :
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   ├── double x, y, width, height, dx, dy. 
+        │   ├── boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot.
+        │   └── ArrayList<Projectile> listProjectiles.
+        └── Description : 
+            ├── Représente un personnage. C'est un GameObjet avec une vitesse en x et en y.
+            ├── Les champs "isRight" & "isLeft" indique si le joueur appuye sur les boutons droite/gauche ou pas. Ils servent à faire bouger le personnage.
+            │   Les champs "isInertRight" & "isInertLeft" gèrent l'inertie, càd que le relâchement du bouton implique un ralentissement de la vitesse du personnage en x, et non un arrêt net.
+            │   Les champs "isShoot" et "canShoot" sont liés aux projectiles. isShoot indique si le personnage vient de tirer, & canShoot indique si le personnage à le droit de tirer. Ces champs fonctionnent comme ceci :
+            │       Si on a le droit de tirer et que l'on tire (i.e on apuie sur le bouton "tirer"), alors on indique que l'on vient de lancer le processus de tir et que l'on a plus le droit de tirer.
+            │       Si on lâche le bouton "tirer", alors on a de nouveau le droit de "tirer".
+            │       Si (isShoot && iscanShoot), i.e on vient de lancer le processus de tir & on a le droit de tirer (càd dès qu'on relâche le bouton "tirer"), alors on tire et on indique qu'on ne tir plus. 
+            │   Le champs "listProjectiles" stock tous les projectiles lancés par le personnage et qui sont toujours sur le terrain.
+            └── La méthode "tirer(double w, double h, double vx, double vy)" ajoute un projectile à la liste des projectiles.
+                La méthode "collides_plateforme(Plateforme pf, double deltaTime)" gère la collision entre le personnage et une plateforme. Si collision il y a, alors la vitesse en y change, toujours proportionnelle au deltaTime.
+                La méthode "collides_item(Items it, double deltaTime)" gère un cas suplémentaire mais est sensiblement identique.
+                        
+    ・Plateforme :
+        ├── Type : Abstract.
+        ├── Classes représentées : PlateformeBase, MovingPlateforme,...
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   └── double x, y, width, height, saut.
+        └── Description : 
+            ├── Représente une plateforme. C'est un GameObjet avec un saut.
+            └── Le champs "saut" est une constante qui indique de combien le personnage va sauter en cas de collision. Constante différente en fonction de la plateforme.
+
+    ・PlateformeBase :
+        ├── Extends : Plateforme.
+        ├── Attributs : 
+        │   └── double x, y, width, height, saut.
+        └── Description : 
+            └── Représente une plateforme basique.
+
+    ・MovingPlateforme :
+        ├── Extends : Plateforme.
+        ├── Attributs : 
+        │   └── double x, y, width, height, saut, dx.
+        └── Description :
+            ├── Représente une plateforme mobile. C'est une Plateforme avec une vitesse en x (horizontale).
+            ├── Le champs "dx" représente la vitesse de la plateforme en x.
+            └── La méthode "move(Terrain t)" fait bouger la plateforme en x.
+
+    ・Items :
+        ├── Type : Abstract.
+        ├── Classes représentées : Fusée, Hélicoptère,...
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   ├── double x, y, width, height, saut.
+        │   └── boolean isNeedPied.
+        └── Description : 
+            ├── Représente un item. C'est un GameObjet avec un saut.
+            └── Le champs "saut" est une constante qui indique de combien le personnage va sauter en cas de collision. Constante différente en fonction de l'item.
+                Le champ "isNeedPied" gère la collision. Il indique si le personnage doit collisionner l'item avec les pieds (ex: ressort...) ou pas forcément (ex : fusée...).
+
+    ・Fusee & Helicoptere :
+        ├── Extends : Item.
+        ├── Attributs : 
+        │   ├── double x, y, width, height, saut.
+        │   └── boolean isNeedPied.
+        └── Description : 
+            ├── Représente une Fusée/Hélicoptère.
+            └── La méthode "move" fait bouger l'item en x et y.
+    
+    ・Projectile :
+        ├── Extends : GameObject.
+        ├── Attributs : 
+        │   └── double x, y, width, height, dx, dy. 
+        └── Description : 
+            ├── Représente un projectile. C'est un GameObject avec une vitesse en x et en y.
+            └── La méthode "limiteProjectile" gère le débordement (la sortie) du projectile par rapport aux limites du terrain.
+                La méthode "collides_monster" gère la collision entre le projectile et un monstre.
+
+    ・Terrain :
+        ├── Attributs :
+        │   ├── ArrayList<Plateforme> plateformesListe.
+        │   ├── ArrayList<Joueur> ListeJoueurs.
+        │   ├── final double height, width.
+        │   ├── double diff_plateformes, difficulty.
+        │   ├── boolean multiplayer, isHost.
+        │   ├── Serveur host.
+        │   ├── JoueurConnecte client.
+        │   └── final int playerID.
+        └── Description :
+            ├── Représente le terrain d'une GAME. Cette classe gère tous les composant d'une partie.
+            │
+            ├── Le champs "plateformesListe" conttient la liste de toutes les plateformes présentent sur le terrain.
+            ├── Le champs "ListeJoueurs" conttient la liste de tous les joueurs présents sur le terrain.
+            ├── Les champs "width, height" représentent la dimension du terrain. Celle-ci ne change jamais (final).
+            ├── Le champs "difficulty" représente la difficulté du jeu. Plus on avance, plus celle-ci augmente jusqu'à un maximum. La difficulté affecte la densité des plateformes et la probabilité qu'un item bonus/malus apparaisse.
+            ├── Le champs "diff_plateformes" représente la différence en y entre 2 plateformes. Plus difficulty augmente, plus la différence est grande.
+            └── Les champs "multiplayer", "isHost", "host", "client" "playerID" !!!!!!!!! EXPLICATION CHEZ FARES !!!!!!!!!!!
+            │
+            ├── Le constructeur initialise les variables et fait appel à la méthode "generateObstacles()".
+            ├── La méthode "generateObstacles()" crée la liste des plateformes. Les dimensions sont adaptées à toutes les résolutions. !!!!!!!!! EXPLICATION CHEZ ELYO !!!!!!!!!!
+            ├── La méthode "highestPlateforme()" renvoie la plateforme la plus haute sur le terrain.
+            ├── La méthode "limite(Personnage)" gère le cas où le personnage déborde d'un côté ou l'autre du terrain. Si plus de la moitié du personnage déborde d'un côté, alors il réapparaît de l'autre côté.
+            ├── La méthode "update(double deltaTime)" met à jour les variables du jeu. Elle appelle, pour tous les joueurs, la méthode "update(Joueur j, double deltaTime)".
+            └── La méthode "update(Joueur j, double deltaTime)" met à jour les variables du jeu pour un joueur j donné.
+                    Cette méthode commence par gérer le ralentissement du personnage, en mettant à jour sa vitesse dy et sa position en y.
+                    Ensuite, si les pieds du personnage touche le bas de la fenêtre, le jeu se termine.
+                    Puis, elle se charge de mettre à jour la position de tous les projectiles lancés par le joueur.
+                    Pour donner cette impression de monter quand on saute, on a décidé arbitrairement que lorsque la tête du personnage atteint la moitié de l'écran en y, toutes les plateformes s'abaissent.
+                    À ce moment là, on met à jour la difficulté, le score, et on descend les plateformes, en s'assurant qu'elles restent bien dans le cadre. Dans le cas contraire, on !!!!!!!!!!!!!!!!!!! ELYO EXPLICATION !!!!!!!!!!!!!!!!!!
+                    Enfin, on gère la collision entre le personnage et les plateformes, ainsi que le débordement avec "limite(Personnage p)".
+
+## Partie 2 : Classes qui gèrent l'affichage :
+/gui :
+    ・Game :
+        ├── Extends : JFrame.
+        ├── Attributs :
+        │   ├── Vue vue.
+        │   └── final int ecranw, ecranh, framew, frameh.
+        └── Description :
+                ├── Représente la fenêtre de l'application.
+                ├── Le champ vue représente la vue de l'application (voir Partie 2 => Classe Vue).
+                ├── Les autres champs entiers représentent les dimensions de l'écran à partir desquels on obtient les dimensions de la fenêtre.
+                ├── Le constructeur initialise une fenêtre avec son nom, ses dimensions.
+                ├── La fenêtre ne peut être redimensionnée.
+                ├── En cas de fermuture par la croix, cela ferme toutes les fenêtres et termine le programme.
+                ├── "this.setLocationRelativeTo(null)" place la fenêtre au centre du bureau (null).
+                ├── Enfin, on ajoute une nouvelle vue (avec son skin en argument).
+                └── Le main se charge de créer cette fenêtre et de la rendre visible.
+
+    ・Vue :
+        ├── Extends : JPanel.
+        ├── Implements : Runnable, KeyListener.
+        ├── Attributs :
+        │   ├── static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenu2, isMenuFin, isClassement, isMenuPause.
+        │   ├── final int width, height.
+        │   ├── int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur.
+        │   ├── JFrame menuPause.
+        │   ├── String chemin, winchemin.
+        │   ├── BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView, pointView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView.
+        │   ├── ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter, buttonRetourMenu, doublePoint, messageFin, messageNom?.
+        │   ├── ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView.
+        │   ├── Terrain terrain.
+        │   ├── double deltaTime.
+        │   ├── ThreadMouvement threadMvt.
+        │   └── Thread thread.
+        └── Description :
+                ├── Représente le composant de type panel qui se charge de tout l'affichage.
+                │
+                ├── Les champs static boolean représentent les statuts de l'application. Un statut indique à l'instant T où se trouve-t-on / ce que nous faisons / l'état de l'application.
+                        Le champs "isQuitte" indique si l'on a quitté l'application. S'il est true, il implique la fermeture de l'application (voir run()).
+                        Le champs "isRunningGame" indique que l'on est en pleine partie.
+                        Le champs "isMenuDemarrer" indique que l'on se trouve au niveau du menu DEMARRER.
+                        Le champs "isMenu2" indique que l'on se trouve au niveau du 2nd menu (menu où l'on entre son nom et/ou d'autres informations).
+                        Le champs "isMenuFin" indique que l'on se trouve au niveau du menu FIN (visible à la fin d'une partie).
+                        Le champs "isClassement" indique que l'on se trouve au niveau du CLASSEMENT.
+                        Chaque statut possède plusieurs méthodes qui lui son associées.
+                ├── Les champs width & height représentent la dimension du panel.
+                ├── Afin de représenter l'équivalent des boutons, mais de façon imagées, nous avons décidé d'afficher le titre du bonton (ex: "Jouer solo"), pointé par une flêche.
+                        La flêche indique sur quel bouton on pointe actuellement.
+                        Le champs "fleche" est un entiier qui, pour un statut donné, indique sur quel "bouton" on pointe actuellement. (Voir KeyListener)
+                        Les champs xfleche, yfleche, wfleche & hfleche représentent les coordonnées de l'image de la flêche ainsi que ses dimensions.
+                ├── Le champs "sautLigne" représente le saut de ligne. Par exemple, lorsque l'on affiche les boutons du menu DEMARRER, il indique combien on doit ajouter au y du bouton précédent pour afficher le bouton suivant.
+                ├── Le champs "nbJoueur" indique le nombre de joueurs dans la partie.
+                ├── Le champs "menuPause" représente une petite fenêtre qui s'ouvre pour mettre pause. !!!!!!!!!!!!!!!!!!!!!! A CHANGER !!!!!!!!!!!!
+                ├── Les champs "chemin" & "winchemin" représentent le chemin qui contient les pack d'images (win chemin étant la version pour windows).
+                ├── Il y a ensuite plusieurs images (BufferedImage) :
+                        L'image view représente l'image générale, dans laquelle on dessine toutes les autres. Cela vaut pour tous les affichages.
+                        Les autres champs sont des images qui seront réutilisées plus tard.
+                ├── Les champs de type ArrayList<BufferedImage> représentent des mots ou ensembles de mots. Chaque lettres étant représentée par une image de cette ArrayList. Les boutons ne sont donc que des images.
+                ├── Les champs de type ArrayList<ArrayList<BufferedImage>> représentent des ensembles d'ensembles de mots. Par exemple, lbView contient toutes les images de l'affichage du classement. Chaque ArrayList<BufferedImage> contient un rang, un nom ou un score.
+                ├── Le champs "terrain" représente le terrain d'une GAME, soit la classe qui gère tous les composants d'une GAME.
+                ├── Le champs "deltaTime" est le temps choisit pour effectuer chaque update lors de la GAME. Il est utilisé dans l'update par secondes constant (ups constant).
+                ├── Le champs "threadMvt" !!!!!!!!!!!!!!!!!!!!!!! EXPLICATION FARES !!!!!!!!!!!!!!!!!!!
+                └── Le champs "thread" représente la thread d'exécution liée au panel.
+
+                ├── Le constructeur prend en argument une fenêtre de type Game pour récupérer ses dimensions, et une String skin pour initialiser les chemins. Enfin, on ajoute les KeyListener de ce composant;
+
+                ├── Comme dit précédement, pour chaque statut, on a globalement 4 méthodes associées 
+                        ├── init qui initialise les images liées à ce statut.
+                        ├── update qui met à jour les images liées à ce statut.
+                        ├── affiche qui affiche toutes les éléments liées à ce statut.
+                        ├── running qui lance l'update & l'affichage en boucle de ce statut.
+                        └── Dans cette partie, nous ne parlerons pas tout de suite du statut "isRunningGame", car ses méthodes différent des autres.
+
+
+                A/ 
+
+
+
+
                 ├── Les autres champs entiers représentent les dimensions de l'écran à partir desquels on obtient les dimensions de la fenêtre.
                 ├── Le constructeur initialise une fenêtre avec son nom, ses dimensions.
                 ├── La fenêtre ne peut être redimensionnée.
@@ -262,6 +501,131 @@ Documentation du projet de programmation : ED1A
 
 ## Partie 4 : Classes qui gèrent le mode multijoueur :
 !!!!!!!!!!! EXPLICATION FARES !!!!!!!!!
+
+
+### Modélisation du projet :
+└── src
+    ├── gameobjects /// Toutes les classes qui gère une partie
+    │   ├── Fusee.java
+    │   ├── GameObject.java
+    │   ├── Helicoptere.java
+    │   ├── Items.java // (ABS) Représente un item.
+    │   ├── Joueur.java // Représente un joueur.
+    │   ├── MovingPlateforme.java
+    │   ├── Personnage.java
+    │   ├── PlateformeBase.java
+    │   ├── Plateforme.java // (ABS) Représente une plateforme.
+    │   ├── Projectile.java
+    │   └── Terrain.java // (MAIN) Gère tous les éléments d'une partie.
+    ├── gui
+    │   ├── App.java
+    │   ├── Game.java // Représente la fenêtre générale qui contient vue.
+    │   ├── Vue.java // (JPanel) S'occupe de tout ce qui est lié à l'affichage.
+    │   └── images // Stocke les différents pack de skin
+    │       └── packBase // Exemple de pack de skin (tous les packs ont la même structure)
+    │           ├── background
+    │           │   └──> Contient les différents background.
+    │           ├── chiffres
+    │           │   └──> Contient des images de chiffres.
+    │           ├── icon
+    │           │   └──> Contient différents icones.
+    │           ├── lettres
+    │           │   └──> Contient des images de lettres. 
+    │           ├── personnages
+    │           │   └──> Contient les différents skin du personnage.
+    │           ├── plateformes
+    │           │   └──> Contient les différents types de plateformes.
+    │           └── items
+    |               └──> Contient les différents items du jeu.
+    ├── leaderboard // Contient les classes qui gère la sauvegarde des scores et tout ce qui est lié au classement.
+    │   ├── classement.csv // Fichier (trié) qui contient les scores de tous les joueurs (classement globale).
+    │   ├── Classement.java
+    │   ├── history.csv // Fichier (non trié) qui fait offiche de "log locale". Contient l'historique des parties du joueur local.
+    │   ├── History.java
+    │   └── LeaderBoard.java // (ABS) Sert à représenter le classement et l'historique.
+    └── multiplayer
+        ├── JoueurConnecte.java
+        ├── Serveur.java
+        └── ThreadMouvement.java
+
+
+                └── Le champs "thread" représente la thread d'exécution liée au panel.
+
+                ├── Les autres champs entiers représentent les dimensions de l'écran à partir desquels on obtient les dimensions de la fenêtre.
+                ├── Le constructeur initialise une fenêtre avec son nom, ses dimensions.
+                ├── La fenêtre ne peut être redimensionnée.
+                ├── En cas de fermuture par la croix, cela ferme toutes les fenêtres et termine le programme.
+                ├── "this.setLocationRelativeTo(null)" place la fenêtre au centre du bureau (null).
+                ├── Enfin, on ajoute une nouvelle vue (avec son skin en argument).
+                └── Le main se charge de créer cette fenêtre et de la rendre visible.
+
+## Partie 3 : Classes qui gèrent la sauvegarde des scores :
+/leaderBoard :
+    ・LeaderBoard :
+        ├── Type : Abstract.
+        ├── Classes représentées : Classement, History.
+        ├── Attributs :
+        │   ├── final String separateur.
+        │   ├── String entete, chemin;
+        │   ├── File fichier;
+        │   ├── ArrayList<String> ligneCSV;
+        │   └── ArrayList<String[]> lbData;
+        └── Description :
+            ├── C'est un objet qui sert à sauvegarder, stocker et manipuler des données de score (locales ou globales).
+            ├── Le champ "separateur" indique quel est le type de séparateur dans le fichier csv. Celui-ci ne change pas (final).
+            ├── Le champ "entete" indique quel est l'en-tête du fichier csv, càd la première ligne qui indique à quoi correspond chaque colonne du fichier.
+            ├── Le champ "chemin" est le chemin vers le dossier qui contient les fichiers sur lesquels on travail.
+            ├── Le champ "fichier" est le fichier sur lequel on travail.
+            ├── Le champ "ligneCSV" est une liste de String, chaque String représentant une ligne du fichier.
+            └── Le champ "lbData" est une liste de tableau de chaine de caractères. Chaque tableau représente une ligne du fichier, avec pour élément [0] = identifiant, [1] = Nom, [2] = Score.
+            ├── Le constructeur prend un fichier en argument est initialise les variables.
+            ├── La méthode "lectureFichier()" sert à lire les données d'un fichier et à les stocker dans différentes variables (c.f attributs).
+                    On commence par ajouter toutes les lignes du fichiers dans "ligneCSV".
+                    La classe BufferedReader, jumelée à FileReader, permet de lire des entrées de séquences de caractères. BufferedReader est utilisée pour sa méthode readLine.
+                    En supposant que le fichier contient toujours au moins l'en-tête, on récupère celui-ci, avant de libérer les ressources du lecteur.
+                    Ensuite on ajoute, les données de chaque colonnes & chaque lignes du fichier dans lbData, comme expliqué ci-dessus. Cela nous permet de travailler exclusivement sur une ArrayList, plutôt que sur un fichier.
+            ├── La méthode abstract "ajoutClassement" sert à ajouter une sauvegarde au fichier (i.e id + nom + score). Cette méthode est redéfinie dans chaque sous-classes.
+            ├── Les méthodes "getMaxScore" & "getMaxIndex" sont utilisées dans la méthode "classer()" qui sert ) trier le fichier en fonction des scores. Ces méthodes sont protected car visibles que par les sous-classes.
+            └── La méthode "afficherLbData" affiche l'ensemble des données du fichier dans le terminal.
+
+
+    ・History :
+        ├── Extends : LeaderBoard.
+        ├── Attributs :
+        │   ├── final String separateur.
+        │   ├── String entete, chemin;
+        │   ├── File fichier;
+        │   ├── ArrayList<String> ligneCSV;
+        │   └── ArrayList<String[]> lbData;
+        └── Description :
+            ├── C'est un objet qui sauvegarde les données de chaque parties, les unes à la suite des autres, tel un système de log. Il est utilisé pour ça mais aussi pour récupérer les données de la dernière partie aisément.
+            └── La méthode "ajoutClassement(String id, String nom, String score)" permet d'ajouter les données d'une partie.
+                    On commence par ajouter à la liste des données du fichier lbData un tableau contenant l'id, le nom et le score lors de la dernière partie.
+                    La classe BufferedWriter, jumelée à FileWriter, permet d'écrire des séquences de caractères dans le fichier. Mais celle-ci efface toutes les données et réécrit.
+                    On commence donc par ajouter l'en-tête au fichier, suivit de la mêthode newLine() de BufferedWriter qui passe elle-même à la ligne suivante, peut importe le délimiteur.
+                    Puis, pour chaque ligne dans lbData (i.e chaque tableau de String), on écrit l'id, le séparateur, le nom, le séparateur, le score et un newLigne().
+                    On libère les ressources du writer à la fin. C'est ainsi qu'on a réécrit toutes les données + les nouvelles dans le fichier history.csv.
+
+
+        ・Classement :
+        ├── Extends : LeaderBoard.
+        ├── Attributs :
+        │   ├── final String separateur.
+        │   ├── String entete, chemin;
+        │   ├── File fichier;
+        │   ├── ArrayList<String> ligneCSV;
+        │   └── ArrayList<String[]> lbData;
+        └── Description :
+            ├── C'est un objet qui sauvegarde les données de chaque parties, de façon triées, pour tous les joueurs (c'est un classement global).
+            └── La méthode "ajoutClassement(String id, String nom, String score)" permet d'ajouter les données d'une partie.
+                    Elle fonctionne exactement de la même manière que celle de history, à une différence près : juste avant de commencer à écrire dans le fichier, on le classe avec la méthode "LeaderBoard.classer".
+                La méthode "getMaxId" renvoie le plus grand identifiant présent dans le classement. Cette méthode est utilisée pour créer un nouvel identifiant local.
+                La méthode "getMaxScoreOfId(String id)" renvoie le plus haut score pour un identifiant donné.
+
+## Partie 4 : Classes qui gèrent le mode multijoueur :
+!!!!!!!!!!! EXPLICATION FARES !!!!!!!!!
+
+
 ### Modélisation du projet :
 └── src
     ├── gameobjects /// Toutes les classes qui gère une partie
