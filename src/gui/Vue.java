@@ -416,7 +416,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         x = (11 * width / 100);
         this.backgroundClView = backgroundClView1;
         for (int z = 0; z < lbView.size(); z = z + 3) {
-            this.backgroundClView = (z % 2 == 0) ? backgroundClView1 : backgroundClView1;
+            this.backgroundClView = (z % 2 == 0) ? backgroundClView1 : backgroundClView2;
             g2.drawImage(backgroundClView, x * 85 / 100, y - h / 6, width, h * 3 / 2, null);
             x = afficheMot(g2, lbView.get(z), x, y, w, h, ecart, espacement);
             x += espacement / 2;
