@@ -484,7 +484,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             // L'image du perso doit être un carré. On prend la valeure la plus petite
             double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
             Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
-            String nomjoueur = "Mizer";
+            String nomjoueur = "Mizer " + i;
             ljou.add(new Joueur(p, nomjoueur));
         }
         this.terrain = new Terrain(ljou, height, width, false, false, 0);
