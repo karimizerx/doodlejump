@@ -25,7 +25,7 @@ public class Game extends JFrame {
         this.setLocationRelativeTo(null);
 
         // Ajout des éléments à la fenêtre
-        this.vue = new Vue(this, "packBase");
+        this.vue = new Vue(this, "packTux");
         this.add(vue);
     }
 
