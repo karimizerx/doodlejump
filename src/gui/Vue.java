@@ -25,9 +25,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private JFrame menuPause; // Le menu pause
     private String chemin, winchemin; // Le chemin vers le package d'images (win = version windows)
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
-            pointView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
-            buttonRetourMenu, doublePoint, messageFin, messageNom;
+            buttonRetourMenu, titreStatut, messageNom;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
     private Terrain terrain; // Le terrain sur lequel on joue
     private double deltaTime; // Le temps nécessaire pour update le jeu
@@ -115,12 +115,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             try {
                 this.backgroundView = ImageIO.read(new File(chemin + "/background/background1.png"));
                 this.flecheView = ImageIO.read(new File(chemin + "/icon/iconfleche.png"));
-                this.pointView = ImageIO.read(new File(chemin + "/icon/iconpoint.png"));
 
             } catch (Exception e) {
                 this.backgroundView = ImageIO.read(new File(winchemin + "background/background1.png"));
                 this.flecheView = ImageIO.read(new File(winchemin + "/icon/iconfleche.png"));
-                this.pointView = ImageIO.read(new File(winchemin + "/icon/iconpoint.png"));
 
             }
         } catch (Exception e) {
@@ -129,10 +127,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // On initialise ces 2 boutons qui seront ré-utiliser de nombreuses fois.
         this.buttonQuitter = createImageOfMot("Quitter");
         this.buttonRetourMenu = createImageOfMot("Revenir au menu");
-        // On initialise ce qui représente un double point ":"
-        this.doublePoint = new ArrayList<BufferedImage>();
-        doublePoint.add(pointView);
-        doublePoint.add(pointView);
     }
 
     /// PARTIE MENU DEMARRER :
@@ -243,13 +237,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     /// PARTIE MENU FIN :
     // Initialise toutes les images du menu FIN
     private void initMenuFin() {
-        // view est l'image qui contiendra toutes les autres
-        // Double try_catch pour gérer la différence entre windows & linux
         this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
         this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
 
         if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur
-            this.messageFin = createImageOfMot("Game Over");
+            this.titreStatut = createImageOfMot("Game Over");
             // Ce qu'on va afficher pour le score en fin de partie :
             Joueur j = terrain.getListeJoueurs().get(0);
             String s = String.valueOf(j.getScore());
@@ -272,7 +264,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         if (terrain.getListeJoueurs().size() == 2) { // S'il y a 2 joueurs
-            this.messageFin = createImageOfMot("Fin de la course");
+            this.titreStatut = createImageOfMot("Fin de la course");
             // On adapte l'init de sorte à ce que la fonction d'affichage ne change pas
             Joueur j0 = terrain.getListeJoueurs().get(0), j1 = terrain.getListeJoueurs().get(1);
             int sc0 = j0.getScore(), sc1 = j1.getScore();
@@ -304,7 +296,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     // Dessine toutes les images du menu FIN
-    public void afficheFin() {
+    public void afficheMenuFin() {
         Graphics2D g2 = (Graphics2D) view.getGraphics();
         // Affichage terrain
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
@@ -312,7 +304,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         /// Affichage du message final :
         int x = (9 * width / 100), y = (12 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
-        afficheMot(g2, messageFin, x, y, w, h, ecart, espacement);
+        afficheMot(g2, titreStatut, x, y, w, h, ecart, espacement);
         /// Affichage des scores :
         // Affichage du score à cette partie :
         y += sautLigne * 2;
@@ -360,7 +352,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.fleche = 0;
         while (isMenuFin) {
             updateMenuFin();
-            afficheFin();
+            afficheMenuFin();
         }
     }
 
@@ -368,7 +360,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Initialise toutes les images du menu CLASSEMENT
     private void initClassement() {
         this.lbView = new ArrayList<ArrayList<BufferedImage>>();
-        this.messageFin = createImageOfMot("Classement ");
+        this.titreStatut = createImageOfMot("Classement ");
         try {
             try {
                 this.backgroundClView1 = ImageIO.read(new File(chemin + "/background/backgroundClassement1.png"));
@@ -384,16 +376,18 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Met à jour les données du CLASSEMENT
     private void updateClassement() throws IOException {
-        Joueur j = terrain.getListeJoueurs().get(0);
-        String score = String.valueOf(j.getScore());
+        if (terrain.getListeJoueurs().size() == 1) { // On update le classement que s'il n'y a qu'un joueur
+            Joueur j = terrain.getListeJoueurs().get(0);
+            String score = String.valueOf(j.getScore());
 
-        // Mise à jour dans le Classement Global
-        Classement c = new Classement();
-        c.ajoutClassement(j.getId(), j.getNom(), score);
+            // Mise à jour dans le Classement Global
+            Classement c = new Classement();
+            c.ajoutClassement(j.getId(), j.getNom(), score);
 
-        // Mise à jour dans le Classement Local
-        History h = new History();
-        h.ajoutClassement(j.getId(), j.getNom(), score);
+            // Mise à jour dans le Classement Local
+            History h = new History();
+            h.ajoutClassement(j.getId(), j.getNom(), score);
+        }
     }
 
     // Met à jour les images du CLASSEMENT
@@ -414,7 +408,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         /// Affichage du message final :
         int x = (9 * width / 100), y = (12 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
-        x = afficheMot(g2, messageFin, x, y, w, h, ecart, espacement);
+        x = afficheMot(g2, titreStatut, x, y, w, h, ecart, espacement);
         x = afficheDoublepoint(g2, x, y, 7, 7);
 
         // Affichage du classement :

@@ -376,8 +376,8 @@ Documentation du projet de programmation : ED1A
         │   ├── int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur.
         │   ├── JFrame menuPause.
         │   ├── String chemin, winchemin.
-        │   ├── BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView, pointView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView.
-        │   ├── ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter, buttonRetourMenu, doublePoint, messageFin, messageNom?.
+        │   ├── BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView.
+        │   ├── ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter, buttonRetourMenu, titreStatut, messageNom?.
         │   ├── ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView.
         │   ├── Terrain terrain.
         │   ├── double deltaTime.
@@ -385,7 +385,7 @@ Documentation du projet de programmation : ED1A
         │   └── Thread thread.
         └── Description :
                 ├── Représente le composant de type panel qui se charge de tout l'affichage.
-                │
+
                 ├── Les champs static boolean représentent les statuts de l'application. Un statut indique à l'instant T où se trouve-t-on / ce que nous faisons / l'état de l'application.
                         Le champs "isQuitte" indique si l'on a quitté l'application. S'il est true, il implique la fermeture de l'application (voir run()).
                         Le champs "isRunningGame" indique que l'on est en pleine partie.
@@ -422,8 +422,41 @@ Documentation du projet de programmation : ED1A
                         ├── running qui lance l'update & l'affichage en boucle de ce statut.
                         └── Dans cette partie, nous ne parlerons pas tout de suite du statut "isRunningGame", car ses méthodes différent des autres.
 
+                A/ Méthodes générales
+                    ├── La méthode "createImageOfMot(String mot)" crée une liste d'image, représentant cette chaine de caractères. Elle ne doit contenir que des lettres/chiffres ou des espaces (représentés par "null").
+                    ├── La méthode "affichemot" prend un contexte graphique Graphics2D, des coordonnées, des dimensions, un écart (représentant l'écart entre chaque lettres) & un espacement (représentant un espace). Pour chaque lettre du mot (i.e pour chaque image de la liste d'image),
+                                on affiche l'image de la lettre avec un décalage de "ecart". On renvoie la position de la dernière lettre (en réalité on s'assure que la dernière lettre soit toujours un espace lorsqu'on crée le mot).
+                    ├── Les méthodes "affichePoint" & "afficheDoublePoint" affichent un point et un double point ":" en utilisant la méthode Graphics2D.fillOval().
+                    ├── La méthode "initGENERAL()" initialise la vue générale (this.view). Puis à l'aide d'un double try_catch pour gérer la portabilité sur windows, elle initialise l'image de la flêche & du background.
+                                Enfin, elle se charge d'initialiser les images des boutons "Quitter" & "RetourMenu" qui sont réutilisés plusieurs fois.
 
-                A/ 
+                B/ isMenuDemarrer, isMenuFin, isClassement & isQuitte
+                    1. isMenuDemarrer // Page d'accueil de l'application.
+                        ├── "initMenuDemarrer()" initialise tous les boutons du menu DEMARRER.
+                        ├── "updateMenuDemarrer()" met à jour les coordonnées & dimensions de la flêche.
+                        ├── "afficheMenuDemarrer()" affiche des boutons, en gérant un saut de ligne entre chaque, ainsi que la flêche à la fin.
+                        ├── "runningMenuDemarrer()" initialise le saut de ligne pour le menu DEMARRER, le pointeur initiale de la flêche (0), puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le menu DEMARRER.
+                    
+                    2. isMenuFin // Page de fin de partie.
+                        ├── "initMenuFin()" initialise la ligne du score actuel (scoreFinalView), la ligne du meilleur score local & global (hightScoreView).
+                                S'il n'y a qu'un joueur, on affichera le score de la partie, le meileur score local & le meilleur score global.
+                                S'il y'en a 2, on affichera le score du joueur 1, celui du joueur 2 et le nom du vainqueur. Faire cette adaptation évite de changer la méthode afficheMenuFin.
+                        ├── "updateMenuFin()" met à jour les coordonnées & dimensions de la flêche.
+                        ├── "afficheMenuFin()" affiche le message final, suivi des résultats (comme expliqué précédemment), suivi des boutons "RetourMenu" & "Quitter", ainsi que la flêche à la fin.
+                        ├── "runningMenuFin()" initialise le saut de ligne pour le menu FIN, le pointeur initiale de la flêche (0), puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le menu FIN.
+
+                    
+                    3. isClassement // Page d'affichage du classemennt Global.
+                        ├── "initClassement()" initialise la liste de listes de mots (qui représente l'affichage du classement), ainsi que le titre du statut (ici : "Classement").
+                                À l'aide d'un double try_catch, on initialise le background du classement. Il y'en a 2, qu'on alterne lors de l'affichage de chaque ligne, pour rendre celui-ci plus propre.
+                        ├── "updateClassementVue()" met à jour les coordonnées & dimensions de la flêche.
+                        ├── "updateClassement()" met à jour le classement et l'historique. Cette méthode update les fichiers que s'il n'y a eu qu'un joueur (partie Solo). Les parties à 2 ne sont pas comptabilisées.
+                                Si c'est le cas, on ajoute les données de la dernière partie au classement & à l'historique. Cette méthode n'est appellée qu'une seule fois (à la fin d'une partie).
+                        ├── "afficheClassement()" affiche le message final, suivi du classemet, suivi des boutons "RetourMenu" & "Quitter", ainsi que la flêche à la fin.
+                        ├── "runningClassement()" initialise le saut de ligne pour le CLASSEMENT, le pointeur initiale de la flêche (0).
+                                Ensuite, on récupère les données du classement que l'on va afficher (dans lbView). On fait ça dans la méthode running pour s'assurer d'avoir les dernières données et de ne les initialiser qu'une seule fois.
+                                Puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le CLASSEMENT.
+                    
 
 
 
