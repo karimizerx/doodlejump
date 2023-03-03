@@ -25,8 +25,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
     private JFrame menuPause; // Le menu pause
     private String chemin, winchemin; // Le chemin vers le package d'images (win = version windows)
-    private BufferedImage view, backgroundView, flecheView, pointView, terrainView, platformeBaseView,
-            platformeMobileView, scoreBackgroundView, projectileView;
+    private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
+            pointView, terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
             buttonRetourMenu, doublePoint, messageFin;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
@@ -92,7 +92,13 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return x;
     }
 
-    // Permet d'afficher un double point
+    // Permet d'afficher un point/double point
+    private int affichePoint(Graphics2D g2, int x, int y, int w, int h) {
+        g2.setColor(Color.BLACK);
+        g2.fillOval(x, y - h, w, h);
+        return x + w;
+    }
+
     private int afficheDoublepoint(Graphics2D g2, int x, int y, int w, int h) {
         g2.setColor(Color.BLACK);
         g2.fillOval(x, y + h / 2, w, h);
@@ -317,6 +323,18 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Initialise toutes les images du menu CLASSEMENT
     private void initClassement() {
         this.lbView = new ArrayList<ArrayList<BufferedImage>>();
+        this.messageFin = createImageOfMot("Classement ");
+        try {
+            try {
+                this.backgroundClView1 = ImageIO.read(new File(chemin + "/background/backgroundClassement1.png"));
+                this.backgroundClView2 = ImageIO.read(new File(chemin + "/background/backgroundClassement2.png"));
+            } catch (Exception e) {
+                this.backgroundClView1 = ImageIO.read(new File(winchemin + "/background/backgroundClassement1.png"));
+                this.backgroundClView2 = ImageIO.read(new File(winchemin + "/background/backgroundClassement2.png"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Met à jour les données du CLASSEMENT
@@ -348,30 +366,40 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Affichage terrain
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
-        // Affichage du classement
-        int x = (10 * width / 100), y = (20 * height / 100);
+        /// Affichage du message final :
+        int x = (9 * width / 100), y = (12 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
+        x = afficheMot(g2, messageFin, x, y, w, h, ecart, espacement);
+        x = afficheDoublepoint(g2, x, y, 7, 7);
 
-        for (int z = 0; z < lbView.size(); z = z + 6) {
-            if (z / 6 >= 9)
-                x -= ecart;
-            for (int i = 0; i < 6; ++i) { // Affichage d'1 ligne du classement
-                ArrayList<BufferedImage> ligne = lbView.get(z + i);
-                x = afficheMot(g2, ligne, x, y, w, h, ecart, espacement);
-            }
-            x = (10 * width / 100);
+        // Affichage du classement :
+        y += sautLigne * 2;
+        x = (11 * width / 100);
+        this.backgroundClView = backgroundClView1;
+        for (int z = 0; z < lbView.size(); z = z + 3) {
+            this.backgroundClView = (z % 2 == 0) ? backgroundClView1 : backgroundClView1;
+            g2.drawImage(backgroundClView, x * 85 / 100, y - h / 6, width, h * 3 / 2, null);
+            x = afficheMot(g2, lbView.get(z), x, y, w, h, ecart, espacement);
+            x += espacement / 2;
+            affichePoint(g2, x, y + h - 7, 7, 7);
+            x += espacement * 2;
+            x = afficheMot(g2, lbView.get(z + 1), x, y, w, h, ecart, espacement);
+            x = afficheDoublepoint(g2, x, y, 7, 7);
+            x += espacement * 2;
+            x = afficheMot(g2, lbView.get(z + 2), x, y, w, h, ecart, espacement);
+            x = (11 * width / 100);
             y += sautLigne;
         }
 
-        // Affichage des boutons
-        int x1 = (10 * width / 100), y1 = (80 * height / 100);
-        int w1 = 30, h1 = 30, espacement1 = 15, ecart1 = 20;
-        afficheMot(g2, buttonRetourMenu, x1, y1, w1, h1, ecart1, espacement1);
-        x1 = (10 * width / 100);
-        y1 = y1 + sautLigne;
-        afficheMot(g2, buttonQuitter, x1, y1, w1, h1, ecart1, espacement1);
+        /// Affichage des boutons :
+        y += sautLigne * 2;
+        x = (9 * width / 100);
+        afficheMot(g2, buttonRetourMenu, x, y, w, h, ecart, espacement);
+        x = (9 * width / 100);
+        y += sautLigne;
+        afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
 
-        // Affichage de la fleche
+        /// Affichage de la fleche
         g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
 
         // Affichage final
@@ -395,16 +423,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             String s = cl.get(i)[2];
 
             ArrayList<BufferedImage> rank = createImageOfMot(String.valueOf(i + 1));
-            ArrayList<BufferedImage> name = createImageOfMot(n);
+            ArrayList<BufferedImage> nom = createImageOfMot(n + " ");
             ArrayList<BufferedImage> score = createImageOfMot(s);
-            ArrayList<BufferedImage> espace = createImageOfMot(" ");
-
             lbView.add(rank);
-            lbView.add(espace);
-            lbView.add(name);
-            lbView.add(espace);
+            lbView.add(nom);
             lbView.add(score);
-            lbView.add(espace);
         }
 
         while (isClassement) {
