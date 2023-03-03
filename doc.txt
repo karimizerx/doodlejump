@@ -435,7 +435,7 @@ Documentation du projet de programmation : ED1A
                         ├── "initMenuDemarrer()" initialise tous les boutons du menu DEMARRER.
                         ├── "updateMenuDemarrer()" met à jour les coordonnées & dimensions de la flêche.
                         ├── "afficheMenuDemarrer()" affiche des boutons, en gérant un saut de ligne entre chaque, ainsi que la flêche à la fin.
-                        ├── "runningMenuDemarrer()" initialise le saut de ligne pour le menu DEMARRER, le pointeur initiale de la flêche (0), puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le menu DEMARRER.
+                        └── "runningMenuDemarrer()" initialise le saut de ligne pour le menu DEMARRER, le pointeur initiale de la flêche (0), puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le menu DEMARRER.
                     
                     2. isMenuFin // Page de fin de partie.
                         ├── "initMenuFin()" initialise la ligne du score actuel (scoreFinalView), la ligne du meilleur score local & global (hightScoreView).
@@ -443,7 +443,7 @@ Documentation du projet de programmation : ED1A
                                 S'il y'en a 2, on affichera le score du joueur 1, celui du joueur 2 et le nom du vainqueur. Faire cette adaptation évite de changer la méthode afficheMenuFin.
                         ├── "updateMenuFin()" met à jour les coordonnées & dimensions de la flêche.
                         ├── "afficheMenuFin()" affiche le message final, suivi des résultats (comme expliqué précédemment), suivi des boutons "RetourMenu" & "Quitter", ainsi que la flêche à la fin.
-                        ├── "runningMenuFin()" initialise le saut de ligne pour le menu FIN, le pointeur initiale de la flêche (0), puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le menu FIN.
+                        └── "runningMenuFin()" initialise le saut de ligne pour le menu FIN, le pointeur initiale de la flêche (0), puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le menu FIN.
 
                     
                     3. isClassement // Page d'affichage du classemennt Global.
@@ -453,10 +453,16 @@ Documentation du projet de programmation : ED1A
                         ├── "updateClassement()" met à jour le classement et l'historique. Cette méthode update les fichiers que s'il n'y a eu qu'un joueur (partie Solo). Les parties à 2 ne sont pas comptabilisées.
                                 Si c'est le cas, on ajoute les données de la dernière partie au classement & à l'historique. Cette méthode n'est appellée qu'une seule fois (à la fin d'une partie).
                         ├── "afficheClassement()" affiche le message final, suivi du classemet, suivi des boutons "RetourMenu" & "Quitter", ainsi que la flêche à la fin.
-                        ├── "runningClassement()" initialise le saut de ligne pour le CLASSEMENT, le pointeur initiale de la flêche (0).
+                        └── "runningClassement()" initialise le saut de ligne pour le CLASSEMENT, le pointeur initiale de la flêche (0).
                                 Ensuite, on récupère les données du classement que l'on va afficher (dans lbView). On fait ça dans la méthode running pour s'assurer d'avoir les dernières données et de ne les initialiser qu'une seule fois.
                                 Puis fait tourner en boucle (while) l'update & l'affichage associé tant qu'on se trouve dans le CLASSEMENT.
+
+                    4. isQuitte // Fin de l'application.
+                        └── Cette variable indique s'il on a quitté l'application, i.e on a quelque part appuyé sur le bouton "Quitter". Dès lors, la méthode "System.exit(0)" est appelée. Celle-ci met fin complètement au programme & ferme toutes les fenêtres.
                     
+                C/ isRunningGame // Statut "en cours de partie".
+                    ├── "initGame()" initialise d'abord joueurDataList
+                    └──
 
 
 
