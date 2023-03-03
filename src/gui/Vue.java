@@ -518,12 +518,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     joueurDataList.add(nomData);
                 }
             } catch (Exception e) {
-                terrainView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
-                platformeBaseView = ImageIO.read(new File("src/gui/images/packBase/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO
-                        .read(new File("src/gui/images/packBase/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File("src/gui/images/packBase/background/scoreBackground1.png"));
-                projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
+                terrainView = ImageIO.read(new File(winchemin + "/background/terrainBackground.png"));
+                platformeBaseView = ImageIO.read(new File(winchemin + "/plateformes/plateformeBase.png"));
+                platformeMobileView = ImageIO.read(new File(winchemin + "/plateformes/plateformeMobile.png"));
+                scoreBackgroundView = ImageIO.read(new File(winchemin + "/background/scoreBackground1.png"));
+                projectileView = ImageIO.read(new File(winchemin + "/projectile.png"));
 
                 // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
@@ -543,79 +542,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    // Dessine toutes les images
-    public void afficheImage() {
-        Graphics2D g2 = (Graphics2D) view.getGraphics();
-        // Affichage terrain
-        g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
-
-        // Affichage des plateformes
-        for (Plateforme pf : terrain.getPlateformesListe()) {
-            BufferedImage pfV = (pf instanceof PlateformeBase) ? platformeBaseView : platformeMobileView;
-            g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
-        }
-
-        // Affichage du Score : seulement s'il n'y a qu'un joueur
-        if (terrain.getListeJoueurs().size() == 1) {
-            String score = String.valueOf(terrain.getListeJoueurs().get(0).getScore());
-            int sw = (int) (terrain.getWidth() * 0.09375), sh = (int) (terrain.getHeight() * 0.0536062378);
-            g2.drawImage(scoreBackgroundView, 2, 2, sw + (sw / 2 * (score.length() - 1)), sh, null);
-            for (int i = 0; i < score.length(); ++i) {
-                try {
-                    try {
-                        scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
-
-                    } catch (Exception e) {
-                        scoreView = ImageIO
-                                .read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                int x = (int) (terrain.getWidth() * 0.0078125); // Variable pour adapter en fonction de la résolution
-                g2.drawImage(scoreView, x + (5 * x * i), 5, x * 10, x * 10, null);
-            }
-
-        }
-
-        // Affichage des personnages + Nom
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            ArrayList<BufferedImage> jImData = viewList.get(i); // On récupère les données liées au joueur
-            Personnage p = terrain.getListeJoueurs().get(i).getPerso();
-            g2.drawImage(jImData.get(0), (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
-            int c = (int) ((15 * (jImData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
-            for (int j = 1; j < jImData.size(); ++j) {
-                g2.drawImage(jImData.get(j), (int) (p.getX() - c + (15 * (j - 1))), (int) p.getY() - 15, 15, 15, null);
-            }
-        }
-        for (Joueur j : terrain.getListeJoueurs()) {
-            Personnage pers = j.getPerso();
-            for (Projectile pro : pers.getListProjectiles()) {
-                g2.drawImage(projectileView, (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
-                        (int) pro.getHeight(), null);
-                // pers.setSpace(false);
-            }
-        }
-
-        // Affichage final
-        Graphics g = getGraphics(); // Contexte graphique
-        g.drawImage(view, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
-        g.dispose(); // On libère les ressource
-    }
-
-    // Gère le cas de fin du jeu
-    public boolean endGame() {
-        boolean isFin = false;
-        // Si un joueur à perdu, c'est fini
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur j = terrain.getListeJoueurs().get(i);
-            isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) ? true : false;
-        }
-        return isFin;
-    }
-
-    // Met à jour l'affichage
-    public void update(double dTime) {
+    // Met à jour l'affichage de la GAME
+    private void updateGame(double dTime) {
         for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
             Joueur j = terrain.getListeJoueurs().get(i);
             Personnage p = j.getPerso();
