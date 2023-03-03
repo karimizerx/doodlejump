@@ -233,8 +233,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         if (terrain.getListeJoueurs().size() == 2) { // S'il y a 2 joueurs
-            // On adapte l'initialisation de sorte à ce que la fonction d'affichage ne
-            // change pas
+            // On adapte l'init de sorte à ce que la fonction d'affichage ne change pas
             Joueur j0 = terrain.getListeJoueurs().get(0), j1 = terrain.getListeJoueurs().get(1);
             int sc0 = j0.getScore(), sc1 = j1.getScore();
             String s0 = String.valueOf(sc0), s1 = String.valueOf(sc1);
