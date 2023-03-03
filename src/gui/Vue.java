@@ -93,19 +93,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     // Permet d'afficher un double point
-    private void afficheDoublepoint(Graphics2D g2, int x, int y) {
-        int w = 7, h = 7;
-        y += 3;
-        for (int i = 0; i < 2; ++i) {
-            BufferedImage image = doublePoint.get(i);
-            if (image != null) {
-                g2.drawImage(image, x, y, w, h, null);
-            }
-            y += 15;
-        }
-    }
-
-    private int afficheDoublepoint2(Graphics2D g2, int x, int y, int w, int h) {
+    private int afficheDoublepoint(Graphics2D g2, int x, int y, int w, int h) {
         g2.setColor(Color.BLACK);
         g2.fillOval(x, y + h / 2, w, h);
         g2.fillOval(x, y + h / 2 + 2 * h, w, h);
@@ -208,9 +196,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Double try_catch pour gérer la différence entre windows & linux
         this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
         this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
-        this.messageFin = createImageOfMot("Game Over");
 
         if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur
+            this.messageFin = createImageOfMot("Game Over");
             // Ce qu'on va afficher pour le score en fin de partie :
             Joueur j = terrain.getListeJoueurs().get(0);
             String s = String.valueOf(j.getScore());
@@ -233,6 +221,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         if (terrain.getListeJoueurs().size() == 2) { // S'il y a 2 joueurs
+            this.messageFin = createImageOfMot("Fin de la course");
             // On adapte l'init de sorte à ce que la fonction d'affichage ne change pas
             Joueur j0 = terrain.getListeJoueurs().get(0), j1 = terrain.getListeJoueurs().get(1);
             int sc0 = j0.getScore(), sc1 = j1.getScore();
@@ -270,15 +259,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
         /// Affichage du message final :
-        int x = (35 * width / 100), y = (12 * height / 100);
+        int x = (9 * width / 100), y = (12 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
         afficheMot(g2, messageFin, x, y, w, h, ecart, espacement);
         /// Affichage des scores :
         // Affichage du score à cette partie :
         y += sautLigne * 2;
-        x = (9 * width / 100);
         x = afficheMot(g2, scoreFinalView.get(0), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint2(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, 7, 7);
         x += espacement;
         x = afficheMot(g2, scoreFinalView.get(1), x, y, w, h, ecart, espacement);
 
@@ -286,7 +274,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         y += sautLigne;
         x = (9 * width / 100);
         x = afficheMot(g2, hightScoreView.get(0), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint2(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, 7, 7);
         x += espacement;
         x = afficheMot(g2, hightScoreView.get(1), x, y, w, h, ecart, espacement);
 
@@ -294,7 +282,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         y += sautLigne;
         x = (9 * width / 100);
         x = afficheMot(g2, hightScoreView.get(2), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint2(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, 7, 7);
         x += espacement;
         x = afficheMot(g2, hightScoreView.get(3), x, y, w, h, ecart, espacement);
 
