@@ -33,7 +33,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private double deltaTime; // Le temps nécessaire pour update le jeu
     private ThreadMouvement threadMvt; // thread qui gere l'envoi et la reception des données pour le multijoueur
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private boolean multijoueur=false,host=false;
+    private boolean multijoueur = false, host = false;
     private Serveur serveur;
     private JoueurConnecte jconnect;
 
@@ -490,7 +490,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             String nomjoueur = "Mizer " + i;
             ljou.add(new Joueur(p, nomjoueur));
         }
-        int i =multijoueur ? host? 0 :1 :0;
+        int i = multijoueur ? host ? 0 : 1 : 0;
         this.terrain = new Terrain(ljou, height, width, host, multijoueur, i);
         terrain.setClient(jconnect);
         terrain.setHost(serveur);
@@ -837,25 +837,27 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 }
 
                 if (this.fleche == 2) { // Multijoueur
-                    nbJoueur=2;
-                    multijoueur=true;
-                    int option=JOptionPane.showConfirmDialog(this,"voulez vous host?","titre",JOptionPane.YES_NO_OPTION);
+                    this.nbJoueur = 2;
+                    this.multijoueur = true;
+                    int option = JOptionPane.showConfirmDialog(this, "Voulez-vous host la partie ?",
+                            "Paramètrage multijoueur",
+                            JOptionPane.YES_NO_OPTION);
                     System.out.println(option);
-                    if(option==0){
-                        host=true;
-                        try{
-                            serveur=new Serveur();
-                            serveur.run();
-                        }catch (IOException io) {
-                            JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé pas de se connecter", "Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
-                            System.exit(-1);
+                    if (option == 0) {
+                        this.host = true;
+                        try {
+                            this.serveur = new Serveur();
+                            this.serveur.run();
+                        } catch (IOException io) {
+                            JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
+                                    JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
+                            // System.exit(-1);
                         }
-                    }else{
-                        host=false;
-                        jconnect=new JoueurConnecte();
-                        jconnect.connecter();
+                    } else {
+                        this.host = false;
+                        this.jconnect = new JoueurConnecte();
+                        this.jconnect.connecter();
                     }
-                    System.out.println("Inch'Allah on aura le mode multijoueur !");
                     isMenuDemarrer = false;
                     isRunningGame = true;
                 }
