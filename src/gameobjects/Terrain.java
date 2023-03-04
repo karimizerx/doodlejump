@@ -54,9 +54,11 @@ public class Terrain {
             if (c < 0.1) { // Le saut sur les plateformes mobiles est + avantageux
                 plateformesListe
                         .add(new MovingPlateforme(x, y, w, h, -(this.height * 0.0013645224), (0.003125 * this.width)));
-            } else
-                plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
-
+            } else{
+                PlateformeBase pf =new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589));
+                plateformesListe.add(pf);
+                pf.addItem((int) pf.getX(), (int) (pf.getY()-2*pf.getHeight()), 42, 42);
+            }
         }
         // On s'assure d'abord toujours une solution au début
     }
@@ -126,9 +128,11 @@ public class Terrain {
             // On descend toutes les plateforme
             for (Plateforme pf : plateformesListe) {
                 pf.setY(pf.getY() - (int) p.getDy());
+                pf.updateItem();
                 if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
+                            pf.setItem(null);
                 }
             }
         }

@@ -37,7 +37,11 @@ public class Personnage extends GameObject {
                 && (this.getY() + 0.87 * this.getHeight() >= pf.getY())
                 && (this.getY() + 0.87 * this.getHeight() <= pf.getY() + pf.getHeight())
                 && (this.getDy() > 0)) { // Si le personnage descent
-            dy = pf.getSaut() * deltaTime;
+                    if(pf.getItem()!=null){
+                        this.collides_item(pf.getItem(), deltaTime);
+                        dy = pf.getSaut() * deltaTime;
+                    }else 
+                        dy = pf.getSaut() * deltaTime;
         }
     }
 
@@ -53,6 +57,8 @@ public class Personnage extends GameObject {
                     && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
                     && (this.getDy() > 0)) { // Si le personnage descend
                 it.runEffect(this);
+                it=null;
+                System.out.println("test need pied");
             }
         } else {
             if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
@@ -61,9 +67,10 @@ public class Personnage extends GameObject {
                     // si ça ne dépasse pas par la droite de la item.
                     // + witdh*0.25 sert à ne compter que le x du premier pied
                     && (this.getY() <= (it.getY() + it.getHeight()))
-                    && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))
-                    && (this.getDy() < 0)) { // Si le personnage monte
+                    && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))) {
                         it.runEffect(this);
+                        it=null;
+                        System.out.println("test sans pied");
             }   
         }
 

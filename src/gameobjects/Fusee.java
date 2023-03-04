@@ -7,9 +7,17 @@ import java.util.TimerTask;
 public class Fusee extends Items {
 
     long time;
-    public Fusee(double x, double y, double w, double h, double saut,long time) {
+    /**
+     * @param x
+     * @param y
+     * @param w
+     * @param h
+     * @param saut
+     * @param time
+     */
+    public Fusee(double x, double y, double w, double h, double saut,double time) {
         super(x, y, w, h, saut, false);
-        this.time=time*1000;
+        this.time=(long)time*1000;
 
     }
     // Méthode move !
@@ -17,11 +25,10 @@ public class Fusee extends Items {
     public void runEffect(Personnage p) {
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
-            double V = 100;// vitesse de l'item, a voir
-
             @Override
             public void run() {
-                p.setDy(V);
+                p.setDy(Fusee.this.getSaut());
+                System.out.println(p.getDy());
             }
         };
         timer.schedule(task, this.time);
