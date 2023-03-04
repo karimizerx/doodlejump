@@ -50,6 +50,7 @@ public class Terrain {
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
             double c = new Random().nextDouble();
+            //TODO add itens to plateforme
             if (c < 0.1) { // Le saut sur les plateformes mobiles est + avantageux
                 plateformesListe
                         .add(new MovingPlateforme(x, y, w, h, -(this.height * 0.0013645224), (0.003125 * this.width)));

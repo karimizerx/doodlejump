@@ -52,7 +52,7 @@ public class Personnage extends GameObject {
                     && (this.getY() + 0.87 * this.getHeight() >= it.getY())
                     && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
                     && (this.getDy() > 0)) { // Si le personnage descend
-                dy = it.getSaut();
+                it.runEffect(this);
             }
         } else {
             if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
@@ -63,8 +63,8 @@ public class Personnage extends GameObject {
                     && (this.getY() <= (it.getY() + it.getHeight()))
                     && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))
                     && (this.getDy() < 0)) { // Si le personnage monte
-                dy = it.getSaut();
-            }
+                        it.runEffect(this);
+            }   
         }
 
     }

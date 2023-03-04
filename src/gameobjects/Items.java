@@ -12,6 +12,9 @@ public abstract class Items extends GameObject {
         this.isNeedPied = p;
     }
 
+    public abstract void runEffect(Personnage p);
+
+
     // Getter & Setter
     public double getSaut() {
         return saut;

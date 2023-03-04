@@ -33,7 +33,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private double deltaTime; // Le temps nécessaire pour update le jeu
     private ThreadMouvement threadMvt; // thread qui gere l'envoi et la reception des données pour le multijoueur
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private boolean multijoueur=true,host=false;
+    private boolean multijoueur=false,host=false;
     private Serveur serveur;
     private JoueurConnecte jconnect;
 
@@ -945,7 +945,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             if ((!terrain.multiplayer))
                 p1 = terrain.getListeJoueurs().get(0).getPerso();
             else
-                p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
 
             if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
                 p1.setRight(false);
