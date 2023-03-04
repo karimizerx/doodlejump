@@ -25,7 +25,7 @@ public class App extends JFrame {
     private int nbj; // Nombre de joueurs
     private boolean multiplayer = false, host = false;
     private ArrayList<String> noms = new ArrayList<String>();
-    private Serveur serveur = new Serveur();
+    private Serveur serveur;
     private JoueurConnecte jconnect = new JoueurConnecte();
 
     public App() {
@@ -141,15 +141,15 @@ public class App extends JFrame {
         try {
             serveur = new Serveur();
             System.out.println("App.createMenuHost()");
-            label1.setText(serveur.start()[0]);
-            label2.setText(serveur.start()[1]);
+            // label1.setText(serveur.start()[0]);
+            // label2.setText(serveur.start()[1]);
             m.add(label1);
             m.add(label2);
             m.add(nomjoueur);
             m.add(end);
             Thread t = new Thread(serveur);
             t.start();
-            serveur.commence.start();
+            // serveur.commence.start();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé pas de se connecter", "Erreur",
                     JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
@@ -168,8 +168,8 @@ public class App extends JFrame {
         this.buttonPlay = new JButton("Jouer");
         this.buttonPlay.addActionListener(e -> {
             // On crée une nouvelle fenêtre de jeu
-            serveur.start = true;
-            serveur.end = true;
+            //serveur.start = true;
+            //serveur.end = true;
             DoodleJumpheur = createDJ();
             DoodleJumpheur.setVisible(true);
             this.dispose();
@@ -193,7 +193,7 @@ public class App extends JFrame {
         m.add(port);
         c = new JButton("Connectez-Vous");
         c.addActionListener(e -> {
-            jconnect.connecter(nomjoueur.getText(), serverName.getText(), Integer.parseInt(port.getText()));
+            // jconnect.connecter(nomjoueur.getText(), serverName.getText(), Integer.parseInt(port.getText()));
             this.menu.setVisible(false);
             this.menu2 = createWaitingMenu();
         });
@@ -214,8 +214,8 @@ public class App extends JFrame {
                     DataInputStream in;
                     boolean tmp = true;
                     try {
-                        in = new DataInputStream(jconnect.getServeur().getInputStream());
-                        tmp = in.readBoolean();
+                        // in = new DataInputStream(jconnect.getServeur().getInputStream());
+                        // tmp = in.readBoolean();
                         waiting = tmp;
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -334,7 +334,7 @@ public class App extends JFrame {
         });
 
         end.addActionListener(e -> {
-            serveur.end = true;
+            // serveur.end = true;
             int c = 0;
             while (!(menu.getComponent(c) instanceof JTextArea)) {
                 c++;
@@ -342,7 +342,7 @@ public class App extends JFrame {
             this.menu.setVisible(false);
             JTextArea jtxt = (JTextArea) menu.getComponent(c);
             noms.add(jtxt.getText().equals("Entrez votre nom") ? "Mizer" : jtxt.getText());
-            noms.addAll(serveur.getNames());
+            // noms.addAll(serveur.getNames());
             this.menu2 = createFinalMenu();
             this.menu2.setVisible(true);
             this.add(this.menu2);
