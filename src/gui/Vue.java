@@ -709,7 +709,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                  */
                 // Si on a lancé une GAME :
                 if (!isMenuDemarrer && !isClassement && !isMenu2 && isRunningGame && !isMenuFin) {
-                    createPartie(); // On crée une partie.
                     initGame(); // On initialise les images de la GAME.
                     if (terrain.multiplayer) { // Si on est en mode multijoueur
                         Thread t = new Thread(new ThreadMouvement(terrain)); // ???
@@ -783,24 +782,26 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons repaint();
-        if (isRunningGame) {
-            Personnage p1;
-            Personnage p2;
-            if ((!terrain.multiplayer))
-                p1 = terrain.getListeJoueurs().get(0).getPerso();
+    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons :
+        if (isRunningGame) { // Si on est en pleine partie :
+            Personnage p1, p2;
+            if (!terrain.multiplayer) // Si on ne joue pas en multijoueur :
+                p1 = terrain.getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier joueur.
             else
                 p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
 
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                p1.setRight(true);
-                p1.setInertRight(false);
+            /// Gestion des déplacements horizontales des personnages :
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on clique sur la flèche droite :
+                p1.setRight(true); // On indique qu'on avance vers la droite.
+                p1.setInertRight(false); // On stop l'inertie (le ralentissement).
             }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                p1.setLeft(true);
-                p1.setInertLeft(false);
+
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) { // Si on clique sur la flèche gauche :
+                p1.setLeft(true); // On indique qu'on avance vers la gauche.
+                p1.setInertLeft(false); // On stop l'inertie (le ralentissement).
             }
-            if (terrain.getListeJoueurs().size() == 2) {
+
+            if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2 joueurs.
                 p2 = terrain.getListeJoueurs().get(1).getPerso();
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     p2.setRight(true);
@@ -811,33 +812,49 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     p2.setInertLeft(false);
                 }
             }
+
+            /// Gestion des tires de projectiles :
             // Si on a le droit de tirer et qu'on tire :
-            if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.iscanShoot()) {
+            if (e.getKeyCode() == KeyEvent.VK_UP && p1.iscanShoot()) {
                 p1.setShoot(true); // On indique qu'on vient de tirer.
-                p1.setcanShoot(false);// On a pas le droit de re-tirer.
+                p1.setcanShoot(false); // On a pas le droit de re-tirer.
             }
+
+            if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
+                p2 = terrain.getListeJoueurs().get(1).getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_Z && p2.iscanShoot()) {
+                    p2.setShoot(true); // On indique qu'on vient de tirer.
+                    p2.setcanShoot(false); // On a pas le droit de re-tirer.
+                }
+            }
+
+            /// Gestion de la pause :
             if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                 pause();
             }
         }
 
-        if (isMenuDemarrer) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.fleche == 0) { // Joueur Solo
-                    this.nbJoueur = 1;
-                    isMenuDemarrer = false;
+        if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
+            /// Gestion du bouton "ENTREE" :
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
+                if (this.fleche == 0) { // La flèche pointe sur le bouton "Jouer Solo" :
+                    this.nbJoueur = 1; // On initialise le nombre de joueurs.
+                    createPartie(); // On crée une partie.
+                    isMenuDemarrer = false; // On quitte le menu DEMARRER
                     // isMenu2 = true;
                     isRunningGame = true;
                 }
-                if (this.fleche == 1) { // Joueur à 2
-                    this.nbJoueur = 2;
-                    isMenuDemarrer = false;
+                if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer à 2" :
+                    this.nbJoueur = 2; // On initialise le nombre de joueurs.
+                    createPartie(); // On crée une partie.
+                    isMenuDemarrer = false; // On quitte le menu DEMARRER
                     // isMenu2 = true;
                     isRunningGame = true;
                 }
 
-                if (this.fleche == 2) { // Multijoueur
-                    this.nbJoueur = 2;
+                if (this.fleche == 2) { // La flèche pointe sur le bouton "Mode multijoueur" :
+                    this.nbJoueur = 2; // On initialise le nombre de joueurs.
+                    createPartie(); // On crée une partie.
                     this.multijoueur = true;
                     int option = JOptionPane.showConfirmDialog(this, "Voulez-vous host la partie ?",
                             "Paramètrage multijoueur",
@@ -851,72 +868,77 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                         } catch (IOException io) {
                             JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
                                     JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
-                            // System.exit(-1);
+                            System.exit(-1);
                         }
                     } else {
                         this.host = false;
                         this.jconnect = new JoueurConnecte();
                         this.jconnect.connecter();
                     }
-                    isMenuDemarrer = false;
+                    isMenuDemarrer = false; // On quitte le menu DEMARRER
                     isRunningGame = true;
                 }
 
-                if (this.fleche == 3) { // Classement
+                if (this.fleche == 3) { // La flèche pointe sur le bouton "Classement" :
                     isClassement = true;
                     isMenuDemarrer = false;
                 }
-                if (this.fleche == 4) { // Quitter
+                if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
                     System.out.println("À la prochaine !");
-                    isQuitte = true;
-                    System.exit(0);
+                    isQuitte = true; // On quitte l'application.
+                    System.exit(0); // On ferme toutes les fenêtres & le programme.
                 }
             }
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
+
+            /// Gestion de la flèche :
+            if (e.getKeyCode() == KeyEvent.VK_UP)
                 this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
                 this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
-            }
         }
 
-        if (isMenuFin) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.fleche == 0) { // Retour au menu DEMARRER
-                    isMenuFin = false;
-                    isMenuDemarrer = true;
+        if (isMenuFin) { // Si on est au niveau du menu FIN :
+            /// Gestion du bouton "ENTREE" :
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
+                if (this.fleche == 0) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                    isMenuFin = false; // On quitte le menu FIN.
+                    isMenuDemarrer = true; // On entre dans le menu DEMARRER.
                 }
-                if (this.fleche == 1) { // Quitter
+                if (this.fleche == 1) { // La flèche pointe sur le bouton "Quitter" :
                     System.out.println("À la prochaine !");
-                    isQuitte = true;
-                    System.exit(0);
+                    isQuitte = true; // On quitte l'application.
+                    System.exit(0); // On ferme toutes les fenêtres & le programme.
                 }
             }
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
+
+            /// Gestion de la flèche :
+            if (e.getKeyCode() == KeyEvent.VK_UP)
                 this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
                 this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
-            }
         }
 
-        if (isClassement) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.fleche == 0) { // Retour au menu DEMARRER
-                    isClassement = false;
-                    isMenuDemarrer = true;
+        if (isClassement) { // Si on est au niveau du CLASSEMENT :
+            /// Gestion du bouton "ENTREE" :
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
+                if (this.fleche == 0) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                    isMenuFin = false; // On quitte le menu FIN.
+                    isMenuDemarrer = true; // On entre dans le menu DEMARRER.
                 }
-                if (this.fleche == 1) { // Quitter
-                    isQuitte = true;
-                    System.exit(0);
+                if (this.fleche == 1) { // La flèche pointe sur le bouton "Quitter" :
+                    System.out.println("À la prochaine !");
+                    isQuitte = true; // On quitte l'application.
+                    System.exit(0); // On ferme toutes les fenêtres & le programme.
                 }
             }
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
+            /// Gestion de la flèche :
+            if (e.getKeyCode() == KeyEvent.VK_UP)
                 this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
                 this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
-            }
         }
 
         if (isMenu2) {
@@ -940,24 +962,26 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) { // On relâche les boutons
-        if (isRunningGame) {
-            Personnage p1;
-            Personnage p2;
-            if ((!terrain.multiplayer))
-                p1 = terrain.getListeJoueurs().get(0).getPerso();
+    public void keyReleased(KeyEvent e) { // On relâche les boutons :
+        if (isRunningGame) { // Si on est en pleine partie :
+            Personnage p1, p2;
+            if (!terrain.multiplayer) // Si on ne joue pas en multijoueur :
+                p1 = terrain.getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier joueur.
             else
                 p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
 
-            if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                p1.setRight(false);
-                p1.setInertRight(true);
+            /// Gestion des déplacements horizontales des personnages :
+            if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on relâche pendant que l'on se déplace vers la droite :
+                p1.setRight(false); // On arrête de se déplacer.
+                p1.setInertRight(true); // On lance le ralentissement (inertie).
             }
-            if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                p1.setLeft(false);
-                p1.setInertLeft(true);
+
+            if (e.getKeyCode() == KeyEvent.VK_LEFT) { // Si on relâche pendant que l'on se déplace vers la gauche :
+                p1.setLeft(false); // On arrête de se déplacer.
+                p1.setInertLeft(true); // On lance le ralentissement (inertie).
             }
-            if (terrain.getListeJoueurs().size() == 2) {
+
+            if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2 joueurs.
                 p2 = terrain.getListeJoueurs().get(1).getPerso();
                 if (e.getKeyCode() == KeyEvent.VK_D) {
                     p2.setRight(false);
@@ -968,9 +992,15 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     p2.setInertLeft(true);
                 }
             }
-            if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-                p1.setcanShoot(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
-                // On oblige donc le joueur à lâcher pour tirer
+
+            /// Gestion des tires de projectiles :
+            if (e.getKeyCode() == KeyEvent.VK_UP) // On oblige le joueur à lâcher pour tirer (pour éviter le spam).
+                p1.setcanShoot(true); // Dès qu'on lâche, on a de nouveau le droit de tirer.
+
+            if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
+                p2 = terrain.getListeJoueurs().get(1).getPerso();
+                if (e.getKeyCode() == KeyEvent.VK_Z) // On oblige le joueur à lâcher pour tirer (pour éviter le spam).
+                    p2.setcanShoot(true); // Dès qu'on lâche, on a de nouveau le droit de tirer.
             }
         }
     }
