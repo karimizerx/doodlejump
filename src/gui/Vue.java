@@ -206,7 +206,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             this.nom2 = "MIZER 2";
         } else // Si le joueur a déjà joué une partie, on prend le nom de la dernière partie.
             nom1 = (h.getLbData().size() > 1) ? h.getLbData().get(h.getLbData().size() - 1)[1] : "MIZER";
-
+        System.out.println(this.nom1);
         this.messageNom = createImageOfMot("Entrez un nom ");
         this.buttonJouer = createImageOfMot("Jouer");
         this.nomJ1 = createImageOfMot(nom1);
@@ -984,68 +984,76 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         if (isMenu2) {
-            if (this.nbJoueur == 1) {
-                if (this.fleche == 0) { // La flèche pointe sur le bouton "Nom 1" :
-                    nom1 = (nom1.length() < 16) ? nom1 += keyWriterNom(e) : nom1;
-                    if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
-                        nom1 = "";
-                }
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer" :
-                        createPartie(); // On crée une partie.
-                        isMenu2 = false;
-                        isRunningGame = true;
-                    }
-
-                    if (this.fleche == 2) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
-                        isMenu2 = false; // On quitte le menu 2.
-                        isMenuDemarrer = true; // On entre dans le menu DEMARRER.
-                    }
-                    if (this.fleche == 3) { // La flèche pointe sur le bouton "Quitter" :
-                        System.out.println("À la prochaine !");
-                        isQuitte = true; // On quitte l'application.
-                        System.exit(0); // On ferme toutes les fenêtres & le programme.
-                    }
-                }
-
-                /// Gestion de la flèche :
-                if (e.getKeyCode() == KeyEvent.VK_UP)
-                    this.fleche = (this.fleche == 0) ? 3 : this.fleche - 1;
-
-                if (e.getKeyCode() == KeyEvent.VK_DOWN)
-                    this.fleche = (this.fleche == 3) ? 0 : this.fleche + 1;
-
-            } else {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            try {
+                if (this.nbJoueur == 1) {
                     if (this.fleche == 0) { // La flèche pointe sur le bouton "Nom 1" :
+                        nom1 = (nom1.length() < 16) ? nom1 += keyWriterNom(e) : nom1;
+                        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                            nom1 = "";
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer" :
+                            createPartie(); // On crée une partie.
+                            isMenu2 = false;
+                            isRunningGame = true;
+                        }
+
+                        if (this.fleche == 2) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                            isMenu2 = false; // On quitte le menu 2.
+                            isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+                        }
+                        if (this.fleche == 3) { // La flèche pointe sur le bouton "Quitter" :
+                            System.out.println("À la prochaine !");
+                            isQuitte = true; // On quitte l'application.
+                            System.exit(0); // On ferme toutes les fenêtres & le programme.
+                        }
+                    }
+
+                    /// Gestion de la flèche :
+                    if (e.getKeyCode() == KeyEvent.VK_UP)
+                        this.fleche = (this.fleche == 0) ? 3 : this.fleche - 1;
+
+                    if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                        this.fleche = (this.fleche == 3) ? 0 : this.fleche + 1;
+
+                } else {
+                    if (this.fleche == 0) { // La flèche pointe sur le bouton "Nom 1" :
+                        nom1 = (nom1.length() < 16) ? nom1 += keyWriterNom(e) : nom1;
+                        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                            nom1 = "";
                     }
                     if (this.fleche == 1) { // La flèche pointe sur le bouton "Nom 2" :
+                        nom2 = (nom2.length() < 16) ? nom2 += keyWriterNom(e) : nom2;
+                        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                            nom2 = "";
+                    }
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        if (this.fleche == 2) { // La flèche pointe sur le bouton "Jouer" :
+                            createPartie(); // On crée une partie.
+                            isMenu2 = false;
+                            isRunningGame = true;
+                        }
+
+                        if (this.fleche == 3) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                            isMenu2 = false; // On quitte le menu 2.
+                            isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+                        }
+                        if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
+                            System.out.println("À la prochaine !");
+                            isQuitte = true; // On quitte l'application.
+                            System.exit(0); // On ferme toutes les fenêtres & le programme.
+                        }
                     }
 
-                    if (this.fleche == 2) { // La flèche pointe sur le bouton "Jouer" :
-                        createPartie(); // On crée une partie.
-                        isMenu2 = false;
-                        isRunningGame = true;
-                    }
+                    /// Gestion de la flèche :
+                    if (e.getKeyCode() == KeyEvent.VK_UP)
+                        this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
 
-                    if (this.fleche == 3) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
-                        isMenu2 = false; // On quitte le menu 2.
-                        isMenuDemarrer = true; // On entre dans le menu DEMARRER.
-                    }
-                    if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
-                        System.out.println("À la prochaine !");
-                        isQuitte = true; // On quitte l'application.
-                        System.exit(0); // On ferme toutes les fenêtres & le programme.
-                    }
+                    if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                        this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
+
                 }
-
-                /// Gestion de la flèche :
-                if (e.getKeyCode() == KeyEvent.VK_UP)
-                    this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
-
-                if (e.getKeyCode() == KeyEvent.VK_DOWN)
-                    this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
-
+            } catch (Exception exe) {
             }
         }
     }
