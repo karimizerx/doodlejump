@@ -206,7 +206,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             this.nom2 = "MIZER 2";
         } else // Si le joueur a déjà joué une partie, on prend le nom de la dernière partie.
             nom1 = (h.getLbData().size() > 1) ? h.getLbData().get(h.getLbData().size() - 1)[1] : "MIZER";
-        System.out.println(this.nom1);
+
         this.messageNom = createImageOfMot("Entrez un nom ");
         this.buttonJouer = createImageOfMot("Jouer");
         this.nomJ1 = createImageOfMot(nom1);
@@ -1127,15 +1127,15 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             return "8";
         if (e.getKeyCode() == KeyEvent.VK_9 || e.getKeyCode() == KeyEvent.VK_NUMPAD9 || e.getKeyChar() == '9')
             return "9";
-        if (e.getKeyCode() == KeyEvent.VK_A)
+        if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyChar() == 'à' || e.getKeyChar() == 'À')
             return "A";
         if (e.getKeyCode() == KeyEvent.VK_B)
             return "B";
-        if (e.getKeyCode() == KeyEvent.VK_C)
+        if (e.getKeyCode() == KeyEvent.VK_C || e.getKeyChar() == 'ç')
             return "C";
         if (e.getKeyCode() == KeyEvent.VK_D)
             return "D";
-        if (e.getKeyCode() == KeyEvent.VK_E)
+        if (e.getKeyCode() == KeyEvent.VK_E || e.getKeyChar() == 'é' || e.getKeyChar() == 'è')
             return "E";
         if (e.getKeyCode() == KeyEvent.VK_F)
             return "F";
@@ -1179,15 +1179,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             return "Y";
         if (e.getKeyCode() == KeyEvent.VK_Z)
             return "Z";
-        if (e.getKeyCode() == KeyEvent.VK_SPACE)
-            return " ";
-        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
-            return "";
-        /*
-         * else
-         * System.out.
-         * println("N'utilisez que des lettres, des chiffres et le caractère espace .");
-         */
         return "";
     }
 }
