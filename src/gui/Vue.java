@@ -23,11 +23,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
     private JFrame menuPause; // Le menu pause
-    private String chemin, winchemin; // Le chemin vers le package d'images (win = version windows)
+    private String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
             terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
-    private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
-            buttonRetourMenu, titreStatut, messageNom;
+    private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
+            buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
     private Terrain terrain; // Le terrain sur lequel on joue
     private double deltaTime; // Le temps nécessaire pour update le jeu
@@ -59,11 +59,15 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private ArrayList<BufferedImage> createImageOfMot(String mot) {
         // On crée une liste d'image qui va contenir toutes les lettres du mot
         ArrayList<BufferedImage> motView = new ArrayList<BufferedImage>();
-        mot = mot.toLowerCase(); // On met toutes les lettres en minuscules pour ne pas avoir d'erreur
+        if (mot == null) {// S'il n'y a rien on retourne le mot "espace ".
+            motView.add(null);
+            return motView;
+        }
+        mot = mot.toLowerCase(); // On met toutes les lettres en minuscules pour ne pas avoir d'erreur.
 
-        for (int i = 0; i < mot.length(); ++i) { // Pour chaque lettre du mot
+        for (int i = 0; i < mot.length(); ++i) { // Pour chaque lettre du mot :
             char c = mot.charAt(i);
-            try {
+            try { // Double try_catch pour gérer la portabilité sur Windows.
                 try {
                     BufferedImage lv = (c == ' ') ? null
                             : ImageIO.read(new File(chemin + "/lettres/lettre" + c + ".png"));
@@ -135,7 +139,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     /// PARTIE MENU DEMARRER :
     // Initialise toutes les images du menu DEMARRER
     private void initMenuDemarrer() {
-        this.buttonJouer = createImageOfMot("Jouer en solo");
+        this.buttonJouerSolo = createImageOfMot("Jouer en solo");
         this.button2joueur = createImageOfMot("Jouer a 2");
         this.buttonMultiJoueur = createImageOfMot("Mode multijoueurs");
         this.buttonLb = createImageOfMot("Classement");
@@ -159,7 +163,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Affichage des boutons
         int x = (9 * width / 100), y = (10 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
-        afficheMot(g2, buttonJouer, x, y, w, h, ecart, espacement);
+        afficheMot(g2, buttonJouerSolo, x, y, w, h, ecart, espacement);
         x = (9 * width / 100);
         y = y + sautLigne;
         afficheMot(g2, button2joueur, x, y, w, h, ecart, espacement);
@@ -195,7 +199,18 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     /// PARTIE MENU 2 (Nom...) :
     // Initialise toutes les images du menu 2
     private void initMenu2() {
-        this.messageNom = createImageOfMot("Votre nom ");
+        // On initialise les noms des joueurs.
+        History h = new History();
+        if (this.nbJoueur == 2) {
+            this.nom1 = "MIZER 1";
+            this.nom2 = "MIZER 2";
+        } else // Si le joueur a déjà joué une partie, on prend le nom de la dernière partie.
+            nom1 = (h.getLbData().size() > 1) ? h.getLbData().get(h.getLbData().size() - 1)[1] : "MIZER";
+
+        this.messageNom = createImageOfMot("Entrez un nom ");
+        this.buttonJouer = createImageOfMot("Jouer");
+        this.nomJ1 = createImageOfMot(nom1);
+        this.nomJ2 = createImageOfMot(nom2);
     }
 
     // Met à jour les images du menu 2
@@ -203,8 +218,18 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.wfleche = 30;
         this.hfleche = 30;
         this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
+
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (10 * height / 100) + fleche * sautLigne;
+        if (this.nbJoueur == 1) {
+            this.yfleche = (fleche == 0) ? ((12 * height / 100) + sautLigne)
+                    : (12 * height / 100) + sautLigne * (fleche + 2);
+        } else {
+            this.yfleche = (fleche <= 1) ? ((12 * height / 100) + sautLigne * (2 * fleche + 1))
+                    : (12 * height / 100) + sautLigne * (fleche + 3);
+
+        }
+        this.nomJ1 = createImageOfMot(nom1); // On update les noms à afficher.
+        this.nomJ2 = (this.nbJoueur == 2) ? createImageOfMot(nom2) : createImageOfMot(null);
     }
 
     // Dessine toutes les images du menu 2
@@ -214,9 +239,31 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
         // Affichage des boutons
-        int x = (10 * width / 100), y = (10 * height / 100);
+        int x = (9 * width / 100), y = (12 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
-        afficheMot(g2, messageNom, x, y, w, h, ecart, espacement);
+        x = afficheMot(g2, messageNom, x, y, w, h, ecart, espacement);
+        afficheDoublepoint(g2, x, y, 7, 7);
+        x = (15 * width / 100);
+        y += sautLigne;
+        afficheMot(g2, nomJ1, x, y, w, h, ecart, espacement);
+        if (nbJoueur == 2) {
+            x = (9 * width / 100);
+            y += sautLigne;
+            x = afficheMot(g2, messageNom, x, y, w, h, ecart, espacement);
+            afficheDoublepoint(g2, x, y, 7, 7);
+            x = (15 * width / 100);
+            y += sautLigne;
+            afficheMot(g2, nomJ2, x, y, w, h, ecart, espacement);
+        }
+        x = (9 * width / 100);
+        y += sautLigne * 2;
+        afficheMot(g2, buttonJouer, x, y, w, h, ecart, espacement);
+        x = (9 * width / 100);
+        y += sautLigne;
+        afficheMot(g2, buttonRetourMenu, x, y, w, h, ecart, espacement);
+        x = (9 * width / 100);
+        y += sautLigne;
+        afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
 
         // Affichage de la fleche
         g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
@@ -481,19 +528,24 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     /// PARTIE GAME :
     // Crée une partie (en initialisant toutes les variables, i.e le terrain, ...)
     private void createPartie() {
-        // Initialisation des éléments
-        ArrayList<Joueur> ljou = new ArrayList<Joueur>();
-        for (int i = 0; i < nbJoueur; ++i) {
-            // L'image du perso doit être un carré. On prend la valeure la plus petite
-            double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
-            Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
-            String nomjoueur = "Mizer " + i;
-            ljou.add(new Joueur(p, nomjoueur));
+        /// Initialisation des éléments :
+        ArrayList<Joueur> ljou = new ArrayList<Joueur>(); // Liste des joueurs.
+
+        /// Ajout des joueurs :
+        // Variable (z) pour adapter les dimensions à la résolution d'écran.
+        // L'image du perso doit être un carré. On prend la valeure la plus petite.
+        double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
+        Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
+        ljou.add(new Joueur(p, nom1));
+        if (nbJoueur == 2) { // S'il y a 2 joueurs :
+            Personnage p2 = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
+            ljou.add(new Joueur(p2, nom2));
         }
+
         int i = multijoueur ? host ? 0 : 1 : 0;
-        this.terrain = new Terrain(ljou, height, width, host, multijoueur, i);
-        terrain.setClient(jconnect);
-        terrain.setHost(serveur);
+        this.terrain = new Terrain(ljou, height, width, host, multijoueur, i); // On crée le terrain.
+        this.terrain.setClient(jconnect);
+        this.terrain.setHost(serveur);
     }
 
     // Initialise toutes les images de la GAME
@@ -698,15 +750,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     runningClassement(); // On lance le CLASSEMENT.
                 }
                 // Si on a cliqué sur le boutton "Jouer solo" :
-                /*
-                 * if (!isMenuDemarrer && !isClassement && isMenu2 && !isRunningGame &&
-                 * !isMenuFin) {
-                 * createPartie(); // On crée une partie.
-                 * initGame(); // On initialise les images de la GAME.
-                 * initMenu2();
-                 * runningMenu2();
-                 * }
-                 */
+                if (!isMenuDemarrer && !isClassement && isMenu2 && !isRunningGame && !isMenuFin) {
+                    initMenu2();
+                    runningMenu2();
+                }
+
                 // Si on a lancé une GAME :
                 if (!isMenuDemarrer && !isClassement && !isMenu2 && isRunningGame && !isMenuFin) {
                     initGame(); // On initialise les images de la GAME.
@@ -753,7 +801,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     // Gestion des boutons
-
     private void pause() {
         this.terrain.setPause(!this.terrain.isPause());
         this.menuPause = new JFrame();
@@ -839,22 +886,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
                 if (this.fleche == 0) { // La flèche pointe sur le bouton "Jouer Solo" :
                     this.nbJoueur = 1; // On initialise le nombre de joueurs.
-                    createPartie(); // On crée une partie.
                     isMenuDemarrer = false; // On quitte le menu DEMARRER
-                    // isMenu2 = true;
-                    isRunningGame = true;
+                    isMenu2 = true;
                 }
                 if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer à 2" :
                     this.nbJoueur = 2; // On initialise le nombre de joueurs.
-                    createPartie(); // On crée une partie.
                     isMenuDemarrer = false; // On quitte le menu DEMARRER
-                    // isMenu2 = true;
-                    isRunningGame = true;
+                    isMenu2 = true;
                 }
 
                 if (this.fleche == 2) { // La flèche pointe sur le bouton "Mode multijoueur" :
                     this.nbJoueur = 2; // On initialise le nombre de joueurs.
-                    createPartie(); // On crée une partie.
                     this.multijoueur = true;
                     int option = JOptionPane.showConfirmDialog(this, "Voulez-vous host la partie ?",
                             "Paramètrage multijoueur",
@@ -924,7 +966,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             /// Gestion du bouton "ENTREE" :
             if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
                 if (this.fleche == 0) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
-                    isMenuFin = false; // On quitte le menu FIN.
+                    isClassement = false; // On quitte le menu FIN.
                     isMenuDemarrer = true; // On entre dans le menu DEMARRER.
                 }
                 if (this.fleche == 1) { // La flèche pointe sur le bouton "Quitter" :
@@ -942,21 +984,68 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
 
         if (isMenu2) {
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.fleche == 0) { // Retour au menu DEMARRER
-                    // isMenu2 = false;
-                    // isRunningGame = true;
+            if (this.nbJoueur == 1) {
+                if (this.fleche == 0) { // La flèche pointe sur le bouton "Nom 1" :
+                    nom1 = (nom1.length() < 16) ? nom1 += keyWriterNom(e) : nom1;
+                    if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                        nom1 = "";
                 }
-                if (this.fleche == 1) { // Quitter
-                    isQuitte = true;
-                    System.exit(0);
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer" :
+                        createPartie(); // On crée une partie.
+                        isMenu2 = false;
+                        isRunningGame = true;
+                    }
+
+                    if (this.fleche == 2) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                        isMenu2 = false; // On quitte le menu 2.
+                        isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+                    }
+                    if (this.fleche == 3) { // La flèche pointe sur le bouton "Quitter" :
+                        System.out.println("À la prochaine !");
+                        isQuitte = true; // On quitte l'application.
+                        System.exit(0); // On ferme toutes les fenêtres & le programme.
+                    }
                 }
-            }
-            if (e.getKeyCode() == KeyEvent.VK_UP) {
-                this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
-            }
-            if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
+
+                /// Gestion de la flèche :
+                if (e.getKeyCode() == KeyEvent.VK_UP)
+                    this.fleche = (this.fleche == 0) ? 3 : this.fleche - 1;
+
+                if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                    this.fleche = (this.fleche == 3) ? 0 : this.fleche + 1;
+
+            } else {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (this.fleche == 0) { // La flèche pointe sur le bouton "Nom 1" :
+                    }
+                    if (this.fleche == 1) { // La flèche pointe sur le bouton "Nom 2" :
+                    }
+
+                    if (this.fleche == 2) { // La flèche pointe sur le bouton "Jouer" :
+                        createPartie(); // On crée une partie.
+                        isMenu2 = false;
+                        isRunningGame = true;
+                    }
+
+                    if (this.fleche == 3) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                        isMenu2 = false; // On quitte le menu 2.
+                        isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+                    }
+                    if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
+                        System.out.println("À la prochaine !");
+                        isQuitte = true; // On quitte l'application.
+                        System.exit(0); // On ferme toutes les fenêtres & le programme.
+                    }
+                }
+
+                /// Gestion de la flèche :
+                if (e.getKeyCode() == KeyEvent.VK_UP)
+                    this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
+
+                if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                    this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
+
             }
         }
     }
@@ -1007,5 +1096,90 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyTyped(KeyEvent e) {
+    }
+
+    private String keyWriterNom(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_0 || e.getKeyCode() == KeyEvent.VK_NUMPAD0 || e.getKeyChar() == '0')
+            return "0";
+        if (e.getKeyCode() == KeyEvent.VK_1 || e.getKeyCode() == KeyEvent.VK_NUMPAD1 || e.getKeyChar() == '1')
+            return "1";
+        if (e.getKeyCode() == KeyEvent.VK_2 || e.getKeyCode() == KeyEvent.VK_NUMPAD2 || e.getKeyChar() == '2')
+            return "2";
+        if (e.getKeyCode() == KeyEvent.VK_3 || e.getKeyCode() == KeyEvent.VK_NUMPAD3 || e.getKeyChar() == '3')
+            return "3";
+        if (e.getKeyCode() == KeyEvent.VK_4 || e.getKeyCode() == KeyEvent.VK_NUMPAD4 || e.getKeyChar() == '4')
+            return "4";
+        if (e.getKeyCode() == KeyEvent.VK_5 || e.getKeyCode() == KeyEvent.VK_NUMPAD5 || e.getKeyChar() == '5')
+            return "5";
+        if (e.getKeyCode() == KeyEvent.VK_6 || e.getKeyCode() == KeyEvent.VK_NUMPAD6 || e.getKeyChar() == '6')
+            return "6";
+        if (e.getKeyCode() == KeyEvent.VK_7 || e.getKeyCode() == KeyEvent.VK_NUMPAD7 || e.getKeyChar() == '7')
+            return "7";
+        if (e.getKeyCode() == KeyEvent.VK_8 || e.getKeyCode() == KeyEvent.VK_NUMPAD8 || e.getKeyChar() == '8')
+            return "8";
+        if (e.getKeyCode() == KeyEvent.VK_9 || e.getKeyCode() == KeyEvent.VK_NUMPAD9 || e.getKeyChar() == '9')
+            return "9";
+        if (e.getKeyCode() == KeyEvent.VK_A)
+            return "A";
+        if (e.getKeyCode() == KeyEvent.VK_B)
+            return "B";
+        if (e.getKeyCode() == KeyEvent.VK_C)
+            return "C";
+        if (e.getKeyCode() == KeyEvent.VK_D)
+            return "D";
+        if (e.getKeyCode() == KeyEvent.VK_E)
+            return "E";
+        if (e.getKeyCode() == KeyEvent.VK_F)
+            return "F";
+        if (e.getKeyCode() == KeyEvent.VK_G)
+            return "G";
+        if (e.getKeyCode() == KeyEvent.VK_H)
+            return "H";
+        if (e.getKeyCode() == KeyEvent.VK_I)
+            return "I";
+        if (e.getKeyCode() == KeyEvent.VK_J)
+            return "J";
+        if (e.getKeyCode() == KeyEvent.VK_K)
+            return "K";
+        if (e.getKeyCode() == KeyEvent.VK_L)
+            return "L";
+        if (e.getKeyCode() == KeyEvent.VK_M)
+            return "M";
+        if (e.getKeyCode() == KeyEvent.VK_N)
+            return "N";
+        if (e.getKeyCode() == KeyEvent.VK_O)
+            return "O";
+        if (e.getKeyCode() == KeyEvent.VK_P)
+            return "P";
+        if (e.getKeyCode() == KeyEvent.VK_Q)
+            return "Q";
+        if (e.getKeyCode() == KeyEvent.VK_R)
+            return "R";
+        if (e.getKeyCode() == KeyEvent.VK_S)
+            return "S";
+        if (e.getKeyCode() == KeyEvent.VK_T)
+            return "T";
+        if (e.getKeyCode() == KeyEvent.VK_U)
+            return "U";
+        if (e.getKeyCode() == KeyEvent.VK_V)
+            return "V";
+        if (e.getKeyCode() == KeyEvent.VK_W)
+            return "W";
+        if (e.getKeyCode() == KeyEvent.VK_X)
+            return "X";
+        if (e.getKeyCode() == KeyEvent.VK_Y)
+            return "Y";
+        if (e.getKeyCode() == KeyEvent.VK_Z)
+            return "Z";
+        if (e.getKeyCode() == KeyEvent.VK_SPACE)
+            return " ";
+        if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE)
+            return "";
+        /*
+         * else
+         * System.out.
+         * println("N'utilisez que des lettres, des chiffres et le caractère espace .");
+         */
+        return "";
     }
 }
