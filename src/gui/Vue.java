@@ -36,8 +36,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private boolean multijoueur = false, host = false;
     private Serveur serveur;
     private JoueurConnecte jconnect;
+    private String skin;
 
-    public Vue(Game frame, String skin) {
+    public Vue(App frame, String skin) {
         // Taille du panel
         this.width = frame.getWidth();
         this.height = frame.getHeight();
@@ -45,6 +46,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         this.threadMvt = null;
         // Initialisation des chemins
+        this.skin = skin;
         this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
         this.winchemin = "src/gui/images/" + skin + "/";
 
@@ -1180,5 +1182,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_Z)
             return "Z";
         return "";
+    }
+
+    public String getSkin() {
+        return this.skin;
     }
 }
