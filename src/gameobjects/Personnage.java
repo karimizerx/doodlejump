@@ -10,6 +10,7 @@ public class Personnage extends GameObject {
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
     // isShoot & canShoot indique si l'on tire/peut tirer un projectile.
     private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot;
+    private boolean collides=true;
     private ArrayList<Projectile> listProjectiles; // Stock tous les projectiles du personnage encore sur le terrain
 
     public Personnage(double x, double y, double w, double h, double dy) {
@@ -47,6 +48,7 @@ public class Personnage extends GameObject {
 
     // Colision entre le personnage et un item
     public void collides_item(Items it, double deltaTime) {
+        if(!collides) return;
         if (it.isNeedPied()) {
             if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
                     // + witdh*0.65 sert à ne compter que le x du dernier pied
@@ -76,9 +78,24 @@ public class Personnage extends GameObject {
 
     }
 
+    public boolean collides_monstre(Monstre m, double deltaTime) {
+        return ((this.getX() + (this.getWidth() * 0.65) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
+        // + witdh*0.5 sert à ne compter que le x du dernier pied
+        && (this.getX() + (this.getWidth() * 0.25) <= m.getX() + m.getWidth())
+        // si ça ne dépasse pas par la droite de la item.
+        // + witdh*0.25 sert à ne compter que le x du premier pied
+        && (this.getY() <= (m.getY() + m.getHeight()))
+        && ((m.getY() + m.getHeight()) <= (this.getY() + this.getHeight())));
+    
+    }
+
     // Tir un projectile avec ce personnage
     public void tirer(double w, double h, double vx, double vy) {
         this.listProjectiles.add(new Projectile(this.getX() + this.getWidth() * 0.43, this.getY(), w, h, vx, vy));
+    }
+    
+    public void dead(){
+        collides=false;
     }
 
     /*

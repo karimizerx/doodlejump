@@ -10,6 +10,7 @@ import multiplayer.*;
 public class Terrain {
 
     private ArrayList<Plateforme> plateformesListe; // Liste des plateformes sur le terrain
+    private ArrayList<Monstre> monstres;
     private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
@@ -26,6 +27,7 @@ public class Terrain {
     public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer, int id) {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
+        this.monstres=new ArrayList<Monstre>();
         this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
@@ -60,8 +62,14 @@ public class Terrain {
                 pf.addItem((int) pf.getX(), (int) (pf.getY()-2*pf.getHeight()), 42, 42);
             }
         }
-        // On s'assure d'abord toujours une solution au début
-    }
+        for (int i = 0; i <3; i++) {
+            // On définit la largeur/hauteur des plateformes de base
+            int x = new Random().nextInt((int) (this.width - w));
+            int y = (int)this.height/4;
+            //TODO add itens to plateforme
+            monstres.add(new Monstre(x, y, 70,50, -(this.height * 0.0013645224), 1));
+        }
+    } // On s'assure d'abord toujours une solution au début
 
     // Renvoie la plateforme la plus haute sur le terrain
     private Plateforme highestPlateforme() {
@@ -135,12 +143,22 @@ public class Terrain {
                             pf.setItem(null);
                 }
             }
+            for (Monstre m : monstres) {
+                m.setY(m.getY() - (int) p.getDy());
+                if (m.getY() + m.getHeight() >= this.height) // Si la plateformes baissées déborde de l'écran
+                monstres.remove(m);
+            }
         }
         // On gère les collisions & les débordements du personnage
         for (Plateforme pf : plateformesListe) {
             p.collides_plateforme(pf, deltaTime);
             if (pf instanceof MovingPlateforme)
                 ((MovingPlateforme) pf).move(this);
+        }
+        for(Monstre m: monstres){
+            m.move(this);
+            if(p.collides_monstre(m, deltaTime)) p.dead();
+           
         }
         limite(p);
     }
@@ -241,6 +259,10 @@ public class Terrain {
 
     public void setPause(boolean pause) {
         this.pause = pause;
+    }
+
+    public ArrayList<Monstre> getMontresArrayList(){
+        return monstres;
     }
 
 }

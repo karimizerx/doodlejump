@@ -25,7 +25,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private JFrame menuPause; // Le menu pause
     private String chemin, winchemin; // Le chemin vers le package d'images (win = version windows)
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
-            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, helicoptImage,fuseeImage;
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, helicoptImage,fuseeImage,monstre1Image,monstre2Image,monstre3Image;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
             buttonRetourMenu, titreStatut, messageNom;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
@@ -512,6 +512,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
                 helicoptImage = ImageIO.read(new File(chemin+ "/fusee.png"));
                 fuseeImage= ImageIO.read(new File(chemin+ "/helicopter.png"));
+                monstre1Image=ImageIO.read(new File(chemin+ "/monstres1.png"));
+                // monstre2Image
+                // monstre3Image
+
 
                 // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
@@ -533,6 +537,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 projectileView = ImageIO.read(new File(winchemin + "/projectile.png"));
                 helicoptImage = ImageIO.read(new File(winchemin+ "/fusee.png"));
                 fuseeImage= ImageIO.read(new File(winchemin+ "/helicopter.png"));
+                monstre1Image=ImageIO.read(new File(winchemin+ "/monstre1.png"));
 
                 // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
@@ -605,6 +610,23 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 g2.drawImage(fuseeImage ,(int) pf.getItem().getX(), (int) (pf.getItem().getY()),(int)pf.getItem().getWidth(),(int) pf.getItem().getHeight(), null);
 
             }        
+        }
+        for(Monstre m:terrain.getMontresArrayList()){
+            switch (m.getId()) {
+                case 1:
+                    g2.drawImage(monstre1Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
+                    break;
+                case 2:
+                    g2.drawImage(monstre2Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
+                    break;
+                case 3:
+                    g2.drawImage(monstre3Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
+                    break;
+            
+                default:
+                    g2.drawImage(monstre1Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
+                    break;
+            }
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur
