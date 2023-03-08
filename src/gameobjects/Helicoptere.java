@@ -7,20 +7,18 @@ import java.util.TimerTask;
 public class Helicoptere extends Items {
 
     long time;
-    public Helicoptere(double x, double y, double w, double h, double saut,long time) {
+    public Helicoptere(double x, double y, double w, double h, double saut,double time) {
         super(x, y, w, h, saut, false);
-        this.time=time*1000;
+        this.time=(long)time*1000;
     }
     // Méthode move !
 
     public void runEffect(Personnage p) {
         Timer timer = new Timer();
         TimerTask task = new TimerTask() {
-            double V = 100;// vitesse de l'item, a voir
-
             @Override
             public void run() {
-                p.setDy(V);
+                p.setDy(Helicoptere.this.getSaut());
             }
         };
         timer.schedule(task, this.time);

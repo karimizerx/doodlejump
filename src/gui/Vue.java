@@ -25,7 +25,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private JFrame menuPause; // Le menu pause
     private String chemin, winchemin; // Le chemin vers le package d'images (win = version windows)
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
-            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, itemView;
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, helicoptImage,fuseeImage;
     private ArrayList<BufferedImage> buttonJouer, button2joueur, buttonMultiJoueur, buttonLb, buttonQuitter,
             buttonRetourMenu, titreStatut, messageNom;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
@@ -510,7 +510,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
                 scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground1.png"));
                 projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
-                itemView = ImageIO.read(new File(chemin + "/fusee.png"));
+                helicoptImage = ImageIO.read(new File(chemin+ "/fusee.png"));
+                fuseeImage= ImageIO.read(new File(chemin+ "/helicopter.png"));
 
                 // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
@@ -530,8 +531,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 platformeMobileView = ImageIO.read(new File(winchemin + "/plateformes/plateformeMobile.png"));
                 scoreBackgroundView = ImageIO.read(new File(winchemin + "/background/scoreBackground1.png"));
                 projectileView = ImageIO.read(new File(winchemin + "/projectile.png"));
-                itemView = ImageIO.read(new File(winchemin+ "/fusee.png"));
-
+                helicoptImage = ImageIO.read(new File(winchemin+ "/fusee.png"));
+                fuseeImage= ImageIO.read(new File(winchemin+ "/helicopter.png"));
 
                 // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
@@ -597,8 +598,13 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         for (Plateforme pf : terrain.getPlateformesListe()) {
             BufferedImage pfV = (pf instanceof PlateformeBase) ? platformeBaseView : platformeMobileView;
             g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
-            if(pf.getItem()!=null)
-                g2.drawImage(itemView,(int) pf.getItem().getX(), (int) (pf.getItem().getY()),(int)pf.getItem().getWidth(),(int) pf.getItem().getHeight(), null);
+            if(pf.getItem()!=null){
+                if (pf.getItem() instanceof Helicoptere)
+                g2.drawImage(helicoptImage ,(int) pf.getItem().getX(), (int) (pf.getItem().getY()),(int)pf.getItem().getWidth(),(int) pf.getItem().getHeight(), null);
+                else 
+                g2.drawImage(fuseeImage ,(int) pf.getItem().getX(), (int) (pf.getItem().getY()),(int)pf.getItem().getWidth(),(int) pf.getItem().getHeight(), null);
+
+            }        
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur

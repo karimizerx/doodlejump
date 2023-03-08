@@ -25,10 +25,12 @@ public abstract class Plateforme extends GameObject {
 
     public void addItem(double x,double y, double w, double h){
         Random rand =new Random();
-        // if (rand.nextDouble() >0.5){
-            item=new Fusee(x,y,w,h, -50, 2.5);
-            // System.out.println(x+" "+y+" "+" "+w*4000+" "+h*4000+" "+ 100+" "+ 5);
-        // }
+        if (rand.nextDouble() >0.5){
+            item=new Fusee(x,y,w,h, -25, 2.5);
+            System.out.println(x+" "+y+" "+" "+w*4000+" "+h*4000+" "+ 100+" "+ 5);
+        }else{
+            item=new Helicoptere(x,y,w,h, -10, 5);
+        }
     }
     public void updateItem(){
         if(item!=null)
