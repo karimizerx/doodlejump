@@ -93,6 +93,11 @@ public class Personnage extends GameObject {
     public void tirer(double w, double h, double vx, double vy) {
         this.listProjectiles.add(new Projectile(this.getX() + this.getWidth() * 0.43, this.getY(), w, h, vx, vy));
     }
+
+    public boolean projectileCollide(Monstre m){
+        return false;
+        //TODO fixer les collides
+    }
     
     public void dead(){
         collides=false;

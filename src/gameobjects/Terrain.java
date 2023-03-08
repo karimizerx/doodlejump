@@ -157,6 +157,8 @@ public class Terrain {
         }
         for(Monstre m: monstres){
             m.move(this);
+            if(p.projectileCollide(m))
+                monstres.remove(m);
             if(p.collides_monstre(m, deltaTime)) p.dead();
            
         }
