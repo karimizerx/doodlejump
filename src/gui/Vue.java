@@ -1181,6 +1181,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             return "Y";
         if (e.getKeyCode() == KeyEvent.VK_Z)
             return "Z";
+        if (e.getKeyCode() == KeyEvent.VK_SPACE)
+            return " ";
         return "";
     }
 

@@ -46,8 +46,18 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
         this.wfleche = 30;
         this.hfleche = 30;
         this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
+
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (10 * height / 100) + fleche * sautLigne;
+        if (this.nbJoueur == 1) {
+            this.yfleche = (fleche == 0) ? ((12 * height / 100) + sautLigne)
+                    : (12 * height / 100) + sautLigne * (fleche + 2);
+        } else {
+            this.yfleche = (fleche <= 1) ? ((12 * height / 100) + sautLigne * (2 * fleche + 1))
+                    : (12 * height / 100) + sautLigne * (fleche + 3);
+
+        }
+        this.nomJ1 = createImageOfMot(nom1); // On update les noms à afficher.
+        this.nomJ2 = (this.nbJoueur == 2) ? createImageOfMot(nom2) : createImageOfMot(null);
     }
 
     // Affiche les images.
@@ -57,20 +67,30 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
         g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
 
         // Affichage des boutons
-        int x = (9 * width / 100), y = (10 * height / 100);
+        int x = (9 * width / 100), y = (12 * height / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
-        afficheMot(g2, buttonJouerSolo, x, y, w, h, ecart, espacement);
+        x = afficheMot(g2, messageNom, x, y, w, h, ecart, espacement);
+        afficheDoublepoint(g2, x, y, 7, 7);
+        x = (15 * width / 100);
+        y += sautLigne;
+        afficheMot(g2, nomJ1, x, y, w, h, ecart, espacement);
+        if (nbJoueur == 2) {
+            x = (9 * width / 100);
+            y += sautLigne;
+            x = afficheMot(g2, messageNom, x, y, w, h, ecart, espacement);
+            afficheDoublepoint(g2, x, y, 7, 7);
+            x = (15 * width / 100);
+            y += sautLigne;
+            afficheMot(g2, nomJ2, x, y, w, h, ecart, espacement);
+        }
         x = (9 * width / 100);
-        y = y + sautLigne;
-        afficheMot(g2, button2joueur, x, y, w, h, ecart, espacement);
+        y += sautLigne * 2;
+        afficheMot(g2, buttonJouer, x, y, w, h, ecart, espacement);
         x = (9 * width / 100);
-        y = y + sautLigne;
-        afficheMot(g2, buttonMultiJoueur, x, y, w, h, ecart, espacement);
+        y += sautLigne;
+        afficheMot(g2, buttonRetourMenu, x, y, w, h, ecart, espacement);
         x = (9 * width / 100);
-        y = y + sautLigne;
-        afficheMot(g2, buttonLb, x, y, w, h, ecart, espacement);
-        x = (9 * width / 100);
-        y = y + sautLigne;
+        y += sautLigne;
         afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
 
         // Affichage de la fleche
