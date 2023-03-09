@@ -98,7 +98,7 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
     public void running(Graphics g) {
         this.sautLigne = 50;
         this.fleche = 0; // On pointe le premier bouton
-        while (isRunning) {
+        while (Vue.isMenuDemarrer) {
             this.update();
             this.affiche(g);
         }
@@ -109,64 +109,62 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
     public void keyControlPressed(KeyEvent e) {
         System.out.println("Menu DEMARRER - Key Pressed");
 
-        if (this.isRunning) { // Si on est au niveau du menu DEMARRER :
-            /// Gestion du bouton "ENTREE" :
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
-                if (this.fleche == 0) { // La flèche pointe sur le bouton "Jouer Solo" :
-                    this.nbJoueur = 1; // On initialise le nombre de joueurs.
-                    Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
-                    Vue.isMenu2 = true;
-                }
-                if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer à 2" :
-                    this.nbJoueur = 2; // On initialise le nombre de joueurs.
-                    Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
-                    Vue.isMenu2 = true;
-                }
-
-                if (this.fleche == 2) { // La flèche pointe sur le bouton "Mode multijoueur" :
-                    this.nbJoueur = 2; // On initialise le nombre de joueurs.
-                    this.multijoueur = true;
-                    int option = JOptionPane.showConfirmDialog(this.vue, "Voulez-vous host la partie ?",
-                            "Paramètrage multijoueur",
-                            JOptionPane.YES_NO_OPTION);
-                    System.out.println(option);
-                    if (option == 0) {
-                        this.host = true;
-                        try {
-                            this.serveur = new Serveur();
-                            this.serveur.run();
-                        } catch (IOException io) {
-                            JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
-                                    JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
-                            System.exit(-1);
-                        }
-                    } else {
-                        this.host = false;
-                        this.jconnect = new JoueurConnecte();
-                        this.jconnect.connecter();
-                    }
-                    Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
-                    Vue.isRunningGame = true;
-                }
-
-                if (this.fleche == 3) { // La flèche pointe sur le bouton "Classement" :
-                    Vue.isClassement = true;
-                    Vue.isMenuDemarrer = false;
-                }
-                if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
-                    System.out.println("À la prochaine !");
-                    Vue.isQuitte = true; // On quitte l'application.
-                    System.exit(0); // On ferme toutes les fenêtres & le programme.
-                }
+        /// Gestion du bouton "ENTREE" :
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
+            if (this.fleche == 0) { // La flèche pointe sur le bouton "Jouer Solo" :
+                this.nbJoueur = 1; // On initialise le nombre de joueurs.
+                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
+                Vue.isMenuLancement = true;
+            }
+            if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer à 2" :
+                this.nbJoueur = 2; // On initialise le nombre de joueurs.
+                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
+                Vue.isMenuLancement = true;
             }
 
-            /// Gestion de la flèche :
-            if (e.getKeyCode() == KeyEvent.VK_UP)
-                this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
+            if (this.fleche == 2) { // La flèche pointe sur le bouton "Mode multijoueur" :
+                this.nbJoueur = 2; // On initialise le nombre de joueurs.
+                this.multijoueur = true;
+                int option = JOptionPane.showConfirmDialog(this.vue, "Voulez-vous host la partie ?",
+                        "Paramètrage multijoueur",
+                        JOptionPane.YES_NO_OPTION);
+                System.out.println(option);
+                if (option == 0) {
+                    this.host = true;
+                    try {
+                        this.serveur = new Serveur();
+                        this.serveur.run();
+                    } catch (IOException io) {
+                        JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
+                                JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
+                        System.exit(-1);
+                    }
+                } else {
+                    this.host = false;
+                    this.jconnect = new JoueurConnecte();
+                    this.jconnect.connecter();
+                }
+                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
+                Vue.isRunningGame = true;
+            }
 
-            if (e.getKeyCode() == KeyEvent.VK_DOWN)
-                this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
+            if (this.fleche == 3) { // La flèche pointe sur le bouton "Classement" :
+                Vue.isMenuClassement = true;
+                Vue.isMenuDemarrer = false;
+            }
+            if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
+                System.out.println("À la prochaine !");
+                Vue.isQuitte = true; // On quitte l'application.
+                System.exit(0); // On ferme toutes les fenêtres & le programme.
+            }
         }
+
+        /// Gestion de la flèche :
+        if (e.getKeyCode() == KeyEvent.VK_UP)
+            this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
+
+        if (e.getKeyCode() == KeyEvent.VK_DOWN)
+            this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
 
     }
 

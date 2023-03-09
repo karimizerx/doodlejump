@@ -109,7 +109,7 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
     public void running(Graphics g) {
         this.sautLigne = 50;
         this.fleche = 0; // On pointe le premier bouton
-        while (isRunning) {
+        while (Vue.isMenuLancement) {
             this.update();
             this.affiche(g);
         }
@@ -119,10 +119,159 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
     @Override
     public void keyControlPressed(KeyEvent e) {
         System.out.println("Menu LANCEMENT - Key Pressed");
+        if (this.nbJoueur == 1) {
+            if (this.fleche == 0) { // La flèche pointe sur le bouton "Nom 1" :
+                nom1 = (nom1.length() < 16) ? nom1 += keyWriterNom(e) : nom1;
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                    nom1 = "";
+            }
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer" :
+                    // createPartie(); // On crée une partie.
+                    Vue.isMenuLancement = false;
+                    Vue.isRunningGame = true;
+                }
+
+                if (this.fleche == 2) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                    Vue.isMenuLancement = false; // On quitte le menu 2.
+                    Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+                }
+                if (this.fleche == 3) { // La flèche pointe sur le bouton "Quitter" :
+                    System.out.println("À la prochaine !");
+                    Vue.isQuitte = true; // On quitte l'application.
+                    System.exit(0); // On ferme toutes les fenêtres & le programme.
+                }
+            }
+
+            /// Gestion de la flèche :
+            if (e.getKeyCode() == KeyEvent.VK_UP)
+                this.fleche = (this.fleche == 0) ? 3 : this.fleche - 1;
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                this.fleche = (this.fleche == 3) ? 0 : this.fleche + 1;
+
+        }
+
+        if (this.nbJoueur == 2) {
+            if (this.fleche == 0) { // La flèche pointe sur le bouton "Nom 1" :
+                nom1 = (nom1.length() < 16) ? nom1 += keyWriterNom(e) : nom1;
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                    nom1 = "";
+            }
+            if (this.fleche == 1) { // La flèche pointe sur le bouton "Nom 2" :
+                nom2 = (nom2.length() < 16) ? nom2 += keyWriterNom(e) : nom2;
+                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                    nom2 = "";
+            }
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                if (this.fleche == 2) { // La flèche pointe sur le bouton "Jouer" :
+                    // createPartie(); // On crée une partie.
+                    Vue.isMenuLancement = false;
+                    Vue.isRunningGame = true;
+                }
+
+                if (this.fleche == 3) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                    Vue.isMenuLancement = false; // On quitte le menu 2.
+                    Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+                }
+                if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
+                    System.out.println("À la prochaine !");
+                    Vue.isQuitte = true; // On quitte l'application.
+                    System.exit(0); // On ferme toutes les fenêtres & le programme.
+                }
+            }
+
+            /// Gestion de la flèche :
+            if (e.getKeyCode() == KeyEvent.VK_UP)
+                this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
+
+        }
     }
 
     @Override
     public void keyControlReleased(KeyEvent e) {
         System.out.println("Menu LANCEMENT - Key Released");
     }
+
+    private String keyWriterNom(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_0 || e.getKeyCode() == KeyEvent.VK_NUMPAD0 || e.getKeyChar() == '0')
+            return "0";
+        if (e.getKeyCode() == KeyEvent.VK_1 || e.getKeyCode() == KeyEvent.VK_NUMPAD1 || e.getKeyChar() == '1')
+            return "1";
+        if (e.getKeyCode() == KeyEvent.VK_2 || e.getKeyCode() == KeyEvent.VK_NUMPAD2 || e.getKeyChar() == '2')
+            return "2";
+        if (e.getKeyCode() == KeyEvent.VK_3 || e.getKeyCode() == KeyEvent.VK_NUMPAD3 || e.getKeyChar() == '3')
+            return "3";
+        if (e.getKeyCode() == KeyEvent.VK_4 || e.getKeyCode() == KeyEvent.VK_NUMPAD4 || e.getKeyChar() == '4')
+            return "4";
+        if (e.getKeyCode() == KeyEvent.VK_5 || e.getKeyCode() == KeyEvent.VK_NUMPAD5 || e.getKeyChar() == '5')
+            return "5";
+        if (e.getKeyCode() == KeyEvent.VK_6 || e.getKeyCode() == KeyEvent.VK_NUMPAD6 || e.getKeyChar() == '6')
+            return "6";
+        if (e.getKeyCode() == KeyEvent.VK_7 || e.getKeyCode() == KeyEvent.VK_NUMPAD7 || e.getKeyChar() == '7')
+            return "7";
+        if (e.getKeyCode() == KeyEvent.VK_8 || e.getKeyCode() == KeyEvent.VK_NUMPAD8 || e.getKeyChar() == '8')
+            return "8";
+        if (e.getKeyCode() == KeyEvent.VK_9 || e.getKeyCode() == KeyEvent.VK_NUMPAD9 || e.getKeyChar() == '9')
+            return "9";
+        if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyChar() == 'à' || e.getKeyChar() == 'À')
+            return "A";
+        if (e.getKeyCode() == KeyEvent.VK_B)
+            return "B";
+        if (e.getKeyCode() == KeyEvent.VK_C || e.getKeyChar() == 'ç')
+            return "C";
+        if (e.getKeyCode() == KeyEvent.VK_D)
+            return "D";
+        if (e.getKeyCode() == KeyEvent.VK_E || e.getKeyChar() == 'é' || e.getKeyChar() == 'è')
+            return "E";
+        if (e.getKeyCode() == KeyEvent.VK_F)
+            return "F";
+        if (e.getKeyCode() == KeyEvent.VK_G)
+            return "G";
+        if (e.getKeyCode() == KeyEvent.VK_H)
+            return "H";
+        if (e.getKeyCode() == KeyEvent.VK_I)
+            return "I";
+        if (e.getKeyCode() == KeyEvent.VK_J)
+            return "J";
+        if (e.getKeyCode() == KeyEvent.VK_K)
+            return "K";
+        if (e.getKeyCode() == KeyEvent.VK_L)
+            return "L";
+        if (e.getKeyCode() == KeyEvent.VK_M)
+            return "M";
+        if (e.getKeyCode() == KeyEvent.VK_N)
+            return "N";
+        if (e.getKeyCode() == KeyEvent.VK_O)
+            return "O";
+        if (e.getKeyCode() == KeyEvent.VK_P)
+            return "P";
+        if (e.getKeyCode() == KeyEvent.VK_Q)
+            return "Q";
+        if (e.getKeyCode() == KeyEvent.VK_R)
+            return "R";
+        if (e.getKeyCode() == KeyEvent.VK_S)
+            return "S";
+        if (e.getKeyCode() == KeyEvent.VK_T)
+            return "T";
+        if (e.getKeyCode() == KeyEvent.VK_U)
+            return "U";
+        if (e.getKeyCode() == KeyEvent.VK_V)
+            return "V";
+        if (e.getKeyCode() == KeyEvent.VK_W)
+            return "W";
+        if (e.getKeyCode() == KeyEvent.VK_X)
+            return "X";
+        if (e.getKeyCode() == KeyEvent.VK_Y)
+            return "Y";
+        if (e.getKeyCode() == KeyEvent.VK_Z)
+            return "Z";
+        if (e.getKeyCode() == KeyEvent.VK_SPACE)
+            return " ";
+        return "";
+    }
+
 }

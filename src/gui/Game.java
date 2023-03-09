@@ -183,7 +183,7 @@ public class Game extends Etat { // C'est donc un Etat.
         double cnt = 0.0; // Compteur du nombre d'update
         double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
         long t0 = System.currentTimeMillis(); // Temps actuel
-        while (isRunning) { // Tant que le jeu tourne
+        while (Vue.isRunningGame) { // Tant que le jeu tourne
             if (!terrain.isPause()) { // Tant qu'on appuie pas sur pause
                 long t1 = System.currentTimeMillis();
                 long t = t1 - t0;
@@ -207,11 +207,97 @@ public class Game extends Etat { // C'est donc un Etat.
     @Override
     public void keyControlPressed(KeyEvent e) {
         System.out.println("Menu FIN - Key Pressed");
+        Personnage p1, p2;
+        if (!terrain.multiplayer) // Si on ne joue pas en multijoueur :
+            p1 = terrain.getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier joueur.
+        else
+            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+
+        /// Gestion des déplacements horizontales des personnages :
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on clique sur la flèche droite :
+            p1.setRight(true); // On indique qu'on avance vers la droite.
+            p1.setInertRight(false); // On stop l'inertie (le ralentissement).
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) { // Si on clique sur la flèche gauche :
+            p1.setLeft(true); // On indique qu'on avance vers la gauche.
+            p1.setInertLeft(false); // On stop l'inertie (le ralentissement).
+        }
+
+        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2 joueurs.
+            p2 = terrain.getListeJoueurs().get(1).getPerso();
+            if (e.getKeyCode() == KeyEvent.VK_D) {
+                p2.setRight(true);
+                p2.setInertRight(false);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_Q) {
+                p2.setLeft(true);
+                p2.setInertLeft(false);
+            }
+        }
+
+        /// Gestion des tires de projectiles :
+        // Si on a le droit de tirer et qu'on tire :
+        if (e.getKeyCode() == KeyEvent.VK_UP && p1.iscanShoot()) {
+            p1.setShoot(true); // On indique qu'on vient de tirer.
+            p1.setcanShoot(false); // On a pas le droit de re-tirer.
+        }
+
+        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
+            p2 = terrain.getListeJoueurs().get(1).getPerso();
+            if (e.getKeyCode() == KeyEvent.VK_Z && p2.iscanShoot()) {
+                p2.setShoot(true); // On indique qu'on vient de tirer.
+                p2.setcanShoot(false); // On a pas le droit de re-tirer.
+            }
+        }
+
+        /// Gestion de la pause :
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            // pause();
+        }
     }
 
     @Override
     public void keyControlReleased(KeyEvent e) {
-        System.out.println("Menu FIN - Key Released");
+        // Si on est en pleine partie :
+        Personnage p1, p2;
+        if (!terrain.multiplayer) // Si on ne joue pas en multijoueur :
+            p1 = terrain.getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier joueur.
+        else
+            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+
+        /// Gestion des déplacements horizontales des personnages :
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on relâche pendant que l'on se déplace vers la droite :
+            p1.setRight(false); // On arrête de se déplacer.
+            p1.setInertRight(true); // On lance le ralentissement (inertie).
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) { // Si on relâche pendant que l'on se déplace vers la gauche :
+            p1.setLeft(false); // On arrête de se déplacer.
+            p1.setInertLeft(true); // On lance le ralentissement (inertie).
+        }
+
+        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2 joueurs.
+            p2 = terrain.getListeJoueurs().get(1).getPerso();
+            if (e.getKeyCode() == KeyEvent.VK_D) {
+                p2.setRight(false);
+                p2.setInertRight(true);
+            }
+            if (e.getKeyCode() == KeyEvent.VK_Q) {
+                p2.setLeft(false);
+                p2.setInertLeft(true);
+            }
+        }
+
+        /// Gestion des tires de projectiles :
+        if (e.getKeyCode() == KeyEvent.VK_UP) // On oblige le joueur à lâcher pour tirer (pour éviter le spam).
+            p1.setcanShoot(true); // Dès qu'on lâche, on a de nouveau le droit de tirer.
+
+        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
+            p2 = terrain.getListeJoueurs().get(1).getPerso();
+            if (e.getKeyCode() == KeyEvent.VK_Z) // On oblige le joueur à lâcher pour tirer (pour éviter le spam).
+                p2.setcanShoot(true); // Dès qu'on lâche, on a de nouveau le droit de tirer.
+        }
     }
 
     /// Méthodes générales utiles :
@@ -248,4 +334,7 @@ public class Game extends Etat { // C'est donc un Etat.
         return isFin;
     }
 
+    public boolean isEndGame() {
+        return isEndGame;
+    }
 }

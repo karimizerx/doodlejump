@@ -48,7 +48,7 @@ public class MenuClassement extends Etat { // C'est donc un Etat.
     }
 
     // Met à jour les données du CLASSEMENT
-    private void updateClassement() throws IOException {
+    public void updateClassement() throws IOException {
         if (this.nbJoueur == 1) { // On update le classement que s'il n'y a qu'un joueur
             Joueur j = terrain.getListeJoueurs().get(0);
             String score = String.valueOf(j.getScore());
@@ -141,7 +141,7 @@ public class MenuClassement extends Etat { // C'est donc un Etat.
             lbView.add(score);
         }
 
-        while (isRunning) {
+        while (Vue.isMenuClassement) {
             this.update();
             this.affiche(g);
         }
@@ -151,6 +151,26 @@ public class MenuClassement extends Etat { // C'est donc un Etat.
     @Override
     public void keyControlPressed(KeyEvent e) {
         System.out.println("Menu CLASSEMENT - Key Pressed");
+        if (Vue.isMenuClassement) { // Si on est au niveau du CLASSEMENT :
+            /// Gestion du bouton "ENTREE" :
+            if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
+                if (this.fleche == 0) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                    Vue.isMenuClassement = false; // On quitte le menu FIN.
+                    Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+                }
+                if (this.fleche == 1) { // La flèche pointe sur le bouton "Quitter" :
+                    System.out.println("À la prochaine !");
+                    Vue.isQuitte = true; // On quitte l'application.
+                    System.exit(0); // On ferme toutes les fenêtres & le programme.
+                }
+            }
+            /// Gestion de la flèche :
+            if (e.getKeyCode() == KeyEvent.VK_UP)
+                this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
+
+            if (e.getKeyCode() == KeyEvent.VK_DOWN)
+                this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
+        }
     }
 
     @Override

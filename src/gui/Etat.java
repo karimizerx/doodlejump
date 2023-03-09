@@ -16,7 +16,6 @@ import javax.imageio.*;
 
 public abstract class Etat {
 
-    protected boolean isRunning;
     protected final int width, height; // Dimensions du panel
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     protected int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
