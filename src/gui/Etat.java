@@ -21,34 +21,33 @@ public abstract class Etat {
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     protected int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
     protected String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
-    protected BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
-            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
+    protected BufferedImage view, backgroundView, flecheView;
     protected ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
-            buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
-    protected ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
+            buttonQuitter, buttonRetourMenu, titreStatut;
+    protected ArrayList<ArrayList<BufferedImage>> scoreFinalView, hightScoreView;
     protected Terrain terrain; // Le terrain sur lequel on joue
-    protected double deltaTime; // Le temps nécessaire pour update le jeu
-    protected ThreadMouvement threadMvt; // thread qui gere l'envoi et la reception des données pour le multijoueur
-    protected Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
     protected boolean multijoueur = false, host = false;
     protected Serveur serveur;
     protected JoueurConnecte jconnect;
-    protected String skin;
+    protected Vue vue;
 
     public Etat(Vue vue) {
+        this.vue = vue;
         // Taille du panel
         this.width = vue.getWidth();
         this.height = vue.getHeight();
 
-        this.threadMvt = null;
         // Initialisation des chemins
         String skin = vue.getSkin();
-        this.chemin = (new File("gui/images/" + this.skin + "/")).getAbsolutePath();
-        this.winchemin = "src/gui/images/" + this.skin + "/";
+        this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
+        this.winchemin = "src/gui/images/" + skin + "/";
 
     }
 
     /// Méthodes abstract redéfinies dans chaque sous-classe d'Etat.
+    // Initialise les images qui ne changeront jamais.
+    abstract void initFixe();
+
     // Initialise les images & les autres variables.
     abstract void init();
 
@@ -60,6 +59,11 @@ public abstract class Etat {
 
     // Fait tourner cet état en boucle.
     abstract void running(Graphics g);
+
+    // Gère les boutons.
+    abstract void keyControlPressed(KeyEvent e);
+
+    abstract void keyControlReleased(KeyEvent e);
 
     /// Méthodes générales utiles :
     // Crée une liste d'images représentant un mot
@@ -200,22 +204,6 @@ public abstract class Etat {
         this.winchemin = winchemin;
     }
 
-    public String getNom1() {
-        return nom1;
-    }
-
-    public void setNom1(String nom1) {
-        this.nom1 = nom1;
-    }
-
-    public String getNom2() {
-        return nom2;
-    }
-
-    public void setNom2(String nom2) {
-        this.nom2 = nom2;
-    }
-
     public BufferedImage getView() {
         return view;
     }
@@ -232,76 +220,12 @@ public abstract class Etat {
         this.backgroundView = backgroundView;
     }
 
-    public BufferedImage getBackgroundClView() {
-        return backgroundClView;
-    }
-
-    public void setBackgroundClView(BufferedImage backgroundClView) {
-        this.backgroundClView = backgroundClView;
-    }
-
-    public BufferedImage getBackgroundClView1() {
-        return backgroundClView1;
-    }
-
-    public void setBackgroundClView1(BufferedImage backgroundClView1) {
-        this.backgroundClView1 = backgroundClView1;
-    }
-
-    public BufferedImage getBackgroundClView2() {
-        return backgroundClView2;
-    }
-
-    public void setBackgroundClView2(BufferedImage backgroundClView2) {
-        this.backgroundClView2 = backgroundClView2;
-    }
-
     public BufferedImage getFlecheView() {
         return flecheView;
     }
 
     public void setFlecheView(BufferedImage flecheView) {
         this.flecheView = flecheView;
-    }
-
-    public BufferedImage getTerrainView() {
-        return terrainView;
-    }
-
-    public void setTerrainView(BufferedImage terrainView) {
-        this.terrainView = terrainView;
-    }
-
-    public BufferedImage getPlatformeBaseView() {
-        return platformeBaseView;
-    }
-
-    public void setPlatformeBaseView(BufferedImage platformeBaseView) {
-        this.platformeBaseView = platformeBaseView;
-    }
-
-    public BufferedImage getPlatformeMobileView() {
-        return platformeMobileView;
-    }
-
-    public void setPlatformeMobileView(BufferedImage platformeMobileView) {
-        this.platformeMobileView = platformeMobileView;
-    }
-
-    public BufferedImage getScoreBackgroundView() {
-        return scoreBackgroundView;
-    }
-
-    public void setScoreBackgroundView(BufferedImage scoreBackgroundView) {
-        this.scoreBackgroundView = scoreBackgroundView;
-    }
-
-    public BufferedImage getProjectileView() {
-        return projectileView;
-    }
-
-    public void setProjectileView(BufferedImage projectileView) {
-        this.projectileView = projectileView;
     }
 
     public ArrayList<BufferedImage> getButtonJouer() {
@@ -368,46 +292,6 @@ public abstract class Etat {
         this.titreStatut = titreStatut;
     }
 
-    public ArrayList<BufferedImage> getMessageNom() {
-        return messageNom;
-    }
-
-    public void setMessageNom(ArrayList<BufferedImage> messageNom) {
-        this.messageNom = messageNom;
-    }
-
-    public ArrayList<BufferedImage> getNomJ1() {
-        return nomJ1;
-    }
-
-    public void setNomJ1(ArrayList<BufferedImage> nomJ1) {
-        this.nomJ1 = nomJ1;
-    }
-
-    public ArrayList<BufferedImage> getNomJ2() {
-        return nomJ2;
-    }
-
-    public void setNomJ2(ArrayList<BufferedImage> nomJ2) {
-        this.nomJ2 = nomJ2;
-    }
-
-    public ArrayList<ArrayList<BufferedImage>> getJoueurDataList() {
-        return joueurDataList;
-    }
-
-    public void setJoueurDataList(ArrayList<ArrayList<BufferedImage>> joueurDataList) {
-        this.joueurDataList = joueurDataList;
-    }
-
-    public ArrayList<ArrayList<BufferedImage>> getLbView() {
-        return lbView;
-    }
-
-    public void setLbView(ArrayList<ArrayList<BufferedImage>> lbView) {
-        this.lbView = lbView;
-    }
-
     public ArrayList<ArrayList<BufferedImage>> getScoreFinalView() {
         return scoreFinalView;
     }
@@ -430,30 +314,6 @@ public abstract class Etat {
 
     public void setTerrain(Terrain terrain) {
         this.terrain = terrain;
-    }
-
-    public double getDeltaTime() {
-        return deltaTime;
-    }
-
-    public void setDeltaTime(double deltaTime) {
-        this.deltaTime = deltaTime;
-    }
-
-    public ThreadMouvement getThreadMvt() {
-        return threadMvt;
-    }
-
-    public void setThreadMvt(ThreadMouvement threadMvt) {
-        this.threadMvt = threadMvt;
-    }
-
-    public Thread getThread() {
-        return thread;
-    }
-
-    public void setThread(Thread thread) {
-        this.thread = thread;
     }
 
     public boolean isMultijoueur() {
@@ -486,14 +346,6 @@ public abstract class Etat {
 
     public void setJconnect(JoueurConnecte jconnect) {
         this.jconnect = jconnect;
-    }
-
-    public String getSkin() {
-        return skin;
-    }
-
-    public void setSkin(String skin) {
-        this.skin = skin;
     }
 
 }

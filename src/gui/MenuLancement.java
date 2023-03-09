@@ -17,11 +17,17 @@ import javax.imageio.*;
 // Représente l'état ou l'application est au niveau du "MENU DEMARRER".
 public class MenuLancement extends Etat { // C'est donc un Etat.
 
-    BufferedImage view;
+    private ArrayList<BufferedImage> messageNom, nomJ1, nomJ2;
 
-    public MenuLancement(Vue vue, BufferedImage view) {
+    public MenuLancement(Vue vue) {
         super(vue);
-        this.view = view;
+    }
+
+    // Initialise les images qui ne changeront jamais.
+    @Override
+    public void initFixe() {
+        this.messageNom = createImageOfMot("Entrez un nom ");
+        this.buttonJouer = createImageOfMot("Jouer");
     }
 
     // Initialise les images & les autres variables.
@@ -35,8 +41,6 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
         } else // Si le joueur a déjà joué une partie, on prend le nom de la dernière partie.
             nom1 = (h.getLbData().size() > 1) ? h.getLbData().get(h.getLbData().size() - 1)[1] : "MIZER";
 
-        this.messageNom = createImageOfMot("Entrez un nom ");
-        this.buttonJouer = createImageOfMot("Jouer");
         this.nomJ1 = createImageOfMot(nom1);
         this.nomJ2 = createImageOfMot(nom2);
     }
@@ -109,5 +113,16 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
             this.update();
             this.affiche(g);
         }
+    }
+
+    // Gère les boutons.
+    @Override
+    public void keyControlPressed(KeyEvent e) {
+        System.out.println("Menu LANCEMENT - Key Pressed");
+    }
+
+    @Override
+    public void keyControlReleased(KeyEvent e) {
+        System.out.println("Menu LANCEMENT - Key Released");
     }
 }

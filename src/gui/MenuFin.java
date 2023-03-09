@@ -17,20 +17,22 @@ import javax.imageio.*;
 // Représente l'état ou l'application est au niveau du "MENU DEMARRER".
 public class MenuFin extends Etat { // C'est donc un Etat.
 
-    BufferedImage view;
-
-    public MenuFin(Vue vue, BufferedImage view) {
+    public MenuFin(Vue vue) {
         super(vue);
-        this.view = view;
+    }
+
+    // Initialise les images qui ne changeront jamais.
+    @Override
+    public void initFixe() {
+        // Toutes les variables/images initialisées dépendent du nombre de joueurs.
+        this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
+        this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
     }
 
     // Initialise les images & les autres variables.
     @Override
     public void init() {
-        this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
-        this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
-
-        if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur
+        if (this.nbJoueur == 1) { // S'il n'y a qu'1 joueur
             this.titreStatut = createImageOfMot("Game Over");
             // Ce qu'on va afficher pour le score en fin de partie :
             Joueur j = terrain.getListeJoueurs().get(0);
@@ -53,7 +55,7 @@ public class MenuFin extends Etat { // C'est donc un Etat.
             hightScoreView.add(hscore2);
         }
 
-        if (terrain.getListeJoueurs().size() == 2) { // S'il y a 2 joueurs
+        if (this.nbJoueur == 2) { // S'il y a 2 joueurs
             this.titreStatut = createImageOfMot("Fin de la course");
             // On adapte l'init de sorte à ce que la fonction d'affichage ne change pas
             Joueur j0 = terrain.getListeJoueurs().get(0), j1 = terrain.getListeJoueurs().get(1);
@@ -143,5 +145,16 @@ public class MenuFin extends Etat { // C'est donc un Etat.
             this.update();
             this.affiche(g);
         }
+    }
+
+    // Gère les boutons.
+    @Override
+    public void keyControlPressed(KeyEvent e) {
+        System.out.println("Menu FIN - Key Pressed");
+    }
+
+    @Override
+    public void keyControlReleased(KeyEvent e) {
+        System.out.println("Menu FIN - Key Released");
     }
 }

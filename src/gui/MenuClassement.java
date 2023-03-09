@@ -17,68 +17,39 @@ import javax.imageio.*;
 // Représente l'état ou l'application est au niveau du "MENU DEMARRER".
 public class MenuClassement extends Etat { // C'est donc un Etat.
 
-    BufferedImage view;
+    private BufferedImage backgroundClView, backgroundClView1, backgroundClView2;
+    private ArrayList<ArrayList<BufferedImage>> lbView;
 
-    public MenuClassement(Vue vue, BufferedImage view) {
+    public MenuClassement(Vue vue) {
         super(vue);
-        this.view = view;
+    }
+
+    // Initialise les images qui ne changeront jamais.
+    @Override
+    public void initFixe() {
+        this.lbView = new ArrayList<ArrayList<BufferedImage>>();
+        this.titreStatut = createImageOfMot("Classement ");
+        try {
+            try {
+                this.backgroundClView1 = ImageIO.read(new File(chemin + "/background/backgroundClassement1.png"));
+                this.backgroundClView2 = ImageIO.read(new File(chemin + "/background/backgroundClassement2.png"));
+            } catch (Exception e) {
+                this.backgroundClView1 = ImageIO.read(new File(winchemin + "/background/backgroundClassement1.png"));
+                this.backgroundClView2 = ImageIO.read(new File(winchemin + "/background/backgroundClassement2.png"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     // Initialise les images & les autres variables.
     @Override
     public void init() {
-        this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
-        this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
-
-        if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur
-            this.titreStatut = createImageOfMot("Game Over");
-            // Ce qu'on va afficher pour le score en fin de partie :
-            Joueur j = terrain.getListeJoueurs().get(0);
-            String s = String.valueOf(j.getScore());
-            ArrayList<BufferedImage> phrase = createImageOfMot("Votre score ");
-            ArrayList<BufferedImage> score = createImageOfMot(s);
-            scoreFinalView.add(phrase);
-            scoreFinalView.add(score);
-
-            // Ce qu'on va afficher pour le meilleur score en fin de partie :
-            String hs = String.valueOf((new Classement()).getMaxScoreOfId(j.getId()));
-            ArrayList<BufferedImage> phrase1 = createImageOfMot("Votre meilleur score ");
-            ArrayList<BufferedImage> hscore = createImageOfMot(hs);
-            String hs2 = String.valueOf((new Classement()).getMaxScoreGlobal());
-            ArrayList<BufferedImage> phrase2 = createImageOfMot("Meilleur score global ");
-            ArrayList<BufferedImage> hscore2 = createImageOfMot(hs2);
-            hightScoreView.add(phrase1);
-            hightScoreView.add(hscore);
-            hightScoreView.add(phrase2);
-            hightScoreView.add(hscore2);
-        }
-
-        if (terrain.getListeJoueurs().size() == 2) { // S'il y a 2 joueurs
-            this.titreStatut = createImageOfMot("Fin de la course");
-            // On adapte l'init de sorte à ce que la fonction d'affichage ne change pas
-            Joueur j0 = terrain.getListeJoueurs().get(0), j1 = terrain.getListeJoueurs().get(1);
-            int sc0 = j0.getScore(), sc1 = j1.getScore();
-            String s0 = String.valueOf(sc0), s1 = String.valueOf(sc1);
-            ArrayList<BufferedImage> phrase = createImageOfMot("Score de " + j0.getNom() + " ");
-            ArrayList<BufferedImage> score = createImageOfMot(s0);
-            scoreFinalView.add(phrase);
-            scoreFinalView.add(score);
-
-            ArrayList<BufferedImage> phrase1 = createImageOfMot("Score de " + j1.getNom() + " ");
-            ArrayList<BufferedImage> hscore = createImageOfMot(s1);
-            String winner = (sc0 == sc1) ? "Aucun" : (sc0 > sc1) ? j0.getNom() : j1.getNom();
-            ArrayList<BufferedImage> phrase2 = createImageOfMot("Vainqueur ");
-            ArrayList<BufferedImage> hscore2 = createImageOfMot(winner);
-            hightScoreView.add(phrase1);
-            hightScoreView.add(hscore);
-            hightScoreView.add(phrase2);
-            hightScoreView.add(hscore2);
-        }
     }
 
     // Met à jour les données du CLASSEMENT
     private void updateClassement() throws IOException {
-        if (terrain.getListeJoueurs().size() == 1) { // On update le classement que s'il n'y a qu'un joueur
+        if (this.nbJoueur == 1) { // On update le classement que s'il n'y a qu'un joueur
             Joueur j = terrain.getListeJoueurs().get(0);
             String score = String.valueOf(j.getScore());
 
@@ -150,11 +121,40 @@ public class MenuClassement extends Etat { // C'est donc un Etat.
 
     // Fait tourner cet état en boucle.
     public void running(Graphics g) {
+        this.fleche = 0;
         this.sautLigne = 50;
-        this.fleche = 0; // On pointe le premier bouton
+
+        // On récupère les données du classementque l'on va afficher
+        Classement c = new Classement();
+        ArrayList<String[]> cl = c.getLbData();
+
+        int imax = (cl.size() > 10) ? 10 : cl.size();
+        for (int i = 0; i < imax; ++i) {
+            String n = cl.get(i)[1];
+            String s = cl.get(i)[2];
+
+            ArrayList<BufferedImage> rank = createImageOfMot(String.valueOf(i + 1));
+            ArrayList<BufferedImage> nom = createImageOfMot(n + " ");
+            ArrayList<BufferedImage> score = createImageOfMot(s);
+            lbView.add(rank);
+            lbView.add(nom);
+            lbView.add(score);
+        }
+
         while (isRunning) {
             this.update();
             this.affiche(g);
         }
+    }
+
+    // Gère les boutons.
+    @Override
+    public void keyControlPressed(KeyEvent e) {
+        System.out.println("Menu CLASSEMENT - Key Pressed");
+    }
+
+    @Override
+    public void keyControlReleased(KeyEvent e) {
+        System.out.println("Menu CLASSEMENT - Key Released");
     }
 }

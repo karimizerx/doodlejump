@@ -22,7 +22,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private final int width, height; // Dimensions du panel
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
-    private JFrame menuPause; // Le menu pause
     private String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
             terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
@@ -31,12 +30,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
     private Terrain terrain; // Le terrain sur lequel on joue
     private double deltaTime; // Le temps nécessaire pour update le jeu
-    private ThreadMouvement threadMvt; // thread qui gere l'envoi et la reception des données pour le multijoueur
     private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
     private boolean multijoueur = false, host = false;
     private Serveur serveur;
     private JoueurConnecte jconnect;
     private String skin;
+    private JFrame menuPause; // Le menu pause
 
     public Vue(App frame, String skin) {
         // Taille du panel
@@ -44,7 +43,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.height = frame.getHeight();
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
 
-        this.threadMvt = null;
         // Initialisation des chemins
         this.skin = skin;
         this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
