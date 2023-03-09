@@ -4,7 +4,7 @@ Objectifs du sprint précédent :
   -> Menu en image & dynamique
 - mode de jeu multijoueur en réseaux (finir) : Fares [OK]
 - changement de la génération des plateformes, apprition & disparition : Elyo [OK] (pas merge)
-- ajout des monstres : Necerine [NON]
+- ajout des monstres : Necerine [OK] (pas merge)
 - ajout du système de skin : Ayman [NON]
 
 Objectifs pour le prochain sprint :
