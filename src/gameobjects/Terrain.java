@@ -67,7 +67,8 @@ public class Terrain {
             int x = new Random().nextInt((int) (this.width - w));
             int y = (int)this.height/4;
             //TODO add itens to plateforme
-            monstres.add(new Monstre(x, y, 70,50, -(this.height * 0.0013645224), 1));
+            // monstres.add(new Monstre(x, y, 80,90, -(this.height * 0.0013645224), 2));
+
         }
     } // On s'assure d'abord toujours une solution au début
 
@@ -143,11 +144,13 @@ public class Terrain {
                             pf.setItem(null);
                 }
             }
+            ArrayList<Monstre> toBeRemoved=new ArrayList<Monstre>();
             for (Monstre m : monstres) {
                 m.setY(m.getY() - (int) p.getDy());
                 if (m.getY() + m.getHeight() >= this.height) // Si la plateformes baissées déborde de l'écran
-                monstres.remove(m);
+                    toBeRemoved.add(m);
             }
+            monstres.removeAll(toBeRemoved);
         }
         // On gère les collisions & les débordements du personnage
         for (Plateforme pf : plateformesListe) {
@@ -155,13 +158,18 @@ public class Terrain {
             if (pf instanceof MovingPlateforme)
                 ((MovingPlateforme) pf).move(this);
         }
+        ArrayList<Monstre> toBeRemoved=new ArrayList<Monstre>();
         for(Monstre m: monstres){
             m.move(this);
-            if(p.projectileCollide(m))
-                monstres.remove(m);
-            if(p.collides_monstre(m, deltaTime)) p.dead();
+            if(p.projectileCollide(m)){
+                if(m.shot())
+                    toBeRemoved.add(m);
+            }else 
+            if(p.collides_monstre(m, deltaTime)) {p.dead();break;}
            
         }
+        monstres.removeAll(toBeRemoved);
+
         limite(p);
     }
 

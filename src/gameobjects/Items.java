@@ -4,12 +4,12 @@ package gameobjects;
 public abstract class Items extends GameObject {
 
     private double saut; // Constante de saut (différente en fonction de l'item).
-    private boolean isNeedPied; // Indique si l'objet doit être touché avec les pieds (ressort...)
+    private boolean NeedsHead; // Indique si l'objet doit être touché avec les pieds (ressort...)
 
     public Items(double x, double y, double w, double h, double s, boolean p) {
         super(x, y, w, h);
         this.saut = s;
-        this.isNeedPied = p;
+        this.NeedsHead = p;
     }
 
     public abstract void runEffect(Personnage p);
@@ -24,12 +24,12 @@ public abstract class Items extends GameObject {
         this.saut = saut;
     }
 
-    public boolean isNeedPied() {
-        return isNeedPied;
+    public boolean getNeedsHead() {
+        return NeedsHead;
     }
 
-    public void setNeedPied(boolean isNeedPied) {
-        this.isNeedPied = isNeedPied;
+    public void setNeedsHead(boolean isNeedHead) {
+        this.NeedsHead = isNeedHead;
     }
 
 }

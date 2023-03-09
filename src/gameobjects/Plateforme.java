@@ -34,7 +34,7 @@ public abstract class Plateforme extends GameObject {
     }
     public void updateItem(){
         if(item!=null)
-            item.setY(this.getY());
+            item.setY(this.getY()-2*this.getHeight());
     }
 
     public Items getItem(){

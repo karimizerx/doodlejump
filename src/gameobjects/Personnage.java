@@ -28,8 +28,12 @@ public class Personnage extends GameObject {
 
     // Méthodes de la classe
 
+
+
+
     // Colision entre le personnage et une plateforme
     public void collides_plateforme(Plateforme pf, double deltaTime) {
+        if(!collides) return;
         if ((this.getX() + (this.getWidth() * 0.65) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
                 // plateforme. + witdh*0.65 sert à ne compter que le x du dernier pied
                 && (this.getX() + (this.getWidth() * 0.25) <= pf.getX() + pf.getWidth())
@@ -49,18 +53,24 @@ public class Personnage extends GameObject {
     // Colision entre le personnage et un item
     public void collides_item(Items it, double deltaTime) {
         if(!collides) return;
-        if (it.isNeedPied()) {
-            if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
+        if (it.getNeedsHead()) {
+            //0.43 c le ccentre .87 centre vertical 
+            if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) 
+            // si ça ne dépasse pas par la gauche de l'item.
                     // + witdh*0.65 sert à ne compter que le x du dernier pied
                     && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
                     // si ça ne dépasse pas par la droite de la item.
                     // + witdh*0.25 sert à ne compter que le x du premier pied
                     && (this.getY() + 0.87 * this.getHeight() >= it.getY())
-                    && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
-                    && (this.getDy() > 0)) { // Si le personnage descend
-                it.runEffect(this);
+                    && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())) { // Si le personnage descend
+
+                        // double epsilone=0.5;
+                        // boolean ver= ((Math.abs(it.getX()-this.getX())<epsilone) ||Math.abs(it.getX()-(this.getX()+this.getWidth()))<epsilone||Math.abs(this.getX()-(it.getX()+it.getWidth()))<epsilone||Math.abs(this.getX()+this.getWidth()-(it.getX()+it.getWidth()))<epsilone);
+                        // boolean hor= ((Math.abs(it.getX()-this.getX())<epsilone) ||Math.abs(it.getY()-(this.getX()+this.getHeight()))<epsilone||Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()-(it.getY()+it.getHeight()))<epsilone);
+
+                        it.runEffect(this);
                 it=null;
-                System.out.println("test need pied");
+                System.out.println("test need head");
             }
         } else {
             if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
@@ -72,21 +82,18 @@ public class Personnage extends GameObject {
                     && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))) {
                         it.runEffect(this);
                         it=null;
-                        System.out.println("test sans pied");
+                        System.out.println("test dont need head ");
             }   
         }
 
     }
 
     public boolean collides_monstre(Monstre m, double deltaTime) {
-        return ((this.getX() + (this.getWidth() * 0.65) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
-        // + witdh*0.5 sert à ne compter que le x du dernier pied
-        && (this.getX() + (this.getWidth() * 0.25) <= m.getX() + m.getWidth())
-        // si ça ne dépasse pas par la droite de la item.
-        // + witdh*0.25 sert à ne compter que le x du premier pied
-        && (this.getY() <= (m.getY() + m.getHeight()))
-        && ((m.getY() + m.getHeight()) <= (this.getY() + this.getHeight())));
-    
+        double epsilone=5;
+        boolean ver= ((Math.abs(m.getX()-this.getX())<epsilone) ||Math.abs(m.getX()-(this.getX()+this.getWidth()))<epsilone||Math.abs(this.getX()-(m.getX()+m.getWidth()))<epsilone||Math.abs(this.getX()+this.getWidth()-(m.getX()+m.getWidth()))<epsilone);
+        boolean hor= ((Math.abs(m.getY()-this.getY())<epsilone) ||Math.abs(m.getY()-(this.getY()+this.getHeight()))<epsilone||Math.abs(this.getY()-(m.getY()+m.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()-(m.getY()+m.getHeight()))<epsilone);
+        if(ver || hor) System.out.println("ver ="+ver+", hor="+hor);
+        return (ver && hor);   
     }
 
     // Tir un projectile avec ce personnage
@@ -95,8 +102,13 @@ public class Personnage extends GameObject {
     }
 
     public boolean projectileCollide(Monstre m){
+        double epsilone=5;
+        for (Projectile p :listProjectiles){
+        boolean ver= ((Math.abs(m.getX()-p.getX())<epsilone) ||Math.abs(m.getX()-(p.getX()+p.getWidth()))<epsilone||Math.abs(p.getX()-(m.getX()+m.getWidth()))<epsilone||Math.abs(p.getX()+p.getWidth()-(m.getX()+m.getWidth()))<epsilone);
+        boolean hor= ((Math.abs(m.getY()-p.getY())<epsilone) ||Math.abs(m.getY()-(p.getY()+p.getHeight()))<epsilone||Math.abs(p.getY()-(m.getY()+m.getHeight()))<epsilone||Math.abs(p.getY()+p.getHeight()-(m.getY()+m.getHeight()))<epsilone);
+            if (ver && hor){ listProjectiles.remove(p);return true;}
+        }
         return false;
-        //TODO fixer les collides
     }
     
     public void dead(){

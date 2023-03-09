@@ -538,6 +538,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 helicoptImage = ImageIO.read(new File(winchemin+ "/fusee.png"));
                 fuseeImage= ImageIO.read(new File(winchemin+ "/helicopter.png"));
                 monstre1Image=ImageIO.read(new File(winchemin+ "/monstre1.png"));
+                monstre2Image=ImageIO.read(new File(winchemin+ "/monstre2.png"));
+
 
                 // On remplit les données d'image de tous les joueurs
                 for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
