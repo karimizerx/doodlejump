@@ -38,6 +38,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.height = frame.getHeight();
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
 
+        this.skin = skin;
         // Gestion d'évènements boutons
         this.addKeyListener(this);
     }
@@ -75,51 +76,78 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             initGENERAL();
 
             while (!isQuitte) { // Tant qu'on a pas quitter le jeu :
+                System.out.println("Vue.Run 1 :");
+                System.out
+                        .println("isMenuDemarrer : " + isMenuDemarrer + ", " + (this.eActuel instanceof MenuDemarrer));
+                System.out.println(
+                        "isMenuClassement : " + isMenuClassement + ", " + (this.eActuel instanceof MenuClassement));
+                System.out.println(
+                        "isMenuLancement : " + isMenuLancement + ", " + (this.eActuel instanceof MenuLancement));
+                System.out.println("isRunningGame : " + isRunningGame + ", " + (this.eActuel instanceof Game));
+                System.out.println("isMenuFin : " + isMenuFin + ", " + (this.eActuel instanceof MenuFin));
+                System.out.println();
 
                 // ETAPE 2 : On gère les différent statut du jeu !
                 // Si on est au niveau du menu DEMARRER :
                 if (isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin) {
-                    this.eActuel = this.eMenuDemarrer;
+                    // this.eActuel = this.eMenuDemarrer;
+                    this.eMenuDemarrer.running(getGraphics());
                 }
                 // Si on a cliqué sur le boutton "Classement" :
                 if (!isMenuDemarrer && isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin) {
+                    this.eMenuClassement = new MenuClassement(this);
                     this.eMenuClassement.init();
-                    this.eActuel = this.eMenuClassement;
+                    // this.eActuel = this.eMenuClassement;
                 }
                 // Si on a cliqué sur le boutton "Jouer solo" :
                 if (!isMenuDemarrer && !isMenuClassement && isMenuLancement && !isRunningGame && !isMenuFin) {
+                    this.eMenuLancement = new MenuLancement(this);
                     this.eMenuLancement.init();
-                    this.eActuel = this.eMenuLancement;
+                    // this.eActuel = this.eMenuLancement;
                 }
 
                 // Si on a lancé une GAME :
                 if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && isRunningGame && !isMenuFin) {
+                    this.eGame = new Game(this);
                     this.eGame.init(); // On initialise les images de la GAME.
                     // if (terrain.multiplayer) { // Si on est en mode multijoueur
                     // Thread t = new Thread(new ThreadMouvement(terrain)); // ???
                     // t.start();
                     // }
-                    this.eGame.running(getGraphics()); // On lance la GAME (en ups constant).
+                    // this.eActuel = this.eGame;
                 }
+
                 // Si c'est la fin de la GAME (quelqu'un a perdu) :
                 if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin
-                        && ((Game) this.eGame).isEndGame()) {
+                        && ((Game) this.eActuel).isEndGame()) {
                     // On met à jour toutes les variables boolean.
                     isMenuDemarrer = false;
                     isMenuClassement = false;
                     isRunningGame = false;
                     isMenuFin = true;
                     // On met à jour le classement et l'historique.
-                    ((MenuClassement) this.eMenuClassement).updateClassement();
+                    this.eMenuClassement.updateClassement();
                 }
                 // Si on a fini la GAME sans erreur :
                 if (!isMenuDemarrer && !isMenuClassement && !isRunningGame && isMenuFin) {
+                    this.eMenuFin = new MenuFin(this);
                     this.eMenuFin.init(); // On initialise les images du menu FIN.
-                    this.eMenuFin.running(getGraphics()); // On lance le menu FIN.
+                    // this.eActuel = this.eMenuFin;
                 }
 
                 // On exécute les différentes actions.
-                this.eActuel.running(getGraphics());// On lance le menu DEMARRER.
+                // this.eActuel.running(getGraphics());// On lance le menu DEMARRER.
+
+                System.out.println("Vue.Run 2 :");
+                System.out
+                        .println("isMenuDemarrer : " + isMenuDemarrer + ", " + (this.eActuel instanceof MenuDemarrer));
+                System.out.println(
+                        "isMenuClassement : " + isMenuClassement + ", " + (this.eActuel instanceof MenuClassement));
+                System.out.println(
+                        "isMenuLancement : " + isMenuLancement + ", " + (this.eActuel instanceof MenuLancement));
+                System.out.println("isRunningGame : " + isRunningGame + ", " + (this.eActuel instanceof Game));
+                System.out.println("isMenuFin : " + isMenuFin + ", " + (this.eActuel instanceof MenuFin));
+                System.out.println();
             }
             System.exit(0); // Si on a quitté le jeu, on ferme tout le programme.
         } catch (Exception e) {
@@ -172,7 +200,15 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons :
-
+        System.out.println("Vue.KeyPressed :");
+        System.out.println("isMenuDemarrer : " + this.isMenuDemarrer + ", " + (this.eActuel instanceof MenuDemarrer));
+        System.out.println(
+                "isMenuClassement : " + this.isMenuClassement + ", " + (this.eActuel instanceof MenuClassement));
+        System.out
+                .println("isMenuLancement : " + this.isMenuLancement + ", " + (this.eActuel instanceof MenuLancement));
+        System.out.println("isRunningGame : " + this.isRunningGame + ", " + (this.eActuel instanceof Game));
+        System.out.println("isMenuFin : " + this.isMenuFin + ", " + (this.eActuel instanceof MenuFin));
+        System.out.println();
         if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
             this.eMenuDemarrer.keyControlPressed(e);
         }
@@ -208,5 +244,147 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public String getSkin() {
         return this.skin;
+    }
+
+    @Override
+    public int getWidth() {
+        return this.width;
+    }
+
+    @Override
+    public int getHeight() {
+        return this.height;
+    }
+
+    public boolean isQuitte() {
+        return isQuitte;
+    }
+
+    public void setQuitte(boolean isQuitte) {
+        this.isQuitte = isQuitte;
+    }
+
+    public boolean isRunningGame() {
+        return isRunningGame;
+    }
+
+    public void setRunningGame(boolean isRunningGame) {
+        this.isRunningGame = isRunningGame;
+    }
+
+    public boolean isMenuDemarrer() {
+        return isMenuDemarrer;
+    }
+
+    public void setMenuDemarrer(boolean isMenuDemarrer) {
+        this.isMenuDemarrer = isMenuDemarrer;
+    }
+
+    public boolean isMenuLancement() {
+        return isMenuLancement;
+    }
+
+    public void setMenuLancement(boolean isMenuLancement) {
+        this.isMenuLancement = isMenuLancement;
+    }
+
+    public boolean isMenuFin() {
+        return isMenuFin;
+    }
+
+    public void setMenuFin(boolean isMenuFin) {
+        this.isMenuFin = isMenuFin;
+    }
+
+    public boolean isMenuClassement() {
+        return isMenuClassement;
+    }
+
+    public void setMenuClassement(boolean isMenuClassement) {
+        this.isMenuClassement = isMenuClassement;
+    }
+
+    public boolean isMenuPause() {
+        return isMenuPause;
+    }
+
+    public void setMenuPause(boolean isMenuPause) {
+        this.isMenuPause = isMenuPause;
+    }
+
+    public Terrain getTerrain() {
+        return terrain;
+    }
+
+    public void setTerrain(Terrain terrain) {
+        this.terrain = terrain;
+    }
+
+    public Thread getThread() {
+        return thread;
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
+    }
+
+    public JFrame getMenuPause() {
+        return menuPause;
+    }
+
+    public void setMenuPause(JFrame menuPause) {
+        this.menuPause = menuPause;
+    }
+
+    public MenuDemarrer geteMenuDemarrer() {
+        return eMenuDemarrer;
+    }
+
+    public void seteMenuDemarrer(MenuDemarrer eMenuDemarrer) {
+        this.eMenuDemarrer = eMenuDemarrer;
+    }
+
+    public MenuClassement geteMenuClassement() {
+        return eMenuClassement;
+    }
+
+    public void seteMenuClassement(MenuClassement eMenuClassement) {
+        this.eMenuClassement = eMenuClassement;
+    }
+
+    public MenuLancement geteMenuLancement() {
+        return eMenuLancement;
+    }
+
+    public void seteMenuLancement(MenuLancement eMenuLancement) {
+        this.eMenuLancement = eMenuLancement;
+    }
+
+    public MenuFin geteMenuFin() {
+        return eMenuFin;
+    }
+
+    public void seteMenuFin(MenuFin eMenuFin) {
+        this.eMenuFin = eMenuFin;
+    }
+
+    public Game geteGame() {
+        return eGame;
+    }
+
+    public void seteGame(Game eGame) {
+        this.eGame = eGame;
+    }
+
+    public Etat geteActuel() {
+        return eActuel;
+    }
+
+    public void seteActuel(Etat eActuel) {
+        this.eActuel = eActuel;
     }
 }

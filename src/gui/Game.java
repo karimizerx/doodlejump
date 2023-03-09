@@ -318,7 +318,7 @@ public class Game extends Etat { // C'est donc un Etat.
         }
 
         int i = multijoueur ? host ? 0 : 1 : 0;
-        this.terrain = new Terrain(ljou, height, width, host, multijoueur, i); // On crée le terrain.
+        this.terrain = new Terrain(this.vue, ljou, height, width, host, multijoueur, i); // On crée le terrain.
         this.terrain.setClient(jconnect);
         this.terrain.setHost(serveur);
     }

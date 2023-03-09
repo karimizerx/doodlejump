@@ -102,24 +102,25 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
             this.update();
             this.affiche(g);
         }
+        System.out.println("on est sortie du while de running.MDEMARRER");
     }
 
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu DEMARRER - Key Pressed");
+        System.out.println("Menu DEMARRER - Key Pressed : " + this.fleche);
 
         /// Gestion du bouton "ENTREE" :
         if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
             if (this.fleche == 0) { // La flèche pointe sur le bouton "Jouer Solo" :
                 this.nbJoueur = 1; // On initialise le nombre de joueurs.
-                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
-                Vue.isMenuLancement = true;
+                this.vue.setMenuDemarrer(false); // On quitte le menu DEMARRER
+                this.vue.setMenuLancement(true);
             }
             if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer à 2" :
                 this.nbJoueur = 2; // On initialise le nombre de joueurs.
-                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
-                Vue.isMenuLancement = true;
+                this.vue.setMenuDemarrer(false); // On quitte le menu DEMARRER
+                this.vue.setMenuLancement(true);
             }
 
             if (this.fleche == 2) { // La flèche pointe sur le bouton "Mode multijoueur" :
@@ -144,17 +145,24 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
                     this.jconnect = new JoueurConnecte();
                     this.jconnect.connecter();
                 }
-                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
-                Vue.isRunningGame = true;
+                this.vue.setMenuDemarrer(false); // On quitte le menu DEMARRER
+                this.vue.setRunningGame(true);
             }
 
             if (this.fleche == 3) { // La flèche pointe sur le bouton "Classement" :
-                Vue.isMenuClassement = true;
-                Vue.isMenuDemarrer = false;
+                System.out.println();
+                System.out.println("Key.Pressed MenuDemarrer => fleche = 0 :");
+                System.out.println("this.isMenuClassement : " + this.vue.isMenuClassement());
+                System.out.println("this.vue.isMenuDemarrer() : " + this.vue.isMenuDemarrer());
+                this.vue.setMenuClassement(true);
+                this.vue.setMenuDemarrer(false);
+                System.out.println("this.isMenuClassement : " + this.vue.isMenuClassement());
+                System.out.println("this.vue.isMenuDemarrer() : " + this.vue.isMenuDemarrer());
+                System.out.println();
             }
             if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
                 System.out.println("À la prochaine !");
-                Vue.isQuitte = true; // On quitte l'application.
+                this.vue.setQuitte(true); // On quitte l'application.
                 System.exit(0); // On ferme toutes les fenêtres & le programme.
             }
         }

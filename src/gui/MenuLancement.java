@@ -189,6 +189,7 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
                 this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
 
         }
+
     }
 
     @Override

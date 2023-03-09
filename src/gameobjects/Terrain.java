@@ -22,9 +22,12 @@ public class Terrain {
     public Serveur host = null;
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
+    private Vue vue;
 
-    public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer, int id) {
+    public Terrain(Vue vue, ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer,
+            int id) {
         // Initialisation des champs
+        this.vue = vue;
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
         this.height = height;

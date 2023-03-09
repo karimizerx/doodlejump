@@ -39,8 +39,6 @@ public abstract class Etat {
         // Initialisation des chemins
         String skin = vue.getSkin();
         this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
-        this.winchemin = "src/gui/images/" + skin + "/";
-
     }
 
     /// Méthodes abstract redéfinies dans chaque sous-classe d'Etat.
