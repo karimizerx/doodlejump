@@ -25,22 +25,22 @@ public class MenuFin extends Etat { // C'est donc un Etat.
     @Override
     public void initFixe() {
         // Toutes les variables/images initialisées dépendent du nombre de joueurs.
-        this.scoreFinalView = new ArrayList<ArrayList<BufferedImage>>();
-        this.hightScoreView = new ArrayList<ArrayList<BufferedImage>>();
+        this.vue.setScoreFinalView(new ArrayList<ArrayList<BufferedImage>>());
+        this.vue.setHightScoreView(new ArrayList<ArrayList<BufferedImage>>());
     }
 
     // Initialise les images & les autres variables.
     @Override
     public void init() {
-        if (this.nbJoueur == 1) { // S'il n'y a qu'1 joueur
-            this.titreStatut = createImageOfMot("Game Over");
+        if (this.vue.getNbJoueur() == 1) { // S'il n'y a qu'1 joueur
+            this.vue.setTitreStatut(createImageOfMot("Game Over"));
             // Ce qu'on va afficher pour le score en fin de partie :
-            Joueur j = terrain.getListeJoueurs().get(0);
+            Joueur j = this.vue.getTerrain().getListeJoueurs().get(0);
             String s = String.valueOf(j.getScore());
             ArrayList<BufferedImage> phrase = createImageOfMot("Votre score ");
             ArrayList<BufferedImage> score = createImageOfMot(s);
-            scoreFinalView.add(phrase);
-            scoreFinalView.add(score);
+            this.vue.getScoreFinalView().add(phrase);
+            this.vue.getScoreFinalView().add(score);
 
             // Ce qu'on va afficher pour le meilleur score en fin de partie :
             String hs = String.valueOf((new Classement()).getMaxScoreOfId(j.getId()));
@@ -49,116 +49,119 @@ public class MenuFin extends Etat { // C'est donc un Etat.
             String hs2 = String.valueOf((new Classement()).getMaxScoreGlobal());
             ArrayList<BufferedImage> phrase2 = createImageOfMot("Meilleur score global ");
             ArrayList<BufferedImage> hscore2 = createImageOfMot(hs2);
-            hightScoreView.add(phrase1);
-            hightScoreView.add(hscore);
-            hightScoreView.add(phrase2);
-            hightScoreView.add(hscore2);
+            this.vue.getHightScoreView().add(phrase1);
+            this.vue.getHightScoreView().add(hscore);
+            this.vue.getHightScoreView().add(phrase2);
+            this.vue.getHightScoreView().add(hscore2);
         }
 
-        if (this.nbJoueur == 2) { // S'il y a 2 joueurs
-            this.titreStatut = createImageOfMot("Fin de la course");
+        if (this.vue.getNbJoueur() == 2) { // S'il y a 2 joueurs
+            this.vue.setTitreStatut(createImageOfMot("Fin de la course"));
             // On adapte l'init de sorte à ce que la fonction d'affichage ne change pas
-            Joueur j0 = terrain.getListeJoueurs().get(0), j1 = terrain.getListeJoueurs().get(1);
+            Joueur j0 = this.vue.getTerrain().getListeJoueurs().get(0),
+                    j1 = this.vue.getTerrain().getListeJoueurs().get(1);
             int sc0 = j0.getScore(), sc1 = j1.getScore();
             String s0 = String.valueOf(sc0), s1 = String.valueOf(sc1);
             ArrayList<BufferedImage> phrase = createImageOfMot("Score de " + j0.getNom() + " ");
             ArrayList<BufferedImage> score = createImageOfMot(s0);
-            scoreFinalView.add(phrase);
-            scoreFinalView.add(score);
+            this.vue.getScoreFinalView().add(phrase);
+            this.vue.getScoreFinalView().add(score);
 
             ArrayList<BufferedImage> phrase1 = createImageOfMot("Score de " + j1.getNom() + " ");
             ArrayList<BufferedImage> hscore = createImageOfMot(s1);
             String winner = (sc0 == sc1) ? "Aucun" : (sc0 > sc1) ? j0.getNom() : j1.getNom();
             ArrayList<BufferedImage> phrase2 = createImageOfMot("Vainqueur ");
             ArrayList<BufferedImage> hscore2 = createImageOfMot(winner);
-            hightScoreView.add(phrase1);
-            hightScoreView.add(hscore);
-            hightScoreView.add(phrase2);
-            hightScoreView.add(hscore2);
+            this.vue.getHightScoreView().add(phrase1);
+            this.vue.getHightScoreView().add(hscore);
+            this.vue.getHightScoreView().add(phrase2);
+            this.vue.getHightScoreView().add(hscore2);
         }
     }
 
     // Update les images & autres variables.
     public void update() {
-        this.wfleche = 30;
-        this.hfleche = 30;
-        this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
+        this.vue.setWfleche(30);
+        this.vue.setHfleche(30);
+        this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche()); // La fleche se place toujours ici
+                                                                                      // en x
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (12 * height / 100) + sautLigne * (6 + fleche);
+        this.vue.setYfleche((12 * this.vue.getHeight() / 100) + this.vue.getSautLigne() * (6 + this.vue.getFleche()));
     }
 
     // Affiche les images.
     public void affiche(Graphics g) { // Prend en argument le contexte graphique.
-        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        Graphics2D g2 = (Graphics2D) this.vue.getView().getGraphics();
         // Affichage terrain
-        g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
+        g2.drawImage(this.vue.getBackgroundView(), 0, 0, this.vue.getWidth(), this.vue.getHeight(), null);
 
         /// Affichage du message final :
-        int x = (9 * width / 100), y = (12 * height / 100);
+        int x = (9 * this.vue.getWidth() / 100), y = (12 * this.vue.getHeight() / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
-        afficheMot(g2, titreStatut, x, y, w, h, ecart, espacement);
+        afficheMot(g2, this.vue.getTitreStatut(), x, y, w, h, ecart, espacement);
         /// Affichage des scores :
         // Affichage du score à cette partie :
-        y += sautLigne * 2;
-        x = afficheMot(g2, scoreFinalView.get(0), x, y, w, h, ecart, espacement);
+        y += this.vue.getSautLigne() * 2;
+        x = afficheMot(g2, this.vue.getScoreFinalView().get(0), x, y, w, h, ecart, espacement);
         x = afficheDoublepoint(g2, x, y, 7, 7);
         x += espacement;
-        x = afficheMot(g2, scoreFinalView.get(1), x, y, w, h, ecart, espacement);
+        x = afficheMot(g2, this.vue.getScoreFinalView().get(1), x, y, w, h, ecart, espacement);
 
         // Affichage du meilleur score local :
-        y += sautLigne;
-        x = (9 * width / 100);
-        x = afficheMot(g2, hightScoreView.get(0), x, y, w, h, ecart, espacement);
+        y += this.vue.getSautLigne();
+        x = (9 * this.vue.getWidth() / 100);
+        x = afficheMot(g2, this.vue.getHightScoreView().get(0), x, y, w, h, ecart, espacement);
         x = afficheDoublepoint(g2, x, y, 7, 7);
         x += espacement;
-        x = afficheMot(g2, hightScoreView.get(1), x, y, w, h, ecart, espacement);
+        x = afficheMot(g2, this.vue.getHightScoreView().get(1), x, y, w, h, ecart, espacement);
 
         // Affichage du meilleur score global :
-        y += sautLigne;
-        x = (9 * width / 100);
-        x = afficheMot(g2, hightScoreView.get(2), x, y, w, h, ecart, espacement);
+        y += this.vue.getSautLigne();
+        x = (9 * this.vue.getWidth() / 100);
+        x = afficheMot(g2, this.vue.getHightScoreView().get(2), x, y, w, h, ecart, espacement);
         x = afficheDoublepoint(g2, x, y, 7, 7);
         x += espacement;
-        x = afficheMot(g2, hightScoreView.get(3), x, y, w, h, ecart, espacement);
+        x = afficheMot(g2, this.vue.getHightScoreView().get(3), x, y, w, h, ecart, espacement);
 
         /// Affichage des boutons :
-        y += sautLigne * 2;
-        x = (9 * width / 100);
-        afficheMot(g2, buttonRetourMenu, x, y, w, h, ecart, espacement);
-        x = (9 * width / 100);
-        y += sautLigne;
-        afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
+        y += this.vue.getSautLigne() * 2;
+        x = (9 * this.vue.getWidth() / 100);
+        afficheMot(g2, this.vue.getButtonRetourMenu(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y += this.vue.getSautLigne();
+        afficheMot(g2, this.vue.getButtonQuitter(), x, y, w, h, ecart, espacement);
 
         /// Affichage de la fleche
-        g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
+        g2.drawImage(this.vue.getFlecheView(), this.vue.getXfleche(), this.vue.getYfleche(), this.vue.getWfleche(),
+                this.vue.getHfleche(), null);
 
         /// Affichage final
-        g.drawImage(view, 0, 0, this.width, this.height, null);
+        g.drawImage(this.vue.getView(), 0, 0, this.vue.getWidth(), this.vue.getHeight(), null);
         g.dispose(); // On libère les ressource
     }
 
     // Fait tourner cet état en boucle.
-    public void running(Graphics g) {
-        this.sautLigne = 50;
-        this.fleche = 0; // On pointe le premier bouton
+    public void running() {
+        this.vue.setSautLigne(50);
+        this.vue.setFleche(0); // On pointe le premier bouton
         while (Vue.isMenuFin) {
             this.update();
-            this.affiche(g);
+            this.affiche(this.vue.getGraphics());
         }
     }
 
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu FIN - Key Pressed");
+        System.out.println("Menu FIN - Key Pressed : " + this.vue.getFleche());
         if (Vue.isMenuFin) { // Si on est au niveau du menu FIN :
             /// Gestion du bouton "ENTREE" :
             if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
-                if (this.fleche == 0) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                if (this.vue.getFleche() == 0) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
                     Vue.isMenuFin = false; // On quitte le menu FIN.
                     Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
                 }
-                if (this.fleche == 1) { // La flèche pointe sur le bouton "Quitter" :
+                if (this.vue.getFleche() == 1) { // La flèche pointe sur le bouton "Quitter" :
                     System.out.println("À la prochaine !");
                     Vue.isQuitte = true; // On quitte l'application.
                     System.exit(0); // On ferme toutes les fenêtres & le programme.
@@ -167,10 +170,10 @@ public class MenuFin extends Etat { // C'est donc un Etat.
 
             /// Gestion de la flèche :
             if (e.getKeyCode() == KeyEvent.VK_UP)
-                this.fleche = (this.fleche == 0) ? 1 : this.fleche - 1;
+                this.vue.setFleche((this.vue.getFleche() == 0) ? 1 : this.vue.getFleche() - 1);
 
             if (e.getKeyCode() == KeyEvent.VK_DOWN)
-                this.fleche = (this.fleche == 1) ? 0 : this.fleche + 1;
+                this.vue.setFleche((this.vue.getFleche() == 1) ? 0 : this.vue.getFleche() + 1);
         }
     }
 

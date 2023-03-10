@@ -17,14 +17,8 @@ import javax.imageio.*;
 // Représente l'état ou l'application est au niveau du "MENU DEMARRER".
 public class Game extends Etat { // C'est donc un Etat.
 
-    private double deltaTime; // Le temps nécessaire pour update le jeu
-    private boolean isEndGame;
-    private BufferedImage terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
-    private ArrayList<ArrayList<BufferedImage>> joueurDataList;
-
     public Game(Vue vue) {
         super(vue);
-        this.deltaTime = 10;
     }
 
     // Initialise les images qui ne changeront jamais.
@@ -32,21 +26,29 @@ public class Game extends Etat { // C'est donc un Etat.
     public void initFixe() {
         // Stock des listes qui elles-mêmes stockes les données d'image de chaque joueur
         // et qui ne changent jamais, i.e le perso et le nom, contrairement au score
-        joueurDataList = new ArrayList<ArrayList<BufferedImage>>();
+        this.vue.setJoueurDataList(new ArrayList<ArrayList<BufferedImage>>());
 
         try {
             try {
-                terrainView = ImageIO.read(new File(chemin + "/background/terrainBackground.png"));
-                platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground1.png"));
-                projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
+                this.vue.setTerrainView(
+                        ImageIO.read(new File(this.vue.getChemin() + "/background/terrainBackground.png")));
+                this.vue.setPlatformeBaseView(
+                        ImageIO.read(new File(this.vue.getChemin() + "/plateformes/plateformeBase.png")));
+                this.vue.setPlatformeMobileView(
+                        ImageIO.read(new File(this.vue.getChemin() + "/plateformes/plateformeMobile.png")));
+                this.vue.setScoreBackgroundView(
+                        ImageIO.read(new File(this.vue.getChemin() + "/background/scoreBackground1.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/projectile.png")));
             } catch (Exception e) {
-                terrainView = ImageIO.read(new File(winchemin + "/background/terrainBackground.png"));
-                platformeBaseView = ImageIO.read(new File(winchemin + "/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File(winchemin + "/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File(winchemin + "/background/scoreBackground1.png"));
-                projectileView = ImageIO.read(new File(winchemin + "/projectile.png"));
+                this.vue.setTerrainView(
+                        ImageIO.read(new File(this.vue.getWinchemin() + "/background/terrainBackground.png")));
+                this.vue.setPlatformeBaseView(
+                        ImageIO.read(new File(this.vue.getWinchemin() + "/plateformes/plateformeBase.png")));
+                this.vue.setPlatformeMobileView(
+                        ImageIO.read(new File(this.vue.getWinchemin() + "/plateformes/plateformeMobile.png")));
+                this.vue.setScoreBackgroundView(
+                        ImageIO.read(new File(this.vue.getWinchemin() + "/background/scoreBackground1.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/projectile.png")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,35 +58,34 @@ public class Game extends Etat { // C'est donc un Etat.
     // Initialise les images & les autres variables.
     @Override
     public void init() {
-
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
 
                 // On remplit les données d'image de tous les joueurs
-                for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-                    Joueur joueur = terrain.getListeJoueurs().get(i);
+                for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
+                    Joueur joueur = this.vue.getTerrain().getListeJoueurs().get(i);
                     String nom = joueur.getNom().toLowerCase();
                     // On a une liste qui ne contient que l'image du perso
                     ArrayList<BufferedImage> persoData = new ArrayList<BufferedImage>();
-                    persoData.add(ImageIO.read(new File(chemin + "/personnages/persoBase.png")));
+                    persoData.add(ImageIO.read(new File(this.vue.getChemin() + "/personnages/persoBase.png")));
                     // Suivie d'une liste qui contient le nom du joueur (i.e toutes les lettres)
                     ArrayList<BufferedImage> nomData = createImageOfMot(nom);
-                    joueurDataList.add(persoData);
-                    joueurDataList.add(nomData);
+                    this.vue.getJoueurDataList().add(persoData);
+                    this.vue.getJoueurDataList().add(nomData);
                 }
             } catch (Exception e) {
                 // On remplit les données d'image de tous les joueurs
-                for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-                    Joueur joueur = terrain.getListeJoueurs().get(i);
+                for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
+                    Joueur joueur = this.vue.getTerrain().getListeJoueurs().get(i);
                     String nom = joueur.getNom().toLowerCase();
                     // On a une liste qui ne contient que l'image du perso
                     ArrayList<BufferedImage> persoData = new ArrayList<BufferedImage>();
-                    persoData.add(ImageIO.read(new File(winchemin + "/personnages/persoBase.png")));
+                    persoData.add(ImageIO.read(new File(this.vue.getWinchemin() + "/personnages/persoBase.png")));
                     // Suivie d'une liste qui contient le nom du joueur (i.e toutes les lettres)
                     ArrayList<BufferedImage> nomData = createImageOfMot(nom);
-                    joueurDataList.add(persoData);
-                    joueurDataList.add(nomData);
+                    this.vue.getJoueurDataList().add(persoData);
+                    this.vue.getJoueurDataList().add(nomData);
                 }
             }
         } catch (Exception e) {
@@ -94,13 +95,13 @@ public class Game extends Etat { // C'est donc un Etat.
 
     // Update les images & autres variables.
     public void update() {
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur j = terrain.getListeJoueurs().get(i);
+        for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
+            Joueur j = this.vue.getTerrain().getListeJoueurs().get(i);
             Personnage p = j.getPerso();
             // Gère les boutons flèches, avec inertie
             // Dans qu'on appuie, on set la vitesse à ± 4, et on avance de cette distance
-            double vitesse = 0.0078125 * terrain.getWidth();
-            double ralentissement = 0.000375 * terrain.getWidth();
+            double vitesse = 0.0078125 * this.vue.getTerrain().getWidth();
+            double ralentissement = 0.000375 * this.vue.getTerrain().getWidth();
             if (p.isRight()) {
                 p.setDx(+vitesse);
                 p.setX(p.getX() + p.getDx());
@@ -119,99 +120,101 @@ public class Game extends Etat { // C'est donc un Etat.
                 p.setDx(0);
             }
             if (p.isShoot() && p.iscanShoot()) { // Si on tire, on ne tire plus
-                p.tirer(0.046875 * terrain.getWidth(), 0.02923397661 * terrain.getHeight(), 0, -deltaTime);
+                p.tirer(0.046875 * this.vue.getTerrain().getWidth(), 0.02923397661 * this.vue.getTerrain().getHeight(),
+                        0, -this.vue.getDeltaTime());
                 p.setShoot(false);
             }
         }
-        terrain.update(this.deltaTime);
+        this.vue.getTerrain().update(this.vue.getDeltaTime());
     }
 
     // Affiche les images.
     public void affiche(Graphics g) { // Prend en argument le contexte graphique.
-        Graphics2D g2 = (Graphics2D) view.getGraphics();
-        int tw = (int) terrain.getWidth(), th = (int) terrain.getHeight();
+        Graphics2D g2 = (Graphics2D) this.vue.getView().getGraphics();
+        int tw = (int) this.vue.getTerrain().getWidth(), th = (int) this.vue.getTerrain().getHeight();
 
         // Affichage terrain
-        g2.drawImage(terrainView, 0, 0, tw, th, null);
+        g2.drawImage(this.vue.getTerrainView(), 0, 0, tw, th, null);
 
         // Affichage des plateformes
-        for (Plateforme pf : terrain.getPlateformesListe()) {
-            BufferedImage pfV = (pf instanceof PlateformeBase) ? platformeBaseView : platformeMobileView;
+        for (Plateforme pf : this.vue.getTerrain().getPlateformesListe()) {
+            BufferedImage pfV = (pf instanceof PlateformeBase) ? this.vue.getPlatformeBaseView()
+                    : this.vue.getPlatformeMobileView();
             g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur
-        if (terrain.getListeJoueurs().size() == 1) {
-            String score = String.valueOf(terrain.getListeJoueurs().get(0).getScore());
+        if (this.vue.getTerrain().getListeJoueurs().size() == 1) {
+            String score = String.valueOf(this.vue.getTerrain().getListeJoueurs().get(0).getScore());
             int sw = (int) (tw * 0.09375), sh = (int) (th * 0.0536062378);
-            g2.drawImage(scoreBackgroundView, 2, 2, sw + (sw / 2 * (score.length() - 1)), sh, null);
+            g2.drawImage(this.vue.getScoreBackgroundView(), 2, 2, sw + (sw / 2 * (score.length() - 1)), sh, null);
             ArrayList<BufferedImage> scoreView = createImageOfMot(score);
             int x = (int) (tw * 0.0078125); // Variable pour adapter en fonction de la résolution
             afficheMot(g2, scoreView, x, 5, x * 10, x * 10, 5 * x, 0);
         }
 
         // Affichage des personnages + Nom
-        for (int i = 0; i < terrain.getListeJoueurs().size() * 2; i = i + 2) {
+        for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size() * 2; i = i + 2) {
             // On récupère les données liées au joueur
-            BufferedImage jPersoData = joueurDataList.get(i).get(0);
-            ArrayList<BufferedImage> jNomData = joueurDataList.get(i + 1);
-            Personnage p = terrain.getListeJoueurs().get(i / 2).getPerso();
+            BufferedImage jPersoData = this.vue.getJoueurDataList().get(i).get(0);
+            ArrayList<BufferedImage> jNomData = this.vue.getJoueurDataList().get(i + 1);
+            Personnage p = this.vue.getTerrain().getListeJoueurs().get(i / 2).getPerso();
 
             // Affichage du personnage :
+            System.out.println("p.x = " + p.getX());
             g2.drawImage(jPersoData, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
             int c = (int) ((20 * (jNomData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
             afficheMot(g2, jNomData, (int) (p.getX() - c), (int) p.getY() - 15, 20, 20, 15, 10);
         }
 
         // Affichage des projectiles
-        for (Joueur j : terrain.getListeJoueurs()) {
+        for (Joueur j : this.vue.getTerrain().getListeJoueurs()) {
             Personnage pers = j.getPerso();
             for (Projectile pro : pers.getListProjectiles()) {
-                g2.drawImage(projectileView, (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
+                g2.drawImage(this.vue.getProjectileView(), (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
                         (int) pro.getHeight(), null);
             }
         }
 
         /// Affichage final
-        g.drawImage(view, 0, 0, this.width, this.height, null);
+        g.drawImage(this.vue.getView(), 0, 0, this.vue.getWidth(), this.vue.getHeight(), null);
         g.dispose(); // On libère les ressource
     }
 
     // Fait tourner cet état en boucle.
-    public void running(Graphics g) {
+    public void running() {
+        System.out.println("===> On entre dans Game.running");
         // Gestion de l'ups constant
         double cnt = 0.0; // Compteur du nombre d'update
         double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
         long t0 = System.currentTimeMillis(); // Temps actuel
         while (Vue.isRunningGame) { // Tant que le jeu tourne
-            if (!terrain.isPause()) { // Tant qu'on appuie pas sur pause
-                long t1 = System.currentTimeMillis();
-                long t = t1 - t0;
-                t0 = System.currentTimeMillis();
-                acc += t;
-                while (acc > deltaTime) { // Si on peut update
-                    update(); // On met à jour les variables
-                    // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
-                    // un retard, qu'on stock pour l'ajouter à l'étape suivante.
-                    // Si on a reste > Δ, on relance cette boucle
-                    acc -= deltaTime;
-                    cnt += deltaTime; // On accumule le nombre d'update
-                }
+            long t1 = System.currentTimeMillis();
+            long t = t1 - t0;
+            t0 = System.currentTimeMillis();
+            acc += t;
+            while (acc > this.vue.getDeltaTime()) { // Si on peut update
+                update(); // On met à jour les variables
+                // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
+                // un retard, qu'on stock pour l'ajouter à l'étape suivante.
+                // Si on a reste > Δ, on relance cette boucle
+                acc -= this.vue.getDeltaTime();
+                cnt += this.vue.getDeltaTime(); // On accumule le nombre d'update
             }
-            affiche(g); // On affiche les images une fois les données update
         }
-        this.isEndGame = endGame();
+        affiche(this.vue.getGraphics()); // On affiche les images une fois les données update
     }
 
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu FIN - Key Pressed");
+        System.out.println("Game - Key Pressed : " + this.vue.getFleche());
         Personnage p1, p2;
-        if (!terrain.multiplayer) // Si on ne joue pas en multijoueur :
-            p1 = terrain.getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier joueur.
+        if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
+            p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier
+                                                                            // joueur.
         else
-            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+            p1 = this.vue.getTerrain().getListeJoueurs().get(this.vue.getTerrain().playerID).getPerso();
 
         /// Gestion des déplacements horizontales des personnages :
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on clique sur la flèche droite :
@@ -224,8 +227,9 @@ public class Game extends Etat { // C'est donc un Etat.
             p1.setInertLeft(false); // On stop l'inertie (le ralentissement).
         }
 
-        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2 joueurs.
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
+        if (this.vue.getTerrain().getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2
+                                                                   // joueurs.
+            p2 = this.vue.getTerrain().getListeJoueurs().get(1).getPerso();
             if (e.getKeyCode() == KeyEvent.VK_D) {
                 p2.setRight(true);
                 p2.setInertRight(false);
@@ -243,8 +247,8 @@ public class Game extends Etat { // C'est donc un Etat.
             p1.setcanShoot(false); // On a pas le droit de re-tirer.
         }
 
-        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
+        if (this.vue.getTerrain().getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
+            p2 = this.vue.getTerrain().getListeJoueurs().get(1).getPerso();
             if (e.getKeyCode() == KeyEvent.VK_Z && p2.iscanShoot()) {
                 p2.setShoot(true); // On indique qu'on vient de tirer.
                 p2.setcanShoot(false); // On a pas le droit de re-tirer.
@@ -261,10 +265,11 @@ public class Game extends Etat { // C'est donc un Etat.
     public void keyControlReleased(KeyEvent e) {
         // Si on est en pleine partie :
         Personnage p1, p2;
-        if (!terrain.multiplayer) // Si on ne joue pas en multijoueur :
-            p1 = terrain.getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier joueur.
+        if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
+            p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier
+                                                                            // joueur.
         else
-            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
+            p1 = this.vue.getTerrain().getListeJoueurs().get(this.vue.getTerrain().playerID).getPerso();
 
         /// Gestion des déplacements horizontales des personnages :
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on relâche pendant que l'on se déplace vers la droite :
@@ -277,8 +282,9 @@ public class Game extends Etat { // C'est donc un Etat.
             p1.setInertLeft(true); // On lance le ralentissement (inertie).
         }
 
-        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2 joueurs.
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
+        if (this.vue.getTerrain().getListeJoueurs().size() == 2) { // On fait la même chose avec "Q" & "D" s'il y a 2
+                                                                   // joueurs.
+            p2 = this.vue.getTerrain().getListeJoueurs().get(1).getPerso();
             if (e.getKeyCode() == KeyEvent.VK_D) {
                 p2.setRight(false);
                 p2.setInertRight(true);
@@ -293,8 +299,8 @@ public class Game extends Etat { // C'est donc un Etat.
         if (e.getKeyCode() == KeyEvent.VK_UP) // On oblige le joueur à lâcher pour tirer (pour éviter le spam).
             p1.setcanShoot(true); // Dès qu'on lâche, on a de nouveau le droit de tirer.
 
-        if (terrain.getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
+        if (this.vue.getTerrain().getListeJoueurs().size() == 2) { // On fait la même chose avec "Z" s'il y a 2 joueurs.
+            p2 = this.vue.getTerrain().getListeJoueurs().get(1).getPerso();
             if (e.getKeyCode() == KeyEvent.VK_Z) // On oblige le joueur à lâcher pour tirer (pour éviter le spam).
                 p2.setcanShoot(true); // Dès qu'on lâche, on a de nouveau le droit de tirer.
         }
@@ -302,39 +308,41 @@ public class Game extends Etat { // C'est donc un Etat.
 
     /// Méthodes générales utiles :
     // Crée une partie (en initialisant toutes les variables, i.e le terrain, ...)
-    private void createPartie() {
+    public void createPartie() {
         /// Initialisation des éléments :
         ArrayList<Joueur> ljou = new ArrayList<Joueur>(); // Liste des joueurs.
 
         /// Ajout des joueurs :
         // Variable (z) pour adapter les dimensions à la résolution d'écran.
         // L'image du perso doit être un carré. On prend la valeure la plus petite.
-        double z = ((height * 0.09746) > (width * 0.15625)) ? (width * 0.15625) : (height * 0.09746);
-        Personnage p = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
-        ljou.add(new Joueur(p, nom1));
-        if (nbJoueur == 2) { // S'il y a 2 joueurs :
-            Personnage p2 = new Personnage(width / 2, height - z, z, z, -(height * 0.0097465887));
-            ljou.add(new Joueur(p2, nom2));
+        double z = ((this.vue.getHeight() * 0.09746) > (this.vue.getWidth() * 0.15625))
+                ? (this.vue.getWidth() * 0.15625)
+                : (this.vue.getHeight() * 0.09746);
+        Personnage p = new Personnage(this.vue.getWidth() / 2, this.vue.getHeight() - 300, z, z,
+                -(this.vue.getHeight() * 0.0097465887));
+        ljou.add(new Joueur(p, this.vue.getNom1()));
+        if (this.vue.getNbJoueur() == 2) { // S'il y a 2 joueurs :
+            Personnage p2 = new Personnage(this.vue.getWidth() / 2, this.vue.getHeight() - z, z, z,
+                    -(this.vue.getHeight() * 0.0097465887));
+            ljou.add(new Joueur(p2, this.vue.getNom2()));
         }
 
-        int i = multijoueur ? host ? 0 : 1 : 0;
-        this.terrain = new Terrain(this.vue, ljou, height, width, host, multijoueur, i); // On crée le terrain.
-        this.terrain.setClient(jconnect);
-        this.terrain.setHost(serveur);
+        int i = this.vue.isMultijoueur() ? this.vue.isHost() ? 0 : 1 : 0;
+        this.vue.setTerrain(new Terrain(this.vue, ljou, this.vue.getHeight(), this.vue.getWidth(), this.vue.isHost(),
+                this.vue.isMultijoueur(), i)); // On crée le
+        this.vue.getTerrain().setClient(this.vue.getJconnect());
+        this.vue.getTerrain().setHost(this.vue.getServeur());
     }
 
     // Gère le cas de fin de la GAME
-    private boolean endGame() {
+    public boolean endGame() {
         boolean isFin = false;
         // Si un joueur à perdu, c'est fini
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur j = terrain.getListeJoueurs().get(i);
-            isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) ? true : false;
+        for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
+            Joueur j = this.vue.getTerrain().getListeJoueurs().get(i);
+            isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.vue.getHeight()) ? true : false;
         }
         return isFin;
     }
 
-    public boolean isEndGame() {
-        return isEndGame;
-    }
 }

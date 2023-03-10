@@ -16,29 +16,10 @@ import javax.imageio.*;
 
 public abstract class Etat {
 
-    protected final int width, height; // Dimensions du panel
-    // La fleche est un curseur qui indique sur quel boutton on agit actuellement
-    protected int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
-    protected String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
-    protected BufferedImage view, backgroundView, flecheView;
-    protected ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
-            buttonQuitter, buttonRetourMenu, titreStatut;
-    protected ArrayList<ArrayList<BufferedImage>> scoreFinalView, hightScoreView;
-    protected Terrain terrain; // Le terrain sur lequel on joue
-    protected boolean multijoueur = false, host = false;
-    protected Serveur serveur;
-    protected JoueurConnecte jconnect;
     protected Vue vue;
 
     public Etat(Vue vue) {
         this.vue = vue;
-        // Taille du panel
-        this.width = vue.getWidth();
-        this.height = vue.getHeight();
-
-        // Initialisation des chemins
-        String skin = vue.getSkin();
-        this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
     }
 
     /// Méthodes abstract redéfinies dans chaque sous-classe d'Etat.
@@ -55,7 +36,7 @@ public abstract class Etat {
     abstract void affiche(Graphics g);
 
     // Fait tourner cet état en boucle.
-    abstract void running(Graphics g);
+    abstract void running();
 
     // Gère les boutons.
     abstract void keyControlPressed(KeyEvent e);
@@ -78,11 +59,11 @@ public abstract class Etat {
             try { // Double try_catch pour gérer la portabilité sur Windows.
                 try {
                     BufferedImage lv = (c == ' ') ? null
-                            : ImageIO.read(new File(chemin + "/lettres/lettre" + c + ".png"));
+                            : ImageIO.read(new File(this.vue.getChemin() + "/lettres/lettre" + c + ".png"));
                     motView.add(lv);
                 } catch (Exception e) {
                     BufferedImage lv = (c == ' ') ? null
-                            : ImageIO.read(new File(winchemin + "/lettres/lettre" + c + ".png"));
+                            : ImageIO.read(new File(this.vue.getWinchemin() + "/lettres/lettre" + c + ".png"));
                     motView.add(lv);
                 }
             } catch (Exception e) {
@@ -119,230 +100,6 @@ public abstract class Etat {
         g2.fillOval(x, y + h / 2, w, h);
         g2.fillOval(x, y + h / 2 + 2 * h, w, h);
         return x + w;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getFleche() {
-        return fleche;
-    }
-
-    public void setFleche(int fleche) {
-        this.fleche = fleche;
-    }
-
-    public int getXfleche() {
-        return xfleche;
-    }
-
-    public void setXfleche(int xfleche) {
-        this.xfleche = xfleche;
-    }
-
-    public int getYfleche() {
-        return yfleche;
-    }
-
-    public void setYfleche(int yfleche) {
-        this.yfleche = yfleche;
-    }
-
-    public int getWfleche() {
-        return wfleche;
-    }
-
-    public void setWfleche(int wfleche) {
-        this.wfleche = wfleche;
-    }
-
-    public int getHfleche() {
-        return hfleche;
-    }
-
-    public void setHfleche(int hfleche) {
-        this.hfleche = hfleche;
-    }
-
-    public int getSautLigne() {
-        return sautLigne;
-    }
-
-    public void setSautLigne(int sautLigne) {
-        this.sautLigne = sautLigne;
-    }
-
-    public int getNbJoueur() {
-        return nbJoueur;
-    }
-
-    public void setNbJoueur(int nbJoueur) {
-        this.nbJoueur = nbJoueur;
-    }
-
-    public String getChemin() {
-        return chemin;
-    }
-
-    public void setChemin(String chemin) {
-        this.chemin = chemin;
-    }
-
-    public String getWinchemin() {
-        return winchemin;
-    }
-
-    public void setWinchemin(String winchemin) {
-        this.winchemin = winchemin;
-    }
-
-    public BufferedImage getView() {
-        return view;
-    }
-
-    public void setView(BufferedImage view) {
-        this.view = view;
-    }
-
-    public BufferedImage getBackgroundView() {
-        return backgroundView;
-    }
-
-    public void setBackgroundView(BufferedImage backgroundView) {
-        this.backgroundView = backgroundView;
-    }
-
-    public BufferedImage getFlecheView() {
-        return flecheView;
-    }
-
-    public void setFlecheView(BufferedImage flecheView) {
-        this.flecheView = flecheView;
-    }
-
-    public ArrayList<BufferedImage> getButtonJouer() {
-        return buttonJouer;
-    }
-
-    public void setButtonJouer(ArrayList<BufferedImage> buttonJouer) {
-        this.buttonJouer = buttonJouer;
-    }
-
-    public ArrayList<BufferedImage> getButtonJouerSolo() {
-        return buttonJouerSolo;
-    }
-
-    public void setButtonJouerSolo(ArrayList<BufferedImage> buttonJouerSolo) {
-        this.buttonJouerSolo = buttonJouerSolo;
-    }
-
-    public ArrayList<BufferedImage> getButton2joueur() {
-        return button2joueur;
-    }
-
-    public void setButton2joueur(ArrayList<BufferedImage> button2joueur) {
-        this.button2joueur = button2joueur;
-    }
-
-    public ArrayList<BufferedImage> getButtonMultiJoueur() {
-        return buttonMultiJoueur;
-    }
-
-    public void setButtonMultiJoueur(ArrayList<BufferedImage> buttonMultiJoueur) {
-        this.buttonMultiJoueur = buttonMultiJoueur;
-    }
-
-    public ArrayList<BufferedImage> getButtonLb() {
-        return buttonLb;
-    }
-
-    public void setButtonLb(ArrayList<BufferedImage> buttonLb) {
-        this.buttonLb = buttonLb;
-    }
-
-    public ArrayList<BufferedImage> getButtonQuitter() {
-        return buttonQuitter;
-    }
-
-    public void setButtonQuitter(ArrayList<BufferedImage> buttonQuitter) {
-        this.buttonQuitter = buttonQuitter;
-    }
-
-    public ArrayList<BufferedImage> getButtonRetourMenu() {
-        return buttonRetourMenu;
-    }
-
-    public void setButtonRetourMenu(ArrayList<BufferedImage> buttonRetourMenu) {
-        this.buttonRetourMenu = buttonRetourMenu;
-    }
-
-    public ArrayList<BufferedImage> getTitreStatut() {
-        return titreStatut;
-    }
-
-    public void setTitreStatut(ArrayList<BufferedImage> titreStatut) {
-        this.titreStatut = titreStatut;
-    }
-
-    public ArrayList<ArrayList<BufferedImage>> getScoreFinalView() {
-        return scoreFinalView;
-    }
-
-    public void setScoreFinalView(ArrayList<ArrayList<BufferedImage>> scoreFinalView) {
-        this.scoreFinalView = scoreFinalView;
-    }
-
-    public ArrayList<ArrayList<BufferedImage>> getHightScoreView() {
-        return hightScoreView;
-    }
-
-    public void setHightScoreView(ArrayList<ArrayList<BufferedImage>> hightScoreView) {
-        this.hightScoreView = hightScoreView;
-    }
-
-    public Terrain getTerrain() {
-        return terrain;
-    }
-
-    public void setTerrain(Terrain terrain) {
-        this.terrain = terrain;
-    }
-
-    public boolean isMultijoueur() {
-        return multijoueur;
-    }
-
-    public void setMultijoueur(boolean multijoueur) {
-        this.multijoueur = multijoueur;
-    }
-
-    public boolean isHost() {
-        return host;
-    }
-
-    public void setHost(boolean host) {
-        this.host = host;
-    }
-
-    public Serveur getServeur() {
-        return serveur;
-    }
-
-    public void setServeur(Serveur serveur) {
-        this.serveur = serveur;
-    }
-
-    public JoueurConnecte getJconnect() {
-        return jconnect;
-    }
-
-    public void setJconnect(JoueurConnecte jconnect) {
-        this.jconnect = jconnect;
     }
 
 }

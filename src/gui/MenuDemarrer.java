@@ -25,28 +25,29 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
     @Override
     public void initFixe() {
         // view est l'image qui contiendra toutes les autres
-        this.view = new BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB);
+        this.vue.setView(new BufferedImage(this.vue.getWidth(), this.vue.getHeight(), BufferedImage.TYPE_INT_RGB));
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
-                this.backgroundView = ImageIO.read(new File(chemin + "/background/background.png"));
-                this.flecheView = ImageIO.read(new File(chemin + "/icon/iconfleche.png"));
+                this.vue.setBackgroundView(ImageIO.read(new File(this.vue.getChemin() + "/background/background.png")));
+                this.vue.setFlecheView(ImageIO.read(new File(this.vue.getChemin() + "/icon/iconfleche.png")));
 
             } catch (Exception e) {
-                this.backgroundView = ImageIO.read(new File(winchemin + "background/background.png"));
-                this.flecheView = ImageIO.read(new File(winchemin + "/icon/iconfleche.png"));
+                this.vue.setBackgroundView(
+                        ImageIO.read(new File(this.vue.getWinchemin() + "/background/background.png")));
+                this.vue.setFlecheView(ImageIO.read(new File(this.vue.getWinchemin() + "/icon/iconfleche.png")));
 
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
         // On initialise les boutons car ils ne changeront jamais.
-        this.buttonJouerSolo = createImageOfMot("Jouer en solo");
-        this.button2joueur = createImageOfMot("Jouer a 2");
-        this.buttonMultiJoueur = createImageOfMot("Mode multijoueurs");
-        this.buttonLb = createImageOfMot("Classement");
-        this.buttonQuitter = createImageOfMot("Quitter");
-        this.buttonRetourMenu = createImageOfMot("Revenir au menu");
+        this.vue.setButtonJouerSolo(createImageOfMot("Jouer en solo"));
+        this.vue.setButton2joueur(createImageOfMot("Jouer a 2"));
+        this.vue.setButtonMultiJoueur(createImageOfMot("Mode multijoueurs"));
+        this.vue.setButtonLb(createImageOfMot("Classement"));
+        this.vue.setButtonQuitter(createImageOfMot("Quitter"));
+        this.vue.setButtonRetourMenu(createImageOfMot("Revenir au menu"));
     }
 
     // Initialise les images & les autres variables.
@@ -56,51 +57,54 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
 
     // Update les images & autres variables.
     public void update() {
-        this.wfleche = 30;
-        this.hfleche = 30;
-        this.xfleche = (7 * width / 100) - this.wfleche; // La fleche se place toujours ici en x
+        this.vue.setWfleche(30);
+        this.vue.setHfleche(30);
+        // La fleche se place toujours ici en x
+        this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
         // Son placement en y dépend de ce qu'elle pointe
-        this.yfleche = (10 * height / 100) + fleche * sautLigne;
+        int a = this.vue.getYfleche();
+        this.vue.setYfleche((10 * vue.getHeight() / 100) + this.vue.getFleche() * this.vue.getSautLigne());
     }
 
     // Affiche les images.
     public void affiche(Graphics g) { // Prend en argument le contexte graphique.
-        Graphics2D g2 = (Graphics2D) view.getGraphics();
+        Graphics2D g2 = (Graphics2D) this.vue.getView().getGraphics();
         // Affichage terrain
-        g2.drawImage(backgroundView, 0, 0, this.width, this.height, null);
+        g2.drawImage(this.vue.getBackgroundView(), 0, 0, this.vue.getWidth(), this.vue.getHeight(), null);
 
         // Affichage des boutons
-        int x = (9 * width / 100), y = (10 * height / 100);
+        int x = (9 * this.vue.getWidth() / 100), y = (10 * this.vue.getHeight() / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
-        afficheMot(g2, buttonJouerSolo, x, y, w, h, ecart, espacement);
-        x = (9 * width / 100);
-        y = y + sautLigne;
-        afficheMot(g2, button2joueur, x, y, w, h, ecart, espacement);
-        x = (9 * width / 100);
-        y = y + sautLigne;
-        afficheMot(g2, buttonMultiJoueur, x, y, w, h, ecart, espacement);
-        x = (9 * width / 100);
-        y = y + sautLigne;
-        afficheMot(g2, buttonLb, x, y, w, h, ecart, espacement);
-        x = (9 * width / 100);
-        y = y + sautLigne;
-        afficheMot(g2, buttonQuitter, x, y, w, h, ecart, espacement);
+        afficheMot(g2, this.vue.getButtonJouerSolo(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+        afficheMot(g2, this.vue.getButton2joueur(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+        afficheMot(g2, this.vue.getButtonMultiJoueur(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+        afficheMot(g2, this.vue.getButtonLb(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+        afficheMot(g2, this.vue.getButtonQuitter(), x, y, w, h, ecart, espacement);
 
         // Affichage de la fleche
-        g2.drawImage(flecheView, xfleche, yfleche, wfleche, hfleche, null);
+        g2.drawImage(this.vue.getFlecheView(), this.vue.getXfleche(), this.vue.getYfleche(), this.vue.getWfleche(),
+                this.vue.getHfleche(), null);
 
         // Affichage final
-        g.drawImage(view, 0, 0, this.width, this.height, null);
+        g.drawImage(this.vue.getView(), 0, 0, this.vue.getWidth(), this.vue.getHeight(), null);
         g.dispose(); // On libère les ressource
     }
 
     // Fait tourner cet état en boucle.
-    public void running(Graphics g) {
-        this.sautLigne = 50;
-        this.fleche = 0; // On pointe le premier bouton
+    public void running() {
+        this.vue.setSautLigne(50);
+        this.vue.setFleche(0); // On pointe le premier bouton
         while (Vue.isMenuDemarrer) {
             this.update();
-            this.affiche(g);
+            this.affiche(this.vue.getGraphics());
         }
         System.out.println("on est sortie du while de running.MDEMARRER");
     }
@@ -108,72 +112,68 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu DEMARRER - Key Pressed : " + this.fleche);
+        System.out.println("Menu DEMARRER - Key Pressed : " + this.vue.getFleche());
 
         /// Gestion du bouton "ENTREE" :
         if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
-            if (this.fleche == 0) { // La flèche pointe sur le bouton "Jouer Solo" :
-                this.nbJoueur = 1; // On initialise le nombre de joueurs.
-                this.vue.setMenuDemarrer(false); // On quitte le menu DEMARRER
-                this.vue.setMenuLancement(true);
+            if (this.vue.getFleche() == 0) { // La flèche pointe sur le bouton "Jouer Solo" :
+                this.vue.setNbJoueur(1); // On initialise le nombre de joueurs.
+                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
+                Vue.isMenuLancement = true;
+                this.vue.setFleche(-1); // Pour éviter une erreur d'initialisation.
             }
-            if (this.fleche == 1) { // La flèche pointe sur le bouton "Jouer à 2" :
-                this.nbJoueur = 2; // On initialise le nombre de joueurs.
-                this.vue.setMenuDemarrer(false); // On quitte le menu DEMARRER
-                this.vue.setMenuLancement(true);
+            if (this.vue.getFleche() == 1) { // La flèche pointe sur le bouton "Jouer à 2" :
+                this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
+                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
+                Vue.isMenuLancement = true;
+                this.vue.setFleche(-1); // Pour éviter une erreur d'initialisation.
             }
 
-            if (this.fleche == 2) { // La flèche pointe sur le bouton "Mode multijoueur" :
-                this.nbJoueur = 2; // On initialise le nombre de joueurs.
-                this.multijoueur = true;
+            if (this.vue.getFleche() == 2) { // La flèche pointe sur le bouton "Mode multijoueur" :
+                this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
+                this.vue.setMultijoueur(true);
                 int option = JOptionPane.showConfirmDialog(this.vue, "Voulez-vous host la partie ?",
                         "Paramètrage multijoueur",
                         JOptionPane.YES_NO_OPTION);
                 System.out.println(option);
                 if (option == 0) {
-                    this.host = true;
+                    this.vue.setHost(true);
                     try {
-                        this.serveur = new Serveur();
-                        this.serveur.run();
+                        this.vue.setServeur(new Serveur());
+                        this.vue.getServeur().run();
                     } catch (IOException io) {
                         JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
                                 JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
                         System.exit(-1);
                     }
                 } else {
-                    this.host = false;
-                    this.jconnect = new JoueurConnecte();
-                    this.jconnect.connecter();
+                    this.vue.setHost(false);
+                    this.vue.setJconnect(new JoueurConnecte());
+                    this.vue.getJconnect().connecter();
                 }
-                this.vue.setMenuDemarrer(false); // On quitte le menu DEMARRER
-                this.vue.setRunningGame(true);
+                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER
+                Vue.isMenuLancement = true;
             }
 
-            if (this.fleche == 3) { // La flèche pointe sur le bouton "Classement" :
-                System.out.println();
-                System.out.println("Key.Pressed MenuDemarrer => fleche = 0 :");
-                System.out.println("this.isMenuClassement : " + this.vue.isMenuClassement());
-                System.out.println("this.vue.isMenuDemarrer() : " + this.vue.isMenuDemarrer());
-                this.vue.setMenuClassement(true);
-                this.vue.setMenuDemarrer(false);
-                System.out.println("this.isMenuClassement : " + this.vue.isMenuClassement());
-                System.out.println("this.vue.isMenuDemarrer() : " + this.vue.isMenuDemarrer());
-                System.out.println();
+            if (this.vue.getFleche() == 3) { // La flèche pointe sur le bouton "Classement" :
+                Vue.isMenuClassement = true;
+                Vue.isMenuDemarrer = false;
             }
-            if (this.fleche == 4) { // La flèche pointe sur le bouton "Quitter" :
+            if (this.vue.getFleche() == 4) { // La flèche pointe sur le bouton "Quitter" :
                 System.out.println("À la prochaine !");
-                this.vue.setQuitte(true); // On quitte l'application.
+                Vue.isQuitte = true; // On quitte l'application.
                 System.exit(0); // On ferme toutes les fenêtres & le programme.
             }
         }
 
         /// Gestion de la flèche :
         if (e.getKeyCode() == KeyEvent.VK_UP)
-            this.fleche = (this.fleche == 0) ? 4 : this.fleche - 1;
+            this.vue.setFleche((this.vue.getFleche() == 0) ? 4 : this.vue.getFleche() - 1);
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN)
-            this.fleche = (this.fleche == 4) ? 0 : this.fleche + 1;
+            this.vue.setFleche((this.vue.getFleche() == 4) ? 0 : this.vue.getFleche() + 1);
 
+        System.out.println("MenuDemarrer.KeyControl : fleche = " + this.vue.getFleche());
     }
 
     @Override

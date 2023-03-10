@@ -21,10 +21,24 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement,
             isMenuPause;
     private final int width, height; // Dimensions du panel
-    private Terrain terrain; // Le terrain sur lequel on joue
-    private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private String skin;
+    // La fleche est un curseur qui indique sur quel boutton on agit actuellement
+    private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
     private JFrame menuPause; // Le menu pause
+    private String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
+    private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
+    private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
+            buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
+    private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
+    private Terrain terrain; // Le terrain sur lequel on joue
+    private double deltaTime; // Le temps nécessaire pour update le jeu
+    private ThreadMouvement threadMvt; // thread qui gere l'envoi et la reception des données pour le multijoueur
+    private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
+    private boolean multijoueur = false, host = false;
+    private Serveur serveur;
+    private JoueurConnecte jconnect;
+    private String skin;
+
     private MenuDemarrer eMenuDemarrer;
     private MenuClassement eMenuClassement;
     private MenuLancement eMenuLancement;
@@ -39,6 +53,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
 
         this.skin = skin;
+        this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
+        this.winchemin = "src/gui/images/" + skin + "/";
+
         // Gestion d'évènements boutons
         this.addKeyListener(this);
     }
@@ -76,33 +93,26 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             initGENERAL();
 
             while (!isQuitte) { // Tant qu'on a pas quitter le jeu :
-                System.out.println("Vue.Run 1 :");
-                System.out
-                        .println("isMenuDemarrer : " + isMenuDemarrer + ", " + (this.eActuel instanceof MenuDemarrer));
-                System.out.println(
-                        "isMenuClassement : " + isMenuClassement + ", " + (this.eActuel instanceof MenuClassement));
-                System.out.println(
-                        "isMenuLancement : " + isMenuLancement + ", " + (this.eActuel instanceof MenuLancement));
-                System.out.println("isRunningGame : " + isRunningGame + ", " + (this.eActuel instanceof Game));
-                System.out.println("isMenuFin : " + isMenuFin + ", " + (this.eActuel instanceof MenuFin));
-                System.out.println();
 
                 // ETAPE 2 : On gère les différent statut du jeu !
                 // Si on est au niveau du menu DEMARRER :
                 if (isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin) {
                     // this.eActuel = this.eMenuDemarrer;
-                    this.eMenuDemarrer.running(getGraphics());
+                    this.eMenuDemarrer = new MenuDemarrer(this);
+                    this.eMenuDemarrer.running();
                 }
                 // Si on a cliqué sur le boutton "Classement" :
                 if (!isMenuDemarrer && isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin) {
                     this.eMenuClassement = new MenuClassement(this);
                     this.eMenuClassement.init();
+                    this.eMenuClassement.running();
                     // this.eActuel = this.eMenuClassement;
                 }
                 // Si on a cliqué sur le boutton "Jouer solo" :
                 if (!isMenuDemarrer && !isMenuClassement && isMenuLancement && !isRunningGame && !isMenuFin) {
                     this.eMenuLancement = new MenuLancement(this);
                     this.eMenuLancement.init();
+                    this.eMenuLancement.running();
                     // this.eActuel = this.eMenuLancement;
                 }
 
@@ -110,16 +120,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && isRunningGame && !isMenuFin) {
                     this.eGame = new Game(this);
                     this.eGame.init(); // On initialise les images de la GAME.
-                    // if (terrain.multiplayer) { // Si on est en mode multijoueur
-                    // Thread t = new Thread(new ThreadMouvement(terrain)); // ???
-                    // t.start();
-                    // }
+                    this.eGame.running();
+                    if (terrain.multiplayer) { // Si on est en mode multijoueur
+                        Thread t = new Thread(new ThreadMouvement(terrain)); // ???
+                        t.start();
+                    }
                     // this.eActuel = this.eGame;
                 }
 
                 // Si c'est la fin de la GAME (quelqu'un a perdu) :
                 if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin
-                        && ((Game) this.eActuel).isEndGame()) {
+                        && ((Game) this.eActuel).endGame()) {
                     // On met à jour toutes les variables boolean.
                     isMenuDemarrer = false;
                     isMenuClassement = false;
@@ -129,24 +140,16 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     this.eMenuClassement.updateClassement();
                 }
                 // Si on a fini la GAME sans erreur :
-                if (!isMenuDemarrer && !isMenuClassement && !isRunningGame && isMenuFin) {
+                if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && isMenuFin) {
                     this.eMenuFin = new MenuFin(this);
                     this.eMenuFin.init(); // On initialise les images du menu FIN.
+                    this.eMenuFin.running();
                     // this.eActuel = this.eMenuFin;
                 }
 
                 // On exécute les différentes actions.
                 // this.eActuel.running(getGraphics());// On lance le menu DEMARRER.
 
-                System.out.println("Vue.Run 2 :");
-                System.out
-                        .println("isMenuDemarrer : " + isMenuDemarrer + ", " + (this.eActuel instanceof MenuDemarrer));
-                System.out.println(
-                        "isMenuClassement : " + isMenuClassement + ", " + (this.eActuel instanceof MenuClassement));
-                System.out.println(
-                        "isMenuLancement : " + isMenuLancement + ", " + (this.eActuel instanceof MenuLancement));
-                System.out.println("isRunningGame : " + isRunningGame + ", " + (this.eActuel instanceof Game));
-                System.out.println("isMenuFin : " + isMenuFin + ", " + (this.eActuel instanceof MenuFin));
                 System.out.println();
             }
             System.exit(0); // Si on a quitté le jeu, on ferme tout le programme.
@@ -201,14 +204,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons :
         System.out.println("Vue.KeyPressed :");
-        System.out.println("isMenuDemarrer : " + this.isMenuDemarrer + ", " + (this.eActuel instanceof MenuDemarrer));
-        System.out.println(
-                "isMenuClassement : " + this.isMenuClassement + ", " + (this.eActuel instanceof MenuClassement));
-        System.out
-                .println("isMenuLancement : " + this.isMenuLancement + ", " + (this.eActuel instanceof MenuLancement));
-        System.out.println("isRunningGame : " + this.isRunningGame + ", " + (this.eActuel instanceof Game));
-        System.out.println("isMenuFin : " + this.isMenuFin + ", " + (this.eActuel instanceof MenuFin));
-        System.out.println();
         if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
             this.eMenuDemarrer.keyControlPressed(e);
         }
@@ -242,74 +237,309 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public void keyTyped(KeyEvent e) {
     }
 
-    public String getSkin() {
-        return this.skin;
-    }
-
-    @Override
-    public int getWidth() {
-        return this.width;
-    }
-
-    @Override
-    public int getHeight() {
-        return this.height;
-    }
-
-    public boolean isQuitte() {
+    // Getter & setter
+    public static boolean isQuitte() {
         return isQuitte;
     }
 
-    public void setQuitte(boolean isQuitte) {
-        this.isQuitte = isQuitte;
+    public static void setQuitte(boolean isQuitte) {
+        Vue.isQuitte = isQuitte;
     }
 
-    public boolean isRunningGame() {
+    public static boolean isRunningGame() {
         return isRunningGame;
     }
 
-    public void setRunningGame(boolean isRunningGame) {
-        this.isRunningGame = isRunningGame;
+    public static void setRunningGame(boolean isRunningGame) {
+        Vue.isRunningGame = isRunningGame;
     }
 
-    public boolean isMenuDemarrer() {
+    public static boolean isMenuDemarrer() {
         return isMenuDemarrer;
     }
 
-    public void setMenuDemarrer(boolean isMenuDemarrer) {
-        this.isMenuDemarrer = isMenuDemarrer;
+    public static void setMenuDemarrer(boolean isMenuDemarrer) {
+        Vue.isMenuDemarrer = isMenuDemarrer;
     }
 
-    public boolean isMenuLancement() {
-        return isMenuLancement;
-    }
-
-    public void setMenuLancement(boolean isMenuLancement) {
-        this.isMenuLancement = isMenuLancement;
-    }
-
-    public boolean isMenuFin() {
-        return isMenuFin;
-    }
-
-    public void setMenuFin(boolean isMenuFin) {
-        this.isMenuFin = isMenuFin;
-    }
-
-    public boolean isMenuClassement() {
-        return isMenuClassement;
-    }
-
-    public void setMenuClassement(boolean isMenuClassement) {
-        this.isMenuClassement = isMenuClassement;
-    }
-
-    public boolean isMenuPause() {
+    public static boolean isMenuPause() {
         return isMenuPause;
     }
 
-    public void setMenuPause(boolean isMenuPause) {
-        this.isMenuPause = isMenuPause;
+    public static void setMenuPause(boolean isMenuPause) {
+        Vue.isMenuPause = isMenuPause;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getFleche() {
+        return fleche;
+    }
+
+    public void setFleche(int fleche) {
+        this.fleche = fleche;
+    }
+
+    public int getXfleche() {
+        return xfleche;
+    }
+
+    public void setXfleche(int xfleche) {
+        this.xfleche = xfleche;
+    }
+
+    public int getYfleche() {
+        return yfleche;
+    }
+
+    public void setYfleche(int yfleche) {
+        this.yfleche = yfleche;
+    }
+
+    public int getWfleche() {
+        return wfleche;
+    }
+
+    public void setWfleche(int wfleche) {
+        this.wfleche = wfleche;
+    }
+
+    public int getHfleche() {
+        return hfleche;
+    }
+
+    public void setHfleche(int hfleche) {
+        this.hfleche = hfleche;
+    }
+
+    public int getSautLigne() {
+        return sautLigne;
+    }
+
+    public void setSautLigne(int sautLigne) {
+        this.sautLigne = sautLigne;
+    }
+
+    public int getNbJoueur() {
+        return nbJoueur;
+    }
+
+    public void setNbJoueur(int nbJoueur) {
+        this.nbJoueur = nbJoueur;
+    }
+
+    public JFrame getMenuPause() {
+        return menuPause;
+    }
+
+    public void setMenuPause(JFrame menuPause) {
+        this.menuPause = menuPause;
+    }
+
+    public String getChemin() {
+        return chemin;
+    }
+
+    public void setChemin(String chemin) {
+        this.chemin = chemin;
+    }
+
+    public String getWinchemin() {
+        return winchemin;
+    }
+
+    public void setWinchemin(String winchemin) {
+        this.winchemin = winchemin;
+    }
+
+    public BufferedImage getView() {
+        return view;
+    }
+
+    public void setView(BufferedImage view) {
+        this.view = view;
+    }
+
+    public BufferedImage getBackgroundView() {
+        return backgroundView;
+    }
+
+    public void setBackgroundView(BufferedImage backgroundView) {
+        this.backgroundView = backgroundView;
+    }
+
+    public BufferedImage getBackgroundClView() {
+        return backgroundClView;
+    }
+
+    public void setBackgroundClView(BufferedImage backgroundClView) {
+        this.backgroundClView = backgroundClView;
+    }
+
+    public BufferedImage getBackgroundClView1() {
+        return backgroundClView1;
+    }
+
+    public void setBackgroundClView1(BufferedImage backgroundClView1) {
+        this.backgroundClView1 = backgroundClView1;
+    }
+
+    public BufferedImage getBackgroundClView2() {
+        return backgroundClView2;
+    }
+
+    public void setBackgroundClView2(BufferedImage backgroundClView2) {
+        this.backgroundClView2 = backgroundClView2;
+    }
+
+    public BufferedImage getFlecheView() {
+        return flecheView;
+    }
+
+    public void setFlecheView(BufferedImage flecheView) {
+        this.flecheView = flecheView;
+    }
+
+    public BufferedImage getTerrainView() {
+        return terrainView;
+    }
+
+    public void setTerrainView(BufferedImage terrainView) {
+        this.terrainView = terrainView;
+    }
+
+    public BufferedImage getPlatformeBaseView() {
+        return platformeBaseView;
+    }
+
+    public void setPlatformeBaseView(BufferedImage platformeBaseView) {
+        this.platformeBaseView = platformeBaseView;
+    }
+
+    public BufferedImage getPlatformeMobileView() {
+        return platformeMobileView;
+    }
+
+    public void setPlatformeMobileView(BufferedImage platformeMobileView) {
+        this.platformeMobileView = platformeMobileView;
+    }
+
+    public BufferedImage getScoreBackgroundView() {
+        return scoreBackgroundView;
+    }
+
+    public void setScoreBackgroundView(BufferedImage scoreBackgroundView) {
+        this.scoreBackgroundView = scoreBackgroundView;
+    }
+
+    public BufferedImage getProjectileView() {
+        return projectileView;
+    }
+
+    public void setProjectileView(BufferedImage projectileView) {
+        this.projectileView = projectileView;
+    }
+
+    public ArrayList<BufferedImage> getButtonJouer() {
+        return buttonJouer;
+    }
+
+    public void setButtonJouer(ArrayList<BufferedImage> buttonJouer) {
+        this.buttonJouer = buttonJouer;
+    }
+
+    public ArrayList<BufferedImage> getButton2joueur() {
+        return button2joueur;
+    }
+
+    public void setButton2joueur(ArrayList<BufferedImage> button2joueur) {
+        this.button2joueur = button2joueur;
+    }
+
+    public ArrayList<BufferedImage> getButtonMultiJoueur() {
+        return buttonMultiJoueur;
+    }
+
+    public void setButtonMultiJoueur(ArrayList<BufferedImage> buttonMultiJoueur) {
+        this.buttonMultiJoueur = buttonMultiJoueur;
+    }
+
+    public ArrayList<BufferedImage> getButtonLb() {
+        return buttonLb;
+    }
+
+    public void setButtonLb(ArrayList<BufferedImage> buttonLb) {
+        this.buttonLb = buttonLb;
+    }
+
+    public ArrayList<BufferedImage> getButtonQuitter() {
+        return buttonQuitter;
+    }
+
+    public void setButtonQuitter(ArrayList<BufferedImage> buttonQuitter) {
+        this.buttonQuitter = buttonQuitter;
+    }
+
+    public ArrayList<BufferedImage> getButtonRetourMenu() {
+        return buttonRetourMenu;
+    }
+
+    public void setButtonRetourMenu(ArrayList<BufferedImage> buttonRetourMenu) {
+        this.buttonRetourMenu = buttonRetourMenu;
+    }
+
+    public ArrayList<BufferedImage> getTitreStatut() {
+        return titreStatut;
+    }
+
+    public void setTitreStatut(ArrayList<BufferedImage> titreStatut) {
+        this.titreStatut = titreStatut;
+    }
+
+    public ArrayList<BufferedImage> getMessageNom() {
+        return messageNom;
+    }
+
+    public void setMessageNom(ArrayList<BufferedImage> messageNom) {
+        this.messageNom = messageNom;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getJoueurDataList() {
+        return joueurDataList;
+    }
+
+    public void setJoueurDataList(ArrayList<ArrayList<BufferedImage>> joueurDataList) {
+        this.joueurDataList = joueurDataList;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getLbView() {
+        return lbView;
+    }
+
+    public void setLbView(ArrayList<ArrayList<BufferedImage>> lbView) {
+        this.lbView = lbView;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getScoreFinalView() {
+        return scoreFinalView;
+    }
+
+    public void setScoreFinalView(ArrayList<ArrayList<BufferedImage>> scoreFinalView) {
+        this.scoreFinalView = scoreFinalView;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getHightScoreView() {
+        return hightScoreView;
+    }
+
+    public void setHightScoreView(ArrayList<ArrayList<BufferedImage>> hightScoreView) {
+        this.hightScoreView = hightScoreView;
     }
 
     public Terrain getTerrain() {
@@ -320,6 +550,22 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.terrain = terrain;
     }
 
+    public double getDeltaTime() {
+        return deltaTime;
+    }
+
+    public void setDeltaTime(double deltaTime) {
+        this.deltaTime = deltaTime;
+    }
+
+    public ThreadMouvement getThreadMvt() {
+        return threadMvt;
+    }
+
+    public void setThreadMvt(ThreadMouvement threadMvt) {
+        this.threadMvt = threadMvt;
+    }
+
     public Thread getThread() {
         return thread;
     }
@@ -328,16 +574,44 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.thread = thread;
     }
 
+    public boolean isMultijoueur() {
+        return multijoueur;
+    }
+
+    public void setMultijoueur(boolean multijoueur) {
+        this.multijoueur = multijoueur;
+    }
+
+    public boolean isHost() {
+        return host;
+    }
+
+    public void setHost(boolean host) {
+        this.host = host;
+    }
+
+    public Serveur getServeur() {
+        return serveur;
+    }
+
+    public void setServeur(Serveur serveur) {
+        this.serveur = serveur;
+    }
+
+    public JoueurConnecte getJconnect() {
+        return jconnect;
+    }
+
+    public void setJconnect(JoueurConnecte jconnect) {
+        this.jconnect = jconnect;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
     public void setSkin(String skin) {
         this.skin = skin;
-    }
-
-    public JFrame getMenuPause() {
-        return menuPause;
-    }
-
-    public void setMenuPause(JFrame menuPause) {
-        this.menuPause = menuPause;
     }
 
     public MenuDemarrer geteMenuDemarrer() {
@@ -387,4 +661,69 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public void seteActuel(Etat eActuel) {
         this.eActuel = eActuel;
     }
+
+    public ArrayList<BufferedImage> getButtonJouerSolo() {
+        return buttonJouerSolo;
+    }
+
+    public void setButtonJouerSolo(ArrayList<BufferedImage> buttonJouerSolo) {
+        this.buttonJouerSolo = buttonJouerSolo;
+    }
+
+    public static boolean isMenuLancement() {
+        return isMenuLancement;
+    }
+
+    public static void setMenuLancement(boolean isMenuLancement) {
+        Vue.isMenuLancement = isMenuLancement;
+    }
+
+    public static boolean isMenuFin() {
+        return isMenuFin;
+    }
+
+    public static void setMenuFin(boolean isMenuFin) {
+        Vue.isMenuFin = isMenuFin;
+    }
+
+    public static boolean isMenuClassement() {
+        return isMenuClassement;
+    }
+
+    public static void setMenuClassement(boolean isMenuClassement) {
+        Vue.isMenuClassement = isMenuClassement;
+    }
+
+    public String getNom1() {
+        return nom1;
+    }
+
+    public void setNom1(String nom1) {
+        this.nom1 = nom1;
+    }
+
+    public String getNom2() {
+        return nom2;
+    }
+
+    public void setNom2(String nom2) {
+        this.nom2 = nom2;
+    }
+
+    public ArrayList<BufferedImage> getNomJ1() {
+        return nomJ1;
+    }
+
+    public void setNomJ1(ArrayList<BufferedImage> nomJ1) {
+        this.nomJ1 = nomJ1;
+    }
+
+    public ArrayList<BufferedImage> getNomJ2() {
+        return nomJ2;
+    }
+
+    public void setNomJ2(ArrayList<BufferedImage> nomJ2) {
+        this.nomJ2 = nomJ2;
+    }
+
 }
