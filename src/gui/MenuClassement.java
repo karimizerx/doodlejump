@@ -12,7 +12,7 @@ import java.awt.image.*;
 import java.awt.event.*;
 import javax.imageio.*;
 
-// Représente l'état où le jeu est au niveau du "MENU DEMARRER".
+// Représente l'état où le jeu est au niveau du "MENU CLASSEMENT".
 public class MenuClassement extends Etat {
 
     public MenuClassement(Vue vue) {
@@ -135,7 +135,7 @@ public class MenuClassement extends Etat {
         g.dispose(); // On libère les ressources.
     }
 
-    // Fait tourner cet état en boucle.
+    // Fait tourner cet état.
     @Override
     public void running() {
         // Initialisation des valeurs initiales des variables avant lancement.
@@ -165,7 +165,7 @@ public class MenuClassement extends Etat {
         }
     }
 
-    // Gère les boutons.
+    // Gestion des boutons.
     @Override
     public void keyControlPressed(KeyEvent e) { // KeyEvent e de la vue.
         /// Gestion du bouton "ENTREE" :

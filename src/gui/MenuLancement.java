@@ -1,26 +1,20 @@
 package gui;
 
 // Import d'autres dossiers
-import gameobjects.*;
 import leaderboard.*;
-import multiplayer.*;
 
 // Import de packages java
-import java.io.*;
-import java.util.*;
 import java.awt.*;
-import java.awt.image.*;
 import java.awt.event.*;
-import javax.swing.*;
-import javax.imageio.*;
 
-// Représente l'état ou l'application est au niveau du "MENU DEMARRER".
-public class MenuLancement extends Etat { // C'est donc un Etat.
+// Représente l'état où le jeu est au niveau du "MENU LANCEMENT".
+public class MenuLancement extends Etat {
 
     public MenuLancement(Vue vue) {
         super(vue);
     }
 
+    /// Méthodes de la classe :
     // Initialise les images qui ne changeront jamais.
     @Override
     public void initFixe() {
@@ -39,40 +33,46 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
         } else // Si le joueur a déjà joué une partie, on prend le nom de la dernière partie.
             this.vue.setNom1((h.getLbData().size() > 1) ? h.getLbData().get(h.getLbData().size() - 1)[1] : "MIZER");
 
+        // On intialise les images des noms des joueurs.
         this.vue.setNomJ1(createImageOfMot(this.vue.getNom1()));
         this.vue.setNomJ2(createImageOfMot(this.vue.getNom2()));
     }
 
     // Update les images & autres variables.
+    @Override
     public void update() {
+        // Dimensions de la fleche.
         this.vue.setWfleche(30);
         this.vue.setHfleche(30);
-        // La fleche se place toujours ici x
+
+        // La fleche a toujours la même coordonnée x.
         this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
 
-        // Son placement en y dépend de ce qu'elle pointe
-        if (this.vue.getNbJoueur() == 1) {
+        // Le placement de la fleche en y dépend de ce qu'elle pointe & du nbJoueurs.
+        if (this.vue.getNbJoueur() == 1)
             this.vue.setYfleche(
                     (this.vue.getFleche() == 0) ? ((12 * this.vue.getHeight() / 100) + this.vue.getSautLigne())
                             : (12 * this.vue.getHeight() / 100) + this.vue.getSautLigne() * (this.vue.getFleche() + 2));
-        } else {
+        else
             this.vue.setYfleche((this.vue.getFleche() <= 1)
                     ? ((12 * this.vue.getHeight() / 100) + this.vue.getSautLigne() * (2 * this.vue.getFleche() + 1))
                     : (12 * this.vue.getHeight() / 100) + this.vue.getSautLigne() * (this.vue.getFleche() + 3));
 
-        }
-        this.vue.setNomJ1(createImageOfMot(this.vue.getNom1())); // On update les noms à afficher.
+        // On update les noms à afficher.
+        this.vue.setNomJ1(createImageOfMot(this.vue.getNom1()));
         this.vue.setNomJ2(
                 (this.vue.getNbJoueur() == 2) ? createImageOfMot(this.vue.getNom2()) : createImageOfMot(null));
     }
 
     // Affiche les images.
-    public void affiche(Graphics g) { // Prend en argument le contexte graphique.
+    @Override
+    public void affiche(Graphics g) { // Prend en argument le contexte graphique de la vue.
         Graphics2D g2 = (Graphics2D) this.vue.getView().getGraphics();
-        // Affichage terrain
+
+        // Affichage background.
         g2.drawImage(this.vue.getBackgroundView(), 0, 0, this.vue.getWidth(), this.vue.getHeight(), null);
 
-        // Affichage des boutons
+        // Affichage des boutons.
         int x = (9 * this.vue.getWidth() / 100), y = (12 * this.vue.getHeight() / 100);
         int w = 30, h = 30, espacement = 15, ecart = 20;
         x = afficheMot(g2, this.vue.getMessageNom(), x, y, w, h, ecart, espacement);
@@ -99,53 +99,61 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
         y += this.vue.getSautLigne();
         afficheMot(g2, this.vue.getButtonQuitter(), x, y, w, h, ecart, espacement);
 
-        // Affichage de la fleche
+        // Affichage de la fleche.
         g2.drawImage(this.vue.getFlecheView(), this.vue.getXfleche(), this.vue.getYfleche(), this.vue.getWfleche(),
                 this.vue.getHfleche(), null);
 
-        // Affichage final
+        // Affichage final.
         g.drawImage(this.vue.getView(), 0, 0, this.vue.getWidth(), this.vue.getHeight(), null);
-        g.dispose(); // On libère les ressource
+
+        g.dispose(); // On libère les ressources.
     }
 
-    // Fait tourner cet état en boucle.
+    // Fait tourner cet état.
+    @Override
     public void running() {
-        this.vue.setSautLigne(50);
-        this.vue.setFleche(0); // On pointe le premier bouton
-        while (Vue.isMenuLancement) {
-            this.update();
-            this.affiche(this.vue.getGraphics());
+        // Initialisation des valeurs initiales des variables avant lancement.
+        this.vue.setSautLigne(50); // Distance entre 2 lignes.
+        this.vue.setFleche(0); // On pointe le premier bouton.
+
+        while (Vue.isMenuLancement) { // Tant que l'on est dans le menu LANCEMENT :
+            this.update(); // On update.
+            this.affiche(this.vue.getGraphics()); // On affiche.
         }
     }
 
-    // Gère les boutons.
+    // Gestion des boutons.
     @Override
-    public void keyControlPressed(KeyEvent e) {
+    public void keyControlPressed(KeyEvent e) { // KeyEvent e de la vue.
+
+        if (this.vue.getFleche() == 0) { // Si la flèche pointe sur le bouton "Nom 1" :
+            this.vue.setNom1(
+                    (this.vue.getNom1().length() < 16) ? this.vue.getNom1() + keyWriterNom(e) : this.vue.getNom1());
+            if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
+                this.vue.setNom1("");
+        }
+
+        if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (this.vue.getFleche() == this.vue.getNbJoueur()) { // Si la flèche pointe sur le bouton "Jouer" :
+                this.vue.geteGame().createPartie(); // On crée une partie.
+                Vue.isMenuLancement = false; // On quitte le menu LANCEMENT.
+                Vue.isRunningGame = true; // On passe à la GAME.
+            }
+
+            // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :
+            if (this.vue.getFleche() == this.vue.getNbJoueur() + 1) {
+                Vue.isMenuLancement = false; // On quitte le menu LANCEMENT.
+                Vue.isMenuDemarrer = true; // On passe dans le menu DEMARRER.
+            }
+            if (this.vue.getFleche() == this.vue.getNbJoueur() + 2) { // Si la flèche pointe sur le bouton "Quitter" :
+                System.out.println("À la prochaine !");
+                Vue.isQuitte = true; // On quitte le jeu.
+                System.exit(0); // On ferme toutes les fenêtres & le programme.
+            }
+        }
+
+        // Sinon, les autres cas dépendent du nombre de joueurs.
         if (this.vue.getNbJoueur() == 1) {
-            if (this.vue.getFleche() == 0) { // La flèche pointe sur le bouton "Nom 1" :
-                this.vue.setNom1(
-                        (this.vue.getNom1().length() < 16) ? this.vue.getNom1() + keyWriterNom(e) : this.vue.getNom1());
-                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
-                    this.vue.setNom1("");
-            }
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.vue.getFleche() == 1) { // La flèche pointe sur le bouton "Jouer" :
-                    this.vue.geteGame().createPartie(); // On crée une partie.
-                    Vue.isMenuLancement = false;
-                    Vue.isRunningGame = true;
-                }
-
-                if (this.vue.getFleche() == 2) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
-                    Vue.isMenuLancement = false; // On quitte le menu 2.
-                    Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
-                }
-                if (this.vue.getFleche() == 3) { // La flèche pointe sur le bouton "Quitter" :
-                    System.out.println("À la prochaine !");
-                    Vue.isQuitte = true; // On quitte l'application.
-                    System.exit(0); // On ferme toutes les fenêtres & le programme.
-                }
-            }
-
             /// Gestion de la flèche :
             if (e.getKeyCode() == KeyEvent.VK_UP)
                 this.vue.setFleche((this.vue.getFleche() == 0) ? 3 : this.vue.getFleche() - 1);
@@ -156,34 +164,11 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
         }
 
         if (this.vue.getNbJoueur() == 2) {
-            if (this.vue.getFleche() == 0) { // La flèche pointe sur le bouton "Nom 1" :
-                this.vue.setNom1(
-                        (this.vue.getNom1().length() < 16) ? this.vue.getNom1() + keyWriterNom(e) : this.vue.getNom1());
-                if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
-                    this.vue.setNom1("");
-            }
             if (this.vue.getFleche() == 1) { // La flèche pointe sur le bouton "Nom 2" :
                 this.vue.setNom2(
                         (this.vue.getNom2().length() < 16) ? this.vue.getNom2() + keyWriterNom(e) : this.vue.getNom2());
                 if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_DELETE)
                     this.vue.setNom2("");
-            }
-            if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                if (this.vue.getFleche() == 2) { // La flèche pointe sur le bouton "Jouer" :
-                    this.vue.geteGame().createPartie(); // On crée une partie.
-                    Vue.isMenuLancement = false;
-                    Vue.isRunningGame = true;
-                }
-
-                if (this.vue.getFleche() == 3) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :
-                    Vue.isMenuLancement = false; // On quitte le menu 2.
-                    Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
-                }
-                if (this.vue.getFleche() == 4) { // La flèche pointe sur le bouton "Quitter" :
-                    System.out.println("À la prochaine !");
-                    Vue.isQuitte = true; // On quitte l'application.
-                    System.exit(0); // On ferme toutes les fenêtres & le programme.
-                }
             }
 
             /// Gestion de la flèche :
@@ -192,16 +177,14 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
 
             if (e.getKeyCode() == KeyEvent.VK_DOWN)
                 this.vue.setFleche((this.vue.getFleche() == 4) ? 0 : this.vue.getFleche() + 1);
-
         }
-
     }
 
     @Override
     public void keyControlReleased(KeyEvent e) {
-        System.out.println("Menu LANCEMENT - Key Released");
     }
 
+    // Gère l'écriture du nom.
     private String keyWriterNom(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_0 || e.getKeyCode() == KeyEvent.VK_NUMPAD0 || e.getKeyChar() == '0')
             return "0";

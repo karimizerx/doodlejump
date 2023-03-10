@@ -123,7 +123,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     }
                 }
 
-                if (this.eGame.endGame()) { // Si c'est la fin de la GAME (quelqu'un a perdu) :
+                if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin
+                        && this.eGame.endGame()) { // Si c'est la fin de la GAME (quelqu'un a perdu) :
                     // On met à jour toutes les variables boolean.
                     isRunningGame = false;
                     isMenuFin = true;
