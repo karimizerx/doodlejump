@@ -333,10 +333,10 @@ public class Game extends Etat {
         this.vue.getTerrain().setHost(this.vue.getServeur());
     }
 
-    // Gère le cas de fin de la GAME
+    // Gère le cas de fin de la GAME.
     public boolean endGame() {
         boolean isFin = false;
-        // Si un joueur à perdu, c'est fini
+        // Si un joueur a perdu, c'est fini !
         for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
             Joueur j = this.vue.getTerrain().getListeJoueurs().get(i);
             isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.vue.getHeight()) ? true : false;
@@ -344,11 +344,14 @@ public class Game extends Etat {
         return isFin;
     }
 
+    // A REFAIRE !s
     private void pause() {
-        if (this.vue.getTerrain().isPause())
+        if (this.vue.getTerrain().isPause()) {
             Vue.isRunningGame = true;
-        else {
+            this.vue.getTerrain().setPause(false);
+        } else {
             Vue.isRunningGame = false;
+            this.vue.getTerrain().setPause(true);
             System.out.println("PAUSE !");
         }
 
