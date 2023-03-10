@@ -24,10 +24,6 @@ public class Game extends Etat { // C'est donc un Etat.
     // Initialise les images qui ne changeront jamais.
     @Override
     public void initFixe() {
-        // Stock des listes qui elles-mêmes stockes les données d'image de chaque joueur
-        // et qui ne changent jamais, i.e le perso et le nom, contrairement au score
-        this.vue.setJoueurDataList(new ArrayList<ArrayList<BufferedImage>>());
-
         try {
             try {
                 this.vue.setTerrainView(
@@ -58,6 +54,10 @@ public class Game extends Etat { // C'est donc un Etat.
     // Initialise les images & les autres variables.
     @Override
     public void init() {
+        // Stock des listes qui elles-mêmes stockes les données d'image de chaque joueur
+        // et qui ne changent jamais, i.e le perso et le nom, contrairement au score
+        this.vue.setJoueurDataList(new ArrayList<ArrayList<BufferedImage>>());
+
         // Double try_catch pour gérer la différence entre windows & linux
         try {
             try {
@@ -161,7 +161,6 @@ public class Game extends Etat { // C'est donc un Etat.
             Personnage p = this.vue.getTerrain().getListeJoueurs().get(i / 2).getPerso();
 
             // Affichage du personnage :
-            System.out.println("p.x = " + p.getX());
             g2.drawImage(jPersoData, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
             int c = (int) ((20 * (jNomData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
             afficheMot(g2, jNomData, (int) (p.getX() - c), (int) p.getY() - 15, 20, 20, 15, 10);
@@ -183,7 +182,7 @@ public class Game extends Etat { // C'est donc un Etat.
 
     // Fait tourner cet état en boucle.
     public void running() {
-        System.out.println("===> On entre dans Game.running");
+        this.vue.setDeltaTime(10);
         // Gestion de l'ups constant
         double cnt = 0.0; // Compteur du nombre d'update
         double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
@@ -201,8 +200,8 @@ public class Game extends Etat { // C'est donc un Etat.
                 acc -= this.vue.getDeltaTime();
                 cnt += this.vue.getDeltaTime(); // On accumule le nombre d'update
             }
+            affiche(this.vue.getGraphics()); // On affiche les images une fois les données update
         }
-        affiche(this.vue.getGraphics()); // On affiche les images une fois les données update
     }
 
     // Gère les boutons.
@@ -211,8 +210,7 @@ public class Game extends Etat { // C'est donc un Etat.
         System.out.println("Game - Key Pressed : " + this.vue.getFleche());
         Personnage p1, p2;
         if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
-            p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du premier
-                                                                            // joueur.
+            p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du 1er joueur.
         else
             p1 = this.vue.getTerrain().getListeJoueurs().get(this.vue.getTerrain().playerID).getPerso();
 
@@ -328,7 +326,7 @@ public class Game extends Etat { // C'est donc un Etat.
         }
 
         int i = this.vue.isMultijoueur() ? this.vue.isHost() ? 0 : 1 : 0;
-        this.vue.setTerrain(new Terrain(this.vue, ljou, this.vue.getHeight(), this.vue.getWidth(), this.vue.isHost(),
+        this.vue.setTerrain(new Terrain(ljou, this.vue.getHeight(), this.vue.getWidth(), this.vue.isHost(),
                 this.vue.isMultijoueur(), i)); // On crée le
         this.vue.getTerrain().setClient(this.vue.getJconnect());
         this.vue.getTerrain().setHost(this.vue.getServeur());

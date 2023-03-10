@@ -121,7 +121,6 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu LANCEMENT - Key Pressed : " + this.vue.getFleche());
         if (this.vue.getNbJoueur() == 1) {
             if (this.vue.getFleche() == 0) { // La flèche pointe sur le bouton "Nom 1" :
                 this.vue.setNom1(
@@ -134,11 +133,6 @@ public class MenuLancement extends Etat { // C'est donc un Etat.
                     this.vue.geteGame().createPartie(); // On crée une partie.
                     Vue.isMenuLancement = false;
                     Vue.isRunningGame = true;
-                    System.out.println("demarrer : " + Vue.isMenuDemarrer);
-                    System.out.println("classement : " + Vue.isMenuClassement);
-                    System.out.println("lancement : " + Vue.isMenuLancement);
-                    System.out.println("jeu : " + Vue.isRunningGame);
-                    System.out.println("fin : " + Vue.isMenuFin);
                 }
 
                 if (this.vue.getFleche() == 2) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :

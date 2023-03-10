@@ -24,14 +24,14 @@ public class MenuFin extends Etat { // C'est donc un Etat.
     // Initialise les images qui ne changeront jamais.
     @Override
     public void initFixe() {
-        // Toutes les variables/images initialisées dépendent du nombre de joueurs.
-        this.vue.setScoreFinalView(new ArrayList<ArrayList<BufferedImage>>());
-        this.vue.setHightScoreView(new ArrayList<ArrayList<BufferedImage>>());
     }
 
     // Initialise les images & les autres variables.
     @Override
     public void init() {
+        // Toutes les variables/images initialisées dépendent du nombre de joueurs.
+        this.vue.setScoreFinalView(new ArrayList<ArrayList<BufferedImage>>());
+        this.vue.setHightScoreView(new ArrayList<ArrayList<BufferedImage>>());
         if (this.vue.getNbJoueur() == 1) { // S'il n'y a qu'1 joueur
             this.vue.setTitreStatut(createImageOfMot("Game Over"));
             // Ce qu'on va afficher pour le score en fin de partie :
@@ -153,7 +153,6 @@ public class MenuFin extends Etat { // C'est donc un Etat.
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu FIN - Key Pressed : " + this.vue.getFleche());
         if (Vue.isMenuFin) { // Si on est au niveau du menu FIN :
             /// Gestion du bouton "ENTREE" :
             if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :

@@ -154,7 +154,6 @@ public class MenuClassement extends Etat { // C'est donc un Etat.
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu CLASSEMENT - Key Pressed");
         /// Gestion du bouton "ENTREE" :
         if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
             if (this.vue.getFleche() == 0) { // La flèche pointe sur le bouton "Retour au menu DEMARRER" :

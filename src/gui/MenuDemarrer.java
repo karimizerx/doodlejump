@@ -48,6 +48,9 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
         this.vue.setButtonLb(createImageOfMot("Classement"));
         this.vue.setButtonQuitter(createImageOfMot("Quitter"));
         this.vue.setButtonRetourMenu(createImageOfMot("Revenir au menu"));
+
+        this.vue.setMultijoueur(false);
+        this.vue.setHost(false);
     }
 
     // Initialise les images & les autres variables.
@@ -112,8 +115,6 @@ public class MenuDemarrer extends Etat { // C'est donc un Etat.
     // Gère les boutons.
     @Override
     public void keyControlPressed(KeyEvent e) {
-        System.out.println("Menu DEMARRER - Key Pressed : " + this.vue.getFleche());
-
         /// Gestion du bouton "ENTREE" :
         if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
             if (this.vue.getFleche() == 0) { // La flèche pointe sur le bouton "Jouer Solo" :

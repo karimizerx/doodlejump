@@ -1,19 +1,14 @@
 package gui;
 
-// Import d'autres dossiers
-import gameobjects.*;
-import leaderboard.*;
-import multiplayer.*;
-
 // Import de packages java
 import java.io.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
-import javax.swing.*;
 import javax.imageio.*;
 
+// Classe abstraite représentant un état.
 public abstract class Etat {
 
     protected Vue vue;
@@ -48,7 +43,7 @@ public abstract class Etat {
     protected ArrayList<BufferedImage> createImageOfMot(String mot) {
         // On crée une liste d'image qui va contenir toutes les lettres du mot
         ArrayList<BufferedImage> motView = new ArrayList<BufferedImage>();
-        if (mot == null) {// S'il n'y a rien on retourne le mot "espace ".
+        if (mot == null) { // S'il n'y a rien on retourne le mot "espace ".
             motView.add(null);
             return motView;
         }
