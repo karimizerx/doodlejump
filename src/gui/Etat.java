@@ -8,17 +8,17 @@ import java.awt.image.*;
 import java.awt.event.*;
 import javax.imageio.*;
 
-// Classe abstraite représentant un état.
+// Classe abstraite représentant un état du jeu.
 public abstract class Etat {
 
-    protected Vue vue;
+    protected Vue vue; // Ne possède qu'un champs vue, pour gérer ses attributs.
 
     public Etat(Vue vue) {
         this.vue = vue;
     }
 
-    /// Méthodes abstract redéfinies dans chaque sous-classe d'Etat.
-    // Initialise les images qui ne changeront jamais.
+    /// Méthodes abstract redéfinies dans chaque sous-classe d'Etat :
+    // Initialise les images & variables qui ne changeront jamais.
     abstract void initFixe();
 
     // Initialise les images & les autres variables.
@@ -33,13 +33,13 @@ public abstract class Etat {
     // Fait tourner cet état en boucle.
     abstract void running();
 
-    // Gère les boutons.
+    // Gestion des boutons.
     abstract void keyControlPressed(KeyEvent e);
 
     abstract void keyControlReleased(KeyEvent e);
 
     /// Méthodes générales utiles :
-    // Crée une liste d'images représentant un mot
+    // Crée une liste d'images représentant un mot.
     protected ArrayList<BufferedImage> createImageOfMot(String mot) {
         // On crée une liste d'image qui va contenir toutes les lettres du mot
         ArrayList<BufferedImage> motView = new ArrayList<BufferedImage>();
@@ -68,7 +68,7 @@ public abstract class Etat {
         return motView; // Cette méthode ne gère pas les caractères spéciaux (excepté " ").
     }
 
-    // Permet d'afficher un mot
+    // Affiche un mot.
     protected int afficheMot(Graphics2D g2, ArrayList<BufferedImage> mot, int x, int y, int w, int h, int ecart,
             int espacement) {
         // L'écart = l'espace entre 2 lettre, l'espacement = le caractère espace
@@ -83,7 +83,7 @@ public abstract class Etat {
         return x;
     }
 
-    // Permet d'afficher un point/double point
+    // Affichent un point/double point.
     protected int affichePoint(Graphics2D g2, int x, int y, int w, int h) {
         g2.setColor(Color.BLACK);
         g2.fillOval(x, y - h, w, h);

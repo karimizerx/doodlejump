@@ -49,6 +49,10 @@ public class Game extends Etat { // C'est donc un Etat.
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // On initialise les variables du mode multijoueurs.
+        this.vue.setMultijoueur(false);
+        this.vue.setHost(false);
     }
 
     // Initialise les images & les autres variables.

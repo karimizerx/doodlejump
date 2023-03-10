@@ -12,49 +12,54 @@ import java.awt.image.*;
 import java.awt.event.*;
 import javax.swing.*;
 
-// S'occupe de tout l'affichage du jeu, des menus jusqu'à une partie.
+// JPanel s'occupant de tout l'affichage du jeu.
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique l'état actuel du panel.
-    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement,
-            isMenuPause;
-    private final int width, height; // Dimensions du panel
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement;
+    private final int width, height; // Dimensions du panel.
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
     private String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
+
+    // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
             terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
             buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
-    private Terrain terrain; // Le terrain sur lequel on joue
-    private double deltaTime; // Le temps nécessaire pour update le jeu
-    private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private boolean multijoueur, host;
+
+    private double deltaTime; // Le temps nécessaire pour update le jeu.
+    private Terrain terrain; // Le terrain sur lequel on joue.
+    private Thread thread; // La thread liée à ce pannel, qui lance l'exécution.
+
+    // Variables liées au mode multijoueurs.
     private Serveur serveur;
     private JoueurConnecte jconnect;
+    private boolean multijoueur, host;
 
+    // Ces variables représentent les différents états du jeu.
+    private Game eGame;
+    private MenuFin eMenuFin;
     private MenuDemarrer eMenuDemarrer;
     private MenuClassement eMenuClassement;
     private MenuLancement eMenuLancement;
-    private MenuFin eMenuFin;
-    private Game eGame;
 
     public Vue(App frame, String skin) {
-        // Taille du panel
+        // Taille du panel.
         this.width = frame.getWidth();
         this.height = frame.getHeight();
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
 
+        // Chemins des images.
         this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
         this.winchemin = "src/gui/images/" + skin + "/";
 
-        // Gestion d'évènements boutons
+        // Gestion d'évènements boutons.
         this.addKeyListener(this);
     }
 
-    /// Méthodes de la classe
-
+    /// Méthodes de la classe :
     // Initialise les images qui changent pas en fonction de l'état.
     private void initGENERAL() {
         this.eMenuDemarrer.initFixe();
@@ -64,17 +69,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.eMenuFin.initFixe();
     }
 
-    // Fait tourner le jeu Doodle Jump au complet
-    // Cette méthode contient les traitements à exécuter
+    // Fait tourner le jeu Doodle Jump au complet.
+    // Cette méthode contient les traitements à exécuter.
     @Override
     public void run() {
         try {
-            // Cette méthode (ci dessous) demande à ce que ce composant obtienne le focus.
-            // Le focus est le fait qu'un composant soit sélectionné ou pas.
+            // Cette méthode (requestFocusInWindow) demande à ce que ce composant obtienne
+            // le focus. Le focus est le fait qu'un composant soit sélectionné ou pas.
             // Le composant doit être afficheable (OK grâce à addNotify()).
             this.requestFocusInWindow();
 
-            /// ETAPE 1 :
+            /// ETAPE 1 : Premières initialisations.
             // On initialise les différents états.
             this.eMenuDemarrer = new MenuDemarrer(this);
             this.eMenuClassement = new MenuClassement(this);
@@ -82,14 +87,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             this.eGame = new Game(this);
             this.eMenuFin = new MenuFin(this);
 
-            initGENERAL(); // On initialise les images qui ne changent pas en fonction de l'état.
+            this.initGENERAL(); // On initialise les images qui ne changent pas en fonction de l'état.
 
             while (!isQuitte) { // Tant qu'on a pas quitter le jeu :
 
-                // ETAPE 2 : On gère les différent statut du jeu.
-                // càd : On crée un état à partie des données actuelles.
-                // (On initialise les images/variables de cet état.)
-                // On lance l'exécution de cet état.
+                /// ETAPE 2 : On gère les différents états du jeu.
+                // 1. On crée un état à partie des données actuelles.
+                // 2. (On initialise les images/variables de cet état.)
+                // 3. On lance l'exécution de cet état.
 
                 if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
                     this.eMenuDemarrer = new MenuDemarrer(this);
@@ -137,18 +142,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
-    // Rend ce composant affichable en le connectant à une ressource d'écran
+    // Rend ce composant affichable en le connectant à une ressource d'écran.
     @Override
     public void addNotify() {
         super.addNotify();
-        // Si on a toujours pas lancer le jeu
-        if (this.thread == null) {
-            // Créer une nouvelle instance en précisant les traitements à exécuter (run)
-            // This est l'objet qui implémente Runnable (run()), contenant les traitements
+        if (this.thread == null) { // Si on a toujours pas lancer le jeu :
+            // Créer une nouvelle instance en précisant les traitements à exécuter (run).
+            // This est l'objet qui implémente Runnable (run()), contenant les traitements.
             this.thread = new Thread(this);
-            isQuitte = false;
-            isMenuDemarrer = true; // Indique le jeu est lancé
-            this.thread.start(); // Invoque la méthode run()
+            isQuitte = false; // Indique que l'on est dans le jeu.
+            isMenuDemarrer = true; // Indique le jeu est lancé.
+            this.thread.start(); // Invoque la méthode run().
         }
     }
 
@@ -181,9 +185,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // });
     // }
 
-    /// KeyListener qui gère les boutons :
+    /// KeyListener qui gèrent les boutons.
     @Override
-    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons :
+    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons.
         if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
             this.eMenuDemarrer.keyControlPressed(e);
         }
@@ -206,7 +210,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     @Override
-    public void keyReleased(KeyEvent e) { // On vient de relâcher des boutons :
+    public void keyReleased(KeyEvent e) { // On vient de relâcher des boutons.
         if (isRunningGame) { // Si on est en cours de GAME :
             this.eGame.keyControlReleased(e);
         }
