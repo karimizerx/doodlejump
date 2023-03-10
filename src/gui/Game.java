@@ -317,7 +317,7 @@ public class Game extends Etat {
         double z = ((this.vue.getHeight() * 0.09746) > (this.vue.getWidth() * 0.15625))
                 ? (this.vue.getWidth() * 0.15625)
                 : (this.vue.getHeight() * 0.09746);
-        Personnage p = new Personnage(this.vue.getWidth() / 2, this.vue.getHeight() - 300, z, z,
+        Personnage p = new Personnage(this.vue.getWidth() / 2, this.vue.getHeight() - z, z, z,
                 -(this.vue.getHeight() * 0.0097465887));
         ljou.add(new Joueur(p, this.vue.getNom1()));
         if (this.vue.getNbJoueur() == 2) { // S'il y a 2 joueurs :
