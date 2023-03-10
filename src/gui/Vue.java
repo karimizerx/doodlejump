@@ -29,7 +29,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
 
-    private double deltaTime; // Le temps nécessaire pour update le jeu.
+    private double deltaTime; // Le temps nécessaire pour update une GAME.
     private Terrain terrain; // Le terrain sur lequel on joue.
     private Thread thread; // La thread liée à ce pannel, qui lance l'exécution.
 
@@ -156,35 +156,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             this.thread.start(); // Invoque la méthode run().
         }
     }
-
-    // Gestion des boutons
-    // private void pause() {
-    // this.terrain.setPause(!this.terrain.isPause());
-    // this.menuPause = new JFrame();
-    // this.menuPause.setBounds((int) terrain.getWidth() * 3 / 2 - 50, (int)
-    // terrain.getHeight() / 2 - 60, 150, 120);
-    // this.menuPause.setResizable(false);
-    // this.menuPause.setLayout(new FlowLayout());
-    // this.menuPause.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-    // JButton cont = new JButton("Continuer");
-    // JButton exit = new JButton("Menu principal");
-
-    // this.menuPause.add(cont);
-    // this.menuPause.add(exit);
-    // this.menuPause.setVisible(true);
-
-    // cont.addActionListener(ev -> {
-    // this.menuPause.dispose();
-    // this.terrain.setPause(!this.terrain.isPause());
-    // });
-
-    // exit.addActionListener(ev -> {
-    // this.menuPause.dispose();
-    // JFrame retourMenu = new App();
-    // retourMenu.setVisible(true);
-    // });
-    // }
 
     /// KeyListener qui gèrent les boutons.
     @Override
