@@ -513,7 +513,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 helicoptImage = ImageIO.read(new File(chemin+ "/fusee.png"));
                 fuseeImage= ImageIO.read(new File(chemin+ "/helicopter.png"));
                 monstre1Image=ImageIO.read(new File(chemin+ "/monstres1.png"));
-                // monstre2Image
+                monstre2Image=ImageIO.read(new File(chemin+ "/monstre2.png"));
                 // monstre3Image
 
 
@@ -615,15 +615,15 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
         for(Monstre m:terrain.getMontresArrayList()){
             switch (m.getId()) {
-                case 1:
-                    g2.drawImage(monstre1Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
-                    break;
-                case 2:
-                    g2.drawImage(monstre2Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
-                    break;
-                case 3:
-                    g2.drawImage(monstre3Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
-                    break;
+                // case 1:
+                //     g2.drawImage(monstre1Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
+                //     break;
+                // case 2:
+                //     g2.drawImage(monstre2Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
+                //     break;
+                // case 3:
+                //     g2.drawImage(monstre3Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);
+                //     break;
             
                 default:
                     g2.drawImage(monstre1Image ,(int) m.getX(), (int) (m.getY()),(int)m.getWidth(),(int) m.getHeight(), null);

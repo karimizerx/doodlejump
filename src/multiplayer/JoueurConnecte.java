@@ -6,6 +6,7 @@ import java.io.*;
 import javax.swing.*;
 
 import gameobjects.Joueur;
+import gameobjects.Monstre;
 import gameobjects.Plateforme;
 import gameobjects.Terrain;
 
@@ -56,6 +57,7 @@ public class JoueurConnecte {
         try {
             in = new ObjectInputStream(client.getInputStream());
             terrain.setPlateformesListe((ArrayList<Plateforme>)in.readObject());
+            terrain.setMonstres((ArrayList<Monstre>)in.readObject());
             terrain.getListeJoueurs().set(0,((Joueur)in.readObject()));
         }catch (ClassNotFoundException c){
             c.printStackTrace();

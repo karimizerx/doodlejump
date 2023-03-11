@@ -7,8 +7,8 @@ import java.util.TimerTask;
 public class Helicoptere extends Items {
 
     long time;
-    public Helicoptere(double x, double y, double w, double h, double saut,double time) {
-        super(x, y, w, h, saut, false);
+    public Helicoptere(double x, double y, double w, double h, double saut,double off,double time) {
+        super(x, y, w, h, saut, true,off);
         this.time=(long)time*1000;
     }
     // Méthode move !
@@ -19,10 +19,12 @@ public class Helicoptere extends Items {
             @Override
             public void run() {
                 p.setDy(Helicoptere.this.getSaut());
+                // p.setCollide(false);
             }
         };
         timer.schedule(task, this.time);
         p.setDy(0);
+        // p.setCollide(true);
     }
 
 }

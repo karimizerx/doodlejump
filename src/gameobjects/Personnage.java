@@ -42,56 +42,48 @@ public class Personnage extends GameObject {
                 && (this.getY() + 0.87 * this.getHeight() >= pf.getY())
                 && (this.getY() + 0.87 * this.getHeight() <= pf.getY() + pf.getHeight())
                 && (this.getDy() > 0)) { // Si le personnage descent
-                    if(pf.getItem()!=null){
-                        this.collides_item(pf.getItem(), deltaTime);
+                    if(pf.getItem()==null){
                         dy = pf.getSaut() * deltaTime;
                     }else 
+                        this.collides_item(pf.getItem(), deltaTime);
                         dy = pf.getSaut() * deltaTime;
         }
     }
 
     // Colision entre le personnage et un item
     public void collides_item(Items it, double deltaTime) {
-        if(!collides) return;
-        if (it.getNeedsHead()) {
-            //0.43 c le ccentre .87 centre vertical 
-            if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) 
-            // si ça ne dépasse pas par la gauche de l'item.
-                    // + witdh*0.65 sert à ne compter que le x du dernier pied
-                    && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
-                    // si ça ne dépasse pas par la droite de la item.
-                    // + witdh*0.25 sert à ne compter que le x du premier pied
-                    && (this.getY() + 0.87 * this.getHeight() >= it.getY())
-                    && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())) { // Si le personnage descend
-
-                        // double epsilone=0.5;
-                        // boolean ver= ((Math.abs(it.getX()-this.getX())<epsilone) ||Math.abs(it.getX()-(this.getX()+this.getWidth()))<epsilone||Math.abs(this.getX()-(it.getX()+it.getWidth()))<epsilone||Math.abs(this.getX()+this.getWidth()-(it.getX()+it.getWidth()))<epsilone);
-                        // boolean hor= ((Math.abs(it.getX()-this.getX())<epsilone) ||Math.abs(it.getY()-(this.getX()+this.getHeight()))<epsilone||Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()-(it.getY()+it.getHeight()))<epsilone);
-
-                        it.runEffect(this);
-                it=null;
-                System.out.println("test need head");
-            }
-        } else {
-            if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
-                    // + witdh*0.5 sert à ne compter que le x du dernier pied
-                    && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
-                    // si ça ne dépasse pas par la droite de la item.
-                    // + witdh*0.25 sert à ne compter que le x du premier pied
-                    && (this.getY() <= (it.getY() + it.getHeight()))
-                    && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))) {
-                        it.runEffect(this);
-                        it=null;
-                        System.out.println("test dont need head ");
-            }   
+        // if(!collides) return;
+        // if (it.getNeedsHead()) {
+        //     //0.43 c le ccentre .87 centre vertical 
+        //     if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) 
+        //     // si ça ne dépasse pas par la gauche de l'item.
+        //             // + witdh*0.65 sert à ne compter que le x du dernier pied
+        //             && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
+        //             // si ça ne dépasse pas par la droite de la item.
+        //             // + witdh*0.25 sert à ne compter que le x du premier pied
+        //             && (this.getY() + 0.87 * this.getHeight() >= it.getY())
+        //             && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())) { // Si le personnage descend
+        //                 it.runEffect(this);
+        //         it=null;
+        //         System.out.println("test need head");
+        //     }
+        double epsilone=5;
+        boolean ver= ((Math.abs(it.getX()-this.getX())<epsilone) ||Math.abs(it.getX()-(this.getX()+this.getWidth()))<epsilone||Math.abs(this.getX()-(it.getX()+it.getWidth()))<epsilone||Math.abs(this.getX()+this.getWidth()-(it.getX()+it.getWidth()))<epsilone);
+        boolean horHead= ((Math.abs(it.getY()-this.getY())<epsilone) ||Math.abs(it.getY()-(this.getY()+this.getHeight()*0.13))<epsilone||Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()*0.13-(it.getY()+it.getHeight()))<epsilone);
+        boolean horNoHead= ((Math.abs(it.getY()-this.getY())<epsilone) ||Math.abs(it.getY()-(this.getY()+this.getHeight()))<epsilone||Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()-(it.getY()+it.getHeight()))<epsilone);
+        
+        if (ver && collides) if ((it.getNeedsHead() && horHead ) ||(!it.getNeedsHead() && horNoHead) ){
+            it.runEffect(this);
+            it=null;
+            collides=true;
         }
 
     }
 
     public boolean collides_monstre(Monstre m, double deltaTime) {
-        double epsilone=5;
+        double epsilone=3;
         boolean ver= ((Math.abs(m.getX()-this.getX())<epsilone) ||Math.abs(m.getX()-(this.getX()+this.getWidth()))<epsilone||Math.abs(this.getX()-(m.getX()+m.getWidth()))<epsilone||Math.abs(this.getX()+this.getWidth()-(m.getX()+m.getWidth()))<epsilone);
-        boolean hor= ((Math.abs(m.getY()-this.getY())<epsilone) ||Math.abs(m.getY()-(this.getY()+this.getHeight()))<epsilone||Math.abs(this.getY()-(m.getY()+m.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()-(m.getY()+m.getHeight()))<epsilone);
+        boolean hor= ((Math.abs(m.getY()-this.getY())<epsilone) ||Math.abs(m.getY()-(this.getY()-this.getHeight()))<epsilone||Math.abs(this.getY()-(m.getY()-m.getHeight()))<epsilone||Math.abs(this.getY()-this.getHeight()-(m.getY()-m.getHeight()))<epsilone);
         if(ver || hor) System.out.println("ver ="+ver+", hor="+hor);
         return (ver && hor);   
     }
@@ -113,6 +105,14 @@ public class Personnage extends GameObject {
     
     public void dead(){
         collides=false;
+        dy=0;
+        // pour le debug:
+        // try {
+        //     wait(1000*30);
+        // } catch (InterruptedException e) {
+        //     System.out.println("Personnage.dead()");
+        //     e.printStackTrace();
+        // }
     }
 
     /*
@@ -205,5 +205,10 @@ public class Personnage extends GameObject {
 
     public void setcanShoot(boolean canShoot) {
         this.canShoot = canShoot;
+    }
+
+                
+    public void setCollide(boolean p){
+        collides=p;
     }
 }

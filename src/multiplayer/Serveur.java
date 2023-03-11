@@ -34,6 +34,7 @@ public class Serveur implements Runnable {
         try {
             in =  new ObjectOutputStream(serveur.client.getOutputStream());
             in.writeObject(terrain.getPlateformesListe());
+            in.writeObject(terrain.getMontresArrayList());
             in.writeObject(terrain.getListeJoueurs().get(0));
         } catch (Exception e) {
             e.printStackTrace();

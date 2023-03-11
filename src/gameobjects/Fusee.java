@@ -15,8 +15,8 @@ public class Fusee extends Items {
      * @param saut
      * @param time
      */
-    public Fusee(double x, double y, double w, double h, double saut,double time) {
-        super(x, y, w, h, saut, false);
+    public Fusee(double x, double y, double w, double h, double saut,double off,double time) {
+        super(x, y, w, h, saut, false,off);
         this.time=(long)time*1000;
 
     }
@@ -29,10 +29,13 @@ public class Fusee extends Items {
             public void run() {
                 p.setDy(Fusee.this.getSaut());
                 System.out.println(p.getDy());
+                // p.setCollide(false);
             }
         };
         timer.schedule(task, this.time);
         p.setDy(0);
+        // p.setCollide(true);
+
     }
 
 

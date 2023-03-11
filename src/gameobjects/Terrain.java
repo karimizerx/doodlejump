@@ -66,8 +66,8 @@ public class Terrain {
             // On définit la largeur/hauteur des plateformes de base
             int x = new Random().nextInt((int) (this.width - w));
             int y = (int)this.height/4;
-            //TODO add itens to plateforme
-            // monstres.add(new Monstre(x, y, 80,90, -(this.height * 0.0013645224), 2));
+            //TODO add items to plateforme
+            monstres.add(new Monstre(x, y, 80,90, -(this.height * 0.0013645224), new Random().nextInt(2)+1));
 
         }
     } // On s'assure d'abord toujours une solution au début
@@ -142,6 +142,8 @@ public class Terrain {
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                             pf.setItem(null);
+                            if (new Random().nextDouble(difficulty) < difficulty/8 && !(pf instanceof MovingPlateforme) )
+                                pf.addItem((int) pf.getX(), (int) (pf.getY()-2*pf.getHeight()), 42, 42);
                 }
             }
             ArrayList<Monstre> toBeRemoved=new ArrayList<Monstre>();
@@ -273,6 +275,10 @@ public class Terrain {
 
     public ArrayList<Monstre> getMontresArrayList(){
         return monstres;
+    }
+
+    public void setMonstres(ArrayList<Monstre> m){
+        monstres=m;
     }
 
 }
