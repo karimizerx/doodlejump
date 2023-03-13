@@ -138,7 +138,7 @@ public class Terrain {
                     if(willMove(difficulty)){
                        plateformesListe.remove(pf);
                        plateformesListe.add(new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(), -(this.height * 0.0013645224), (0.003125 * this.width)));
-                       plateformesListe.get(plateformesListe.size()-1).setDx((0.003125 * this.width));
+                       plateformesListe.get(plateformesListe.size()-1).setDx((0.003125 * this.width)*difficulty/3.5);
                     }
                     else{
                         plateformesListe.remove(pf);
