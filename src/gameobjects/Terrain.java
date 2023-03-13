@@ -24,7 +24,8 @@ public class Terrain {
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
 
-    public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer, int id) {
+    public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer,
+            int id) {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.monstres=new ArrayList<Monstre>();

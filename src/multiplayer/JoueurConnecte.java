@@ -1,5 +1,6 @@
 package multiplayer;
 
+// Import de packages java :
 import java.net.*;
 import java.util.ArrayList;
 import java.io.*;
@@ -16,43 +17,44 @@ import gameobjects.Terrain;
 
 //Joueur qui se connecte vers le Serveur qui, dans notre cas, sera le joueur qui host  
 public class JoueurConnecte {
-    
-    Socket client; // Socket qui sera initialisé avec ServerName et port 
-    
-    public JoueurConnecte(){
-        this.client=null;
+
+    Socket client; // Socket qui sera initialisé avec ServerName et port
+
+    public JoueurConnecte() {
+        this.client = null;
     }
 
-    protected void setClient(Socket a){
-        if(null==this.client)this.client=a;
+    protected void setClient(Socket a) {
+        if (null == this.client)
+            this.client = a;
     }
+
     /**
      * @param ServerName nom du serveur
-     * @param port port au quelle le socket va se connecter
-     * @true Si le joueur est connecté 
+     * @param port       port au quelle le socket va se connecter
+     * @true Si le joueur est connecté
      */
-    public boolean connecter(){
+    public boolean connecter() {
         try {
-            String ServerName=JOptionPane.showInputDialog("Nom du Serveur");
-            int port=Integer.parseInt(JOptionPane.showInputDialog( "Port"));
-            
-            this.client=new Socket(ServerName,port);  
-            return true;   
-            
+            String ServerName = JOptionPane.showInputDialog("Nom du Serveur");
+            int port = Integer.parseInt(JOptionPane.showInputDialog("Port"));
+
+            this.client = new Socket(ServerName, port);
+            return true;
+
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Echec de connexion","Erreur",JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Echec de connexion", "Erreur", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(-1);
             return false;
         }
     }
 
-
-
     /**
-     * @return tableau qui contient l'etat de la partie, la position de la raquette du host, coordonnées de la balle.
+     * @return tableau qui contient l'etat de la partie, la position de la raquette
+     *         du host, coordonnées de la balle.
      */
-    public void receiveTerrain(Terrain terrain){
+    public void receiveTerrain(Terrain terrain) {
         ObjectInputStream in;
         try {
             in = new ObjectInputStream(client.getInputStream());
@@ -69,25 +71,19 @@ public class JoueurConnecte {
         }
     }
 
-
-
-
-
-    protected void deconnecter() throws IOException{
+    protected void deconnecter() throws IOException {
         client.close();
     }
 
     public void sendJoueurB(Joueur joueurB) {
-        try{
-            ObjectOutputStream output= new ObjectOutputStream(client.getOutputStream()) ;
+        try {
+            ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
             output.writeObject(joueurB);
             System.out.println("JoueurConnecte.sendJoueurB() reussi");
-            }catch(IOException e){
-                e.printStackTrace();
-                System.out.println("JoueurConnecte.sendJoueurB() echoue");
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("JoueurConnecte.sendJoueurB() echoue");
+        }
     }
 
-
-    
 }
