@@ -41,7 +41,6 @@ public class Terrain {
         generateObstacles();
     }
 
-<<<<<<< HEAD
     private boolean willMove(double x){//Génère une probabilité croissante selon la difficultée
         int c = new Random().nextInt(31);
         if(c*x>=30){
@@ -51,9 +50,7 @@ public class Terrain {
     }
 
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
-=======
-    // Crée la liste des plateformes
->>>>>>> master
+    // Crée la liste des plateforme
     private void generateObstacles() {
         // Taille des plateformes en fonction de la taille de la fenêtre
         double w = this.width * 0.09375, h = 0.0194931774 * this.height;
