@@ -32,6 +32,11 @@ public class Game extends Etat {
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getChemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/projectile.png")));
+                this.vue.setHelicopterView(ImageIO.read(new File(this.vue.getChemin() + "/helicopter.png")));
+                this.vue.setfuseeView(ImageIO.read(new File(this.vue.getChemin() + "/fusee.png")));
+                this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getChemin() + "/monstre1.png")));
+                this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getChemin() + "/monstre2.png")));
+                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getChemin() + "/monstre3.png")));
             } catch (Exception e) {
                 this.vue.setTerrainView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/terrainBackground.png")));
@@ -42,6 +47,11 @@ public class Game extends Etat {
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/projectile.png")));
+                this.vue.setHelicopterView(ImageIO.read(new File(this.vue.getWinchemin() + "/helicopter.png")));
+                this.vue.setfuseeView(ImageIO.read(new File(this.vue.getWinchemin() + "/fusee.png")));
+                this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre1.png")));
+                this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre2.png")));
+                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre3.png")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,9 +152,37 @@ public class Game extends Etat {
 
         // Affichage des plateformes.
         for (Plateforme pf : this.vue.getTerrain().getPlateformesListe()) {
-            BufferedImage pfV = (pf instanceof PlateformeBase) ? this.vue.getPlatformeBaseView()
-                    : this.vue.getPlatformeMobileView();
+            BufferedImage pfV;
+            if(pf instanceof MovingPlateforme)
+                pfV=this.vue.getPlatformeMobileView();
+            else 
+                pfV=this.vue.getPlatformeBaseView();
             g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
+            Items it=pf.getItem();
+            if(it!=null){
+                if(it instanceof Fusee)
+                g2.drawImage(this.vue.getfuseeView(), (int) it.getX(), (int) it.getY(), (int)it.getWidth(), (int) it.getHeight(), null);
+                else
+                g2.drawImage(this.vue.getHelicopterView(), (int) it.getX(), (int) it.getY(), (int)it.getWidth(), (int) it.getHeight(), null);
+
+            }
+
+        }
+        for (Monstre m : this.vue.getTerrain().getMontresArrayList()){
+            switch(m .getId()){
+            case 1:
+            g2.drawImage(this.vue.getMonstre1View(),      (int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+            break;
+            case 2:
+            g2.drawImage(this.vue.getMonstre2View(), (int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+            break;
+            case 3:
+            g2.drawImage(null, (int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+            break;
+            default :
+            g2.drawImage(this.vue.getMonstre1View(),      (int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+            break; 
+        }
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur.

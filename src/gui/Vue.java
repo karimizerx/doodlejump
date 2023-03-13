@@ -24,7 +24,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
-            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, monstre1View,monstre2View,monstre3View,fuseeView,helicopterView;
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
             buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
@@ -352,7 +352,36 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     public void setProjectileView(BufferedImage projectileView) {
         this.projectileView = projectileView;
     }
-
+    public void setHelicopterView(BufferedImage helicopterView) {
+        this.helicopterView= helicopterView;
+    }
+    public void setMonstre1View(BufferedImage monstre1View) {
+        this.monstre1View = monstre1View;
+    }
+    public void setMonstre2View(BufferedImage monstre2View) {
+        this.monstre2View = monstre2View;
+    }
+    public void setMonstre3View(BufferedImage monstre3View) {
+        this.monstre3View = monstre3View;
+    }
+    public void setfuseeView(BufferedImage fuseeView) {
+        this.fuseeView= fuseeView;
+    }
+    public BufferedImage getHelicopterView() {
+        return helicopterView;
+    }
+    public BufferedImage getfuseeView() {
+        return fuseeView;
+    }
+    public BufferedImage getMonstre1View() {
+        return this.monstre1View ;
+    }
+    public BufferedImage getMonstre2View() {
+        return this.monstre2View ;
+    }
+    public BufferedImage getMonstre3View() {
+        return this.monstre3View ;
+    }
     public ArrayList<BufferedImage> getButtonJouer() {
         return buttonJouer;
     }
