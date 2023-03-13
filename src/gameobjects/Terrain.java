@@ -1,11 +1,10 @@
 package gameobjects;
 
 // Import de packages java
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.*;
 
 // Import d'autres dossiers
-import gui.Vue;
+import gui.*;
 import multiplayer.*;
 
 public class Terrain {
@@ -17,21 +16,20 @@ public class Terrain {
     private double diff_plateformes; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
-    public boolean pause;
 
-    public boolean multiplayer;
-    public boolean isHost;
+    private boolean pause;
+    public boolean multiplayer, isHost;
     public Serveur host = null;
     public JoueurConnecte client = null;
-    public final int playerID;// si cest zero; il est host ou il est pas multijoueur
+    public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
 
-    public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer, int id) {
+    public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer,
+            int id) {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
         this.height = height;
         this.width = width;
-        this.pause = false;
         this.diff_plateformes = 41040 / this.height;
         this.multiplayer = multiplayer;
         this.isHost = host;
@@ -43,6 +41,7 @@ public class Terrain {
         generateObstacles();
     }
 
+<<<<<<< HEAD
     private boolean willMove(double x){//Génère une probabilité croissante selon la difficultée
         int c = new Random().nextInt(31);
         if(c*x>=30){
@@ -52,6 +51,9 @@ public class Terrain {
     }
 
     // Crée la liste des plateformes (avec un nbPlateformes en entrée)
+=======
+    // Crée la liste des plateformes
+>>>>>>> master
     private void generateObstacles() {
         // Taille des plateformes en fonction de la taille de la fenêtre
         double w = this.width * 0.09375, h = 0.0194931774 * this.height;
@@ -109,12 +111,14 @@ public class Terrain {
 
         // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
-            Vue.isRunning = false;
+            Vue.isRunningGame = false;
         }
+
+        // Affichage des projectiles :
         for (int i = 0; i < p.getListProjectiles().size(); ++i) {
             Projectile pro = p.getListProjectiles().get(i);
             pro.setY(pro.getY() + pro.getDy());
-            if (pro.limite()) {
+            if (pro.limiteProjectile()) {
                 p.getListProjectiles().remove(pro);
             }
         }
@@ -200,14 +204,6 @@ public class Terrain {
         this.diff_plateformes = diff_plateformes;
     }
 
-    public boolean isPause() {
-        return pause;
-    }
-
-    public void setPause(boolean pause) {
-        this.pause = pause;
-    }
-
     public boolean isMultiplayer() {
         return multiplayer;
     }
@@ -254,6 +250,14 @@ public class Terrain {
 
     public void setJoueur(ArrayList<Joueur> l) {
         ListeJoueurs = l;
+    }
+
+    public boolean isPause() {
+        return pause;
+    }
+
+    public void setPause(boolean pause) {
+        this.pause = pause;
     }
 
 }

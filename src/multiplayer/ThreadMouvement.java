@@ -1,40 +1,28 @@
 package multiplayer;
 
-import java.net.*;
-import java.util.ArrayList;
-import java.io.*;
-import javax.swing.*;
-
-import gameobjects.Joueur;
-import gameobjects.Terrain;
+// Import d'autres dossiers :
+import gameobjects.*;
 
 public class ThreadMouvement implements Runnable {
-    // Serveur serveur;
-    // JoueurConnecte client;
+    Serveur serveur;
+    JoueurConnecte client;
     Terrain terrain;
 
     public ThreadMouvement(Terrain court) {
         this.terrain = court;
-        // this.serveur= court.host;
-        // this.client=court.client;
+        this.serveur = court.host;
+        this.client = court.client;
     }
 
     public void run() {
         while (true) {
             if (terrain.isHost) {
-                Serveur serveur = terrain.host;
                 serveur.sendTerrain(terrain);
-                ArrayList<Joueur> list = new ArrayList<Joueur>();
-                list.add(terrain.getMyPlayer());
-                for (int i = 1; i < terrain.getListeJoueurs().size(); i++) {
-                    list.add(serveur.getJoueur(i));
-                } // recevoir ce que le mvt des clients
-                terrain.setJoueur(list);
+                terrain.getListeJoueurs().set(1, (serveur.getJoueurB()));// recevoir ce que le mvt du client
                 System.out.println("ThreadMouvement.run() done");
             } else {
-                // Le client envoi le mvt de son joueur
-                terrain.client.sendJoueur(terrain.getMyPlayer(), terrain.playerID);
-                terrain.client.receiveTerrain(terrain);
+                client.receiveTerrain(terrain);
+                client.sendJoueurB(terrain.getListeJoueurs().get(1));// le client envoi le mvt de son joueur
                 System.out.println("ThreadMouvement.run() done");
             }
         }

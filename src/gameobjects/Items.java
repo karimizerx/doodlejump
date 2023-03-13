@@ -4,7 +4,7 @@ package gameobjects;
 public abstract class Items extends GameObject {
 
     private double saut; // Constante de saut (différente en fonction de l'item).
-    boolean isNeedPied; // Indique si l'objet doit être touché avec les pieds (ressort...)
+    private boolean isNeedPied; // Indique si l'objet doit être touché avec les pieds (ressort...)
 
     public Items(double x, double y, double w, double h, double s, boolean p) {
         super(x, y, w, h);

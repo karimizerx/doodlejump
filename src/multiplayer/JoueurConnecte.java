@@ -1,32 +1,30 @@
 package multiplayer;
 
-// Import de packages java
+// Import de packages java :
 import java.net.*;
 import java.util.ArrayList;
 import java.io.*;
 import javax.swing.*;
 
-// Import d'autres dossiers
+// Import d'autres dossiers :
 import gameobjects.*;
 
+/* On ne calcule plus rien sur la machine du joueur qui se connecte. Le host calcule tout et passe l'information.  
+* On enverra seulement l'etat de la raquette (Going_UP,Going_DOWN,IDLE)
+*/
+
+//Joueur qui se connecte vers le Serveur qui, dans notre cas, sera le joueur qui host  
 public class JoueurConnecte {
 
-    Socket serveur; // Socket qui sera initialisé avec ServerName et port
-    int id;
-    String name = "";
+    Socket client; // Socket qui sera initialisé avec ServerName et port
 
     public JoueurConnecte() {
-        this.serveur = null;
+        this.client = null;
     }
 
-    public JoueurConnecte(Socket serveur, int c) {
-        this.serveur = serveur;
-        this.id = c;
-    }
-
-    protected void setServeur(Socket a) {
-        if (null == this.serveur)
-            this.serveur = a;
+    protected void setClient(Socket a) {
+        if (null == this.client)
+            this.client = a;
     }
 
     /**
@@ -34,21 +32,19 @@ public class JoueurConnecte {
      * @param port       port au quelle le socket va se connecter
      * @true Si le joueur est connecté
      */
-    public void connecter(String name, String ServerName, int port) {
-        this.name = name;
+    public boolean connecter() {
         try {
-            this.serveur = new Socket(ServerName, port);
+            String ServerName = JOptionPane.showInputDialog("Nom du Serveur");
+            int port = Integer.parseInt(JOptionPane.showInputDialog("Port"));
+
+            this.client = new Socket(ServerName, port);
+            return true;
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Echec de connexion", "Erreur", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(-1);
-        }
-        DataInputStream in;
-        try {
-            in = new DataInputStream(serveur.getInputStream());
-            id = in.readInt();
-        } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
     }
 
@@ -59,10 +55,9 @@ public class JoueurConnecte {
     public void receiveTerrain(Terrain terrain) {
         ObjectInputStream in;
         try {
-            in = new ObjectInputStream(serveur.getInputStream());
+            in = new ObjectInputStream(client.getInputStream());
             terrain.setPlateformesListe((ArrayList<Plateforme>) in.readObject());
-            terrain.setListeJoueurs((ArrayList<Joueur>) in.readObject());
-            terrain.pause = (boolean) in.readObject();
+            terrain.getListeJoueurs().set(0, ((Joueur) in.readObject()));
         } catch (ClassNotFoundException c) {
             c.printStackTrace();
             System.out.println("classe perdu");
@@ -73,33 +68,18 @@ public class JoueurConnecte {
         }
     }
 
-    public Socket getServeur() {
-        return serveur;
-    }
-
     protected void deconnecter() throws IOException {
-        serveur.close();
+        client.close();
     }
 
-    public void sendJoueur(Joueur joueurB, int ID) {
+    public void sendJoueurB(Joueur joueurB) {
         try {
-            ObjectOutputStream output = new ObjectOutputStream(serveur.getOutputStream());
+            ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
             output.writeObject(joueurB);
-            // output.writeObject(ID);;
             System.out.println("JoueurConnecte.sendJoueurB() reussi");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("JoueurConnecte.sendJoueurB() echoue");
-        }
-    }
-
-    public void sendName() {
-        DataOutputStream out;
-        try {
-            out = new DataOutputStream(serveur.getOutputStream());
-            out.writeChars(name);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

@@ -6,376 +6,579 @@ import multiplayer.*;
 
 // Import de packages java
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.imageio.*;
 
-// S'occupe d'afficher les éléments du terrain
+// JPanel s'occupant de tout l'affichage du jeu.
 public class Vue extends JPanel implements Runnable, KeyListener {
 
-    public static boolean isRunning;
-    private ThreadMouvement threadMvt = null;
-    private Thread thread; // La thread reliée à ce pannel, qui lance l'exécution
-    private String chemin = (new File("gui/images/packBase/")).getAbsolutePath();
-    private BufferedImage view, terrainView, platformeBaseView, platformeMobileView, scoreView, scoreBackgroundView,
-            projectileView;
-    private ArrayList<ArrayList<BufferedImage>> viewList;
-    // isRight/Left gère les boutons appuyés, isInert gère le relâchement
-    private Terrain terrain;
-    private JFrame menuPause;
-    public double deltaTime = 10;
+    // Ces variables static boolean indique l'état actuel du panel.
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement;
+    private final int width, height; // Dimensions du panel.
+    // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
+    private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
+    private String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
 
-    public Vue(Terrain ter) {
-        this.terrain = ter;
-        // Taille du panel
-        this.setPreferredSize(new Dimension((int) terrain.getWidth(), (int) terrain.getHeight()));
-        // Gestion d'évènements boutons
+    // Variables représentant différentes images.
+    private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
+    private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
+            buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
+    private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
+
+    private double deltaTime; // Le temps nécessaire pour update une GAME.
+    private Terrain terrain; // Le terrain sur lequel on joue.
+    private Thread thread; // La thread liée à ce pannel, qui lance l'exécution.
+
+    // Variables liées au mode multijoueurs.
+    private Serveur serveur;
+    private JoueurConnecte jconnect;
+    private boolean multijoueur, host;
+
+    // Ces variables représentent les différents états du jeu.
+    private Game eGame;
+    private MenuFin eMenuFin;
+    private MenuDemarrer eMenuDemarrer;
+    private MenuClassement eMenuClassement;
+    private MenuLancement eMenuLancement;
+
+    public Vue(App frame, String skin) {
+        // Taille du panel.
+        this.width = frame.getWidth();
+        this.height = frame.getHeight();
+        this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
+
+        // Chemins des images.
+        this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
+        this.winchemin = "src/gui/images/" + skin + "/";
+
+        // Gestion d'évènements boutons.
         this.addKeyListener(this);
     }
 
-    // Méthodes de la classe
-
-    // Initialise toutes les images du jeu
-    private void init() {
-        // view est l'image qui contiendra toutes les autres
-        view = new BufferedImage((int) terrain.getWidth(), (int) terrain.getHeight(), BufferedImage.TYPE_INT_RGB);
-        viewList = new ArrayList<ArrayList<BufferedImage>>();
-
-        // Double try_catch pour gérer la différence entre windows & linux
-        try {
-            try {
-                terrainView = ImageIO.read(new File(chemin + "/background/background1.png"));
-                platformeBaseView = ImageIO.read(new File(chemin + "/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO.read(new File(chemin + "/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File(chemin + "/background/scoreBackground1.png"));
-                projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
-
-                for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-                    Joueur joueur = terrain.getListeJoueurs().get(i);
-                    String nom = joueur.getNom().toLowerCase();
-                    // On stock dans ListAux les images liées à chaque joueur et qui ne changent
-                    // jamais, i.e le perso et le nom, contrairement au score
-                    ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
-                    // L'élément de rang 0 contient l'image du perso
-                    viewListAux.add(ImageIO.read(new File(chemin + "/personnages/persoBase.png")));
-                    // Les autres contiennent les lettres du nom du joueur
-                    for (int j = 0; j < nom.length(); ++j) {
-                        char c = (nom.charAt(j) == ' ') ? '0' : nom.charAt(j);
-                        BufferedImage lv = ImageIO.read(new File(chemin + "/lettres/lettre" + c + ".png"));
-                        viewListAux.add(lv);
-                    }
-                    viewList.add(viewListAux);
-                }
-            } catch (Exception e) {
-                terrainView = ImageIO.read(new File("src/gui/images/packBase/background/background1.png"));
-                platformeBaseView = ImageIO.read(new File("src/gui/images/packBase/plateformes/plateformeBase.png"));
-                platformeMobileView = ImageIO
-                        .read(new File("src/gui/images/packBase/plateformes/plateformeMobile.png"));
-                scoreBackgroundView = ImageIO.read(new File("src/gui/images/packBase/background/scoreBackground1.png"));
-                projectileView = ImageIO.read(new File(chemin + "/projectile.png"));
-
-                for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-                    Joueur joueur = terrain.getListeJoueurs().get(i);
-                    String nom = joueur.getNom().toLowerCase();
-                    // On stock dans ListAux les images liées à chaque joueur et qui ne changent
-                    // jamais, i.e le perso et le nom, contrairement au score
-                    ArrayList<BufferedImage> viewListAux = new ArrayList<BufferedImage>();
-                    // L'élément de rang 0 contient l'image du perso
-                    viewListAux.add(ImageIO.read(new File("src/gui/images/packBase/personnages/persoBase.png")));
-                    // Les autres contiennent les lettres du nom du joueur
-                    for (int j = 0; j < nom.length(); ++j) {
-                        char c = (nom.charAt(j) == ' ') ? '0' : nom.charAt(j);
-                        BufferedImage lv = ImageIO
-                                .read(new File("src/gui/images/packBase/lettres/lettre" + c + ".png"));
-                        viewListAux.add(lv);
-                    }
-                    viewList.add(viewListAux);
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    /// Méthodes de la classe :
+    // Initialise les images qui changent pas en fonction de l'état.
+    private void initGENERAL() {
+        this.eMenuDemarrer.initFixe();
+        this.eMenuClassement.initFixe();
+        this.eMenuLancement.initFixe();
+        this.eGame.initFixe();
+        this.eMenuFin.initFixe();
     }
 
-    // Dessine toutes les images
-    public void afficheImage() {
-        Graphics2D g2 = (Graphics2D) view.getGraphics();
-        // Affichage terrain
-        g2.drawImage(terrainView, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
-
-        // Affichage des plateformes
-        for (Plateforme pf : terrain.getPlateformesListe()) {
-            BufferedImage pfV = (pf instanceof PlateformeBase) ? platformeBaseView : platformeMobileView;
-            g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
-        }
-
-        // Affichage du Score : seulement s'il n'y a qu'un joueur
-        if (terrain.getListeJoueurs().size() == 1) {
-            String score = String.valueOf(terrain.getListeJoueurs().get(0).getScore());
-            int sw = (int) (terrain.getWidth() * 0.09375), sh = (int) (terrain.getHeight() * 0.0536062378);
-            g2.drawImage(scoreBackgroundView, 2, 2, sw + (sw / 2 * (score.length() - 1)), sh, null);
-            for (int i = 0; i < score.length(); ++i) {
-                try {
-                    try {
-                        scoreView = ImageIO.read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
-
-                    } catch (Exception e) {
-                        scoreView = ImageIO
-                                .read(new File(chemin + "/chiffres/ch" + score.charAt(i) + ".png"));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                int x = (int) (terrain.getWidth() * 0.0078125); // Variable pour adapter en fonction de la résolution
-                g2.drawImage(scoreView, x + (5 * x * i), 5, x * 10, x * 10, null);
-            }
-
-        }
-
-        // Affichage des personnages + Nom
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            ArrayList<BufferedImage> jImData = viewList.get(i); // On récupère les données liées au joueur
-            Personnage p = terrain.getListeJoueurs().get(i).getPerso();
-            g2.drawImage(jImData.get(0), (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
-            int c = (int) ((15 * (jImData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
-            for (int j = 1; j < jImData.size(); ++j) {
-                g2.drawImage(jImData.get(j), (int) (p.getX() - c + (15 * (j - 1))), (int) p.getY() - 15, 15, 15, null);
-            }
-        }
-        for (Joueur j : terrain.getListeJoueurs()) {
-            Personnage pers = j.getPerso();
-            for (Projectile pro : pers.getListProjectiles()) {
-                g2.drawImage(projectileView, (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
-                        (int) pro.getHeight(), null);
-                // pers.setSpace(false);
-            }
-        }
-
-        // Affichage final
-        Graphics g = getGraphics(); // Contexte graphique
-        g.drawImage(view, 0, 0, (int) terrain.getWidth(), (int) terrain.getHeight(), null);
-        g.dispose(); // On libère les ressource
-    }
-
-    // Gère le cas de fin du jeu
-    public boolean endGame() {
-        boolean isFin = false;
-        // Si un joueur à perdu, c'est fini
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur j = terrain.getListeJoueurs().get(i);
-            isFin = (j.getPerso().getY() + j.getPerso().getHeight() > this.getHeight()) ? true : false;
-        }
-        return isFin;
-    }
-
-    // Met à jour l'affichage
-    public void update(double dTime) {
-        for (int i = 0; i < terrain.getListeJoueurs().size(); ++i) {
-            Joueur j = terrain.getListeJoueurs().get(i);
-            Personnage p = j.getPerso();
-            // Gère les boutons flèches, avec inertie
-            // Dans qu'on appuie, on set la vitesse à ± 4, et on avance de cette distance
-            double vitesse = 0.0078125 * terrain.getWidth();
-            double ralentissement = 0.000375 * terrain.getWidth();
-            if (p.isRight()) {
-                p.setDx(+vitesse);
-                p.setX(p.getX() + p.getDx());
-            } else if (p.isLeft()) {
-                p.setDx(-vitesse);
-                p.setX(p.getX() + p.getDx());
-            } else if (p.isInertRight() && p.getDx() > 0) { // Si on arrête d'appuyer,
-                p.setDx(p.getDx() - ralentissement); // la vitesse ralentie petit à petit jusqu'à devenir nulle
-                p.setX(p.getX() + p.getDx());
-            } else if (p.isInertLeft() && p.getDx() < 0) {
-                p.setDx(p.getDx() + ralentissement);
-                p.setX(p.getX() + p.getDx());
-            } else {
-                p.setInertRight(false);
-                p.setInertLeft(false);
-                p.setDx(0);
-            }
-            if (p.isSpace() && p.isTirPossible()) { // Si on tire, on ne tire plus
-                p.tirer(0.046875 * terrain.getWidth(), 0.02923397661 * terrain.getHeight(), 0, -deltaTime);
-                p.setSpace(false);
-            }
-        }
-        terrain.update(dTime);
-    }
-
-    // Fait tourner le jeu
-    // Cette méthode contient les traitements
+    // Fait tourner le jeu Doodle Jump au complet.
+    // Cette méthode contient les traitements à exécuter.
     @Override
     public void run() {
         try {
-            // Demande à ce que ce composant obtienne le focus.
-            // Le focus est le fait qu'un composant soit sélectionné ou pas.
-            // Le composant doit être afficheable (OK grâce à addNotify())
+            // Cette méthode (requestFocusInWindow) demande à ce que ce composant obtienne
+            // le focus. Le focus est le fait qu'un composant soit sélectionné ou pas.
+            // Le composant doit être afficheable (OK grâce à addNotify()).
             this.requestFocusInWindow();
-            init(); // Initialisation des images
 
-            if (terrain.multiplayer) { // Si on est en mode multijoueur
-                Thread t = new Thread(new ThreadMouvement(terrain)); // ???
-                t.start();
-            }
+            /// ETAPE 1 : Premières initialisations.
+            // On initialise les différents états.
+            this.eMenuDemarrer = new MenuDemarrer(this);
+            this.eMenuClassement = new MenuClassement(this);
+            this.eMenuLancement = new MenuLancement(this);
+            this.eGame = new Game(this);
+            this.eMenuFin = new MenuFin(this);
 
-            // Gestion de l'ups constant
-            double cnt = 0.0; // Compteur du nombre d'update
-            double acc = 0.0; // Accumulateur qui va gérer les pertes de temps
-            long t0 = System.currentTimeMillis(); // Temps actuel
-            while (isRunning) { // Tant que le jeu tourne
-                if (!terrain.isPause()) { // Tant qu'on appuie pas sur pause
-                    long t1 = System.currentTimeMillis();
-                    long t = t1 - t0;
-                    t0 = System.currentTimeMillis();
-                    acc += t;
-                    while (acc > deltaTime) { // Si on peut update
-                        update(deltaTime); // On met à jour les variables
-                        // On retire 1 Δ à chaque update. Si le reste > 0 & < Δ, ça veut dire qu'on a
-                        // un retard, qu'on stock pour l'ajouter à l'étape suivante.
-                        // Si on a reste > Δ, on relance cette boucle
-                        acc -= deltaTime;
-                        cnt += deltaTime; // On accumule le nombre d'update
+            this.initGENERAL(); // On initialise les images qui ne changent pas en fonction de l'état.
+
+            while (!isQuitte) { // Tant qu'on a pas quitter le jeu :
+
+                /// ETAPE 2 : On gère les différents états du jeu.
+                // 1. On crée un état à partie des données actuelles.
+                // 2. (On initialise les images/variables de cet état.)
+                // 3. On lance l'exécution de cet état.
+
+                if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
+                    this.eMenuDemarrer = new MenuDemarrer(this);
+                    this.eMenuDemarrer.running();
+                }
+
+                if (isMenuClassement) { // Si on a cliqué sur le boutton "Classement" :
+                    this.eMenuClassement = new MenuClassement(this);
+                    this.eMenuClassement.init();
+                    this.eMenuClassement.running();
+                }
+
+                if (isMenuLancement) { // Si on a cliqué sur le boutton "Jouer solo/à 2" :
+                    this.eMenuLancement = new MenuLancement(this);
+                    this.eMenuLancement.init();
+                    this.eMenuLancement.running();
+                }
+
+                if (isRunningGame) { // Si on a lancé une GAME :
+                    this.eGame = new Game(this);
+                    this.eGame.init();
+                    this.eGame.running();
+                    if (this.terrain.multiplayer) { // Si on est en mode multijoueur :
+                        Thread t = new Thread(new ThreadMouvement(terrain)); // ???
+                        t.start();
                     }
                 }
-                afficheImage(); // On affiche les images une fois les données update
-            }
-            if (endGame()) { // Si c'est la fin du jeu
-                if (terrain.getListeJoueurs().size() == 1) { // S'il n'y a qu'1 joueur, on affiche le score/LB
-                    Joueur j = terrain.getListeJoueurs().get(0);
-                    String score = String.valueOf(j.getScore());
-                    System.out.println("Score à cette manche : " + j.getScore());
-                    Classement c = new Classement();
-                    c.ajoutClassement(j.getNom(), score);
-                    c.afficherClassement();
+
+                if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin
+                        && this.eGame.endGame()) { // Si c'est la fin de la GAME (quelqu'un a perdu) :
+                    // On met à jour toutes les variables boolean.
+                    isRunningGame = false;
+                    isMenuFin = true;
+                    this.eMenuClassement.updateClassement(); // On met à jour le classement et l'historique.
                 }
-                this.removeAll(); // On retire tout
-                this.repaint(); // On met à jour l'affichage
+
+                if (isMenuFin) { // Si on a fini la GAME sans erreur :
+                    this.eMenuFin = new MenuFin(this);
+                    this.eMenuFin.init();
+                    this.eMenuFin.running();
+                }
             }
+            System.exit(0); // Si on a quitté le jeu, on ferme tout le programme.
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // Rend ce composant affichable en le connectant à une ressource d'écran
+    // Rend ce composant affichable en le connectant à une ressource d'écran.
     @Override
     public void addNotify() {
         super.addNotify();
-        // Si on a toujours pas lancer le jeu
-        if (this.thread == null) {
-            // Créer une nouvelle instance en précisant les traitements à exécuter (run)
-            // This est l'objet qui implémente Runnable (run()), contenant les traitements
+        if (this.thread == null) { // Si on a toujours pas lancer le jeu :
+            // Créer une nouvelle instance en précisant les traitements à exécuter (run).
+            // This est l'objet qui implémente Runnable (run()), contenant les traitements.
             this.thread = new Thread(this);
-            isRunning = true; // Indique le jeu est lancé
-            this.thread.start(); // Invoque la méthode run()
+            isQuitte = false; // Indique que l'on est dans le jeu.
+            isMenuDemarrer = true; // Indique le jeu est lancé.
+            this.thread.start(); // Invoque la méthode run().
         }
     }
 
-    // Gestion des boutons
+    /// KeyListener qui gèrent les boutons.
+    @Override
+    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons.
+        if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
+            this.eMenuDemarrer.keyControlPressed(e);
+        }
 
-    private void pause() {
-        this.terrain.pause = !this.terrain.pause;
-        this.menuPause = new JFrame();
-        this.menuPause.setBounds((int) terrain.getWidth() * 3 / 2 - 50, (int) terrain.getHeight() / 2 - 60, 150, 120);
-        this.menuPause.setResizable(false);
-        this.menuPause.setLayout(new FlowLayout());
-        this.menuPause.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        if (isMenuClassement) { // Si on est au niveau du CLASSEMENT :
+            this.eMenuClassement.keyControlPressed(e);
+        }
 
-        JButton cont = new JButton("Continuer");
-        JButton exit = new JButton("Menu principal");
+        if (isMenuLancement) { // Si on est au niveau du menu LANCEMENT :
+            this.eMenuLancement.keyControlPressed(e);
+        }
 
-        this.menuPause.add(cont);
-        this.menuPause.add(exit);
-        this.menuPause.setVisible(true);
+        if (isRunningGame) { // Si on est en cours de GAME :
+            this.eGame.keyControlPressed(e);
+        }
 
-        cont.addActionListener(ev -> {
-            this.menuPause.dispose();
-            this.terrain.pause = !this.terrain.pause;
-        });
-
-        exit.addActionListener(ev -> {
-            this.menuPause.dispose();
-            JFrame retourMenu = new App();
-            retourMenu.setVisible(true);
-        });
+        if (isMenuFin) { // Si on est au niveau du menu FIN :
+            this.eMenuFin.keyControlPressed(e);
+        }
     }
 
     @Override
-    public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons
-        Personnage p1;
-        Personnage p2;
-        if ((!terrain.multiplayer))
-            p1 = terrain.getListeJoueurs().get(0).getPerso();
-        else
-            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
-
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            p1.setRight(true);
-            p1.setInertRight(false);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            p1.setLeft(true);
-            p1.setInertLeft(false);
-        }
-        if (terrain.getListeJoueurs().size() == 2) {
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
-            if (e.getKeyCode() == KeyEvent.VK_D) {
-                p2.setRight(true);
-                p2.setInertRight(false);
-            }
-            if (e.getKeyCode() == KeyEvent.VK_Q) {
-                p2.setLeft(true);
-                p2.setInertLeft(false);
-            }
-        }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE && p1.isTirPossible()) {
-            p1.setSpace(true);// Si on a le droit de tirer et qu'on tire
-            p1.setTirPossible(false);// On a pas le droit de re-tirer
-            // On indique qu'on vient de tirer
-        }
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-            pause();
-        }
-
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) { // On relâche les boutons
-        Personnage p1;
-        Personnage p2;
-        if ((!terrain.multiplayer))
-            p1 = terrain.getListeJoueurs().get(0).getPerso();
-        else
-            p1 = terrain.getListeJoueurs().get(terrain.playerID).getPerso();
-
-        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            p1.setRight(false);
-            p1.setInertRight(true);
-        }
-        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-            p1.setLeft(false);
-            p1.setInertLeft(true);
-        }
-        if (terrain.getListeJoueurs().size() == 2) {
-            p2 = terrain.getListeJoueurs().get(1).getPerso();
-            if (e.getKeyCode() == KeyEvent.VK_D) {
-                p2.setRight(false);
-                p2.setInertRight(true);
-            }
-            if (e.getKeyCode() == KeyEvent.VK_Q) {
-                p2.setLeft(false);
-                p2.setInertLeft(true);
-            }
-        }
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-            p1.setTirPossible(true);// Dès qu'on lâche, on a de nouveau le droit de tirer.
-            // On oblige donc le joueur à lâcher pour tirer
+    public void keyReleased(KeyEvent e) { // On vient de relâcher des boutons.
+        if (isRunningGame) { // Si on est en cours de GAME :
+            this.eGame.keyControlReleased(e);
         }
     }
 
     @Override
     public void keyTyped(KeyEvent e) {
     }
+
+    /// Getter & setter
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getFleche() {
+        return fleche;
+    }
+
+    public void setFleche(int fleche) {
+        this.fleche = fleche;
+    }
+
+    public int getXfleche() {
+        return xfleche;
+    }
+
+    public void setXfleche(int xfleche) {
+        this.xfleche = xfleche;
+    }
+
+    public int getYfleche() {
+        return yfleche;
+    }
+
+    public void setYfleche(int yfleche) {
+        this.yfleche = yfleche;
+    }
+
+    public int getWfleche() {
+        return wfleche;
+    }
+
+    public void setWfleche(int wfleche) {
+        this.wfleche = wfleche;
+    }
+
+    public int getHfleche() {
+        return hfleche;
+    }
+
+    public void setHfleche(int hfleche) {
+        this.hfleche = hfleche;
+    }
+
+    public int getSautLigne() {
+        return sautLigne;
+    }
+
+    public void setSautLigne(int sautLigne) {
+        this.sautLigne = sautLigne;
+    }
+
+    public int getNbJoueur() {
+        return nbJoueur;
+    }
+
+    public void setNbJoueur(int nbJoueur) {
+        this.nbJoueur = nbJoueur;
+    }
+
+    public String getChemin() {
+        return chemin;
+    }
+
+    public String getWinchemin() {
+        return winchemin;
+    }
+
+    public BufferedImage getView() {
+        return view;
+    }
+
+    public void setView(BufferedImage view) {
+        this.view = view;
+    }
+
+    public BufferedImage getBackgroundView() {
+        return backgroundView;
+    }
+
+    public void setBackgroundView(BufferedImage backgroundView) {
+        this.backgroundView = backgroundView;
+    }
+
+    public BufferedImage getBackgroundClView() {
+        return backgroundClView;
+    }
+
+    public void setBackgroundClView(BufferedImage backgroundClView) {
+        this.backgroundClView = backgroundClView;
+    }
+
+    public BufferedImage getBackgroundClView1() {
+        return backgroundClView1;
+    }
+
+    public void setBackgroundClView1(BufferedImage backgroundClView1) {
+        this.backgroundClView1 = backgroundClView1;
+    }
+
+    public BufferedImage getBackgroundClView2() {
+        return backgroundClView2;
+    }
+
+    public void setBackgroundClView2(BufferedImage backgroundClView2) {
+        this.backgroundClView2 = backgroundClView2;
+    }
+
+    public BufferedImage getFlecheView() {
+        return flecheView;
+    }
+
+    public void setFlecheView(BufferedImage flecheView) {
+        this.flecheView = flecheView;
+    }
+
+    public BufferedImage getTerrainView() {
+        return terrainView;
+    }
+
+    public void setTerrainView(BufferedImage terrainView) {
+        this.terrainView = terrainView;
+    }
+
+    public BufferedImage getPlatformeBaseView() {
+        return platformeBaseView;
+    }
+
+    public void setPlatformeBaseView(BufferedImage platformeBaseView) {
+        this.platformeBaseView = platformeBaseView;
+    }
+
+    public BufferedImage getPlatformeMobileView() {
+        return platformeMobileView;
+    }
+
+    public void setPlatformeMobileView(BufferedImage platformeMobileView) {
+        this.platformeMobileView = platformeMobileView;
+    }
+
+    public BufferedImage getScoreBackgroundView() {
+        return scoreBackgroundView;
+    }
+
+    public void setScoreBackgroundView(BufferedImage scoreBackgroundView) {
+        this.scoreBackgroundView = scoreBackgroundView;
+    }
+
+    public BufferedImage getProjectileView() {
+        return projectileView;
+    }
+
+    public void setProjectileView(BufferedImage projectileView) {
+        this.projectileView = projectileView;
+    }
+
+    public ArrayList<BufferedImage> getButtonJouer() {
+        return buttonJouer;
+    }
+
+    public void setButtonJouer(ArrayList<BufferedImage> buttonJouer) {
+        this.buttonJouer = buttonJouer;
+    }
+
+    public ArrayList<BufferedImage> getButton2joueur() {
+        return button2joueur;
+    }
+
+    public void setButton2joueur(ArrayList<BufferedImage> button2joueur) {
+        this.button2joueur = button2joueur;
+    }
+
+    public ArrayList<BufferedImage> getButtonMultiJoueur() {
+        return buttonMultiJoueur;
+    }
+
+    public void setButtonMultiJoueur(ArrayList<BufferedImage> buttonMultiJoueur) {
+        this.buttonMultiJoueur = buttonMultiJoueur;
+    }
+
+    public ArrayList<BufferedImage> getButtonLb() {
+        return buttonLb;
+    }
+
+    public void setButtonLb(ArrayList<BufferedImage> buttonLb) {
+        this.buttonLb = buttonLb;
+    }
+
+    public ArrayList<BufferedImage> getButtonQuitter() {
+        return buttonQuitter;
+    }
+
+    public void setButtonQuitter(ArrayList<BufferedImage> buttonQuitter) {
+        this.buttonQuitter = buttonQuitter;
+    }
+
+    public ArrayList<BufferedImage> getButtonRetourMenu() {
+        return buttonRetourMenu;
+    }
+
+    public void setButtonRetourMenu(ArrayList<BufferedImage> buttonRetourMenu) {
+        this.buttonRetourMenu = buttonRetourMenu;
+    }
+
+    public ArrayList<BufferedImage> getTitreStatut() {
+        return titreStatut;
+    }
+
+    public void setTitreStatut(ArrayList<BufferedImage> titreStatut) {
+        this.titreStatut = titreStatut;
+    }
+
+    public ArrayList<BufferedImage> getMessageNom() {
+        return messageNom;
+    }
+
+    public void setMessageNom(ArrayList<BufferedImage> messageNom) {
+        this.messageNom = messageNom;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getJoueurDataList() {
+        return joueurDataList;
+    }
+
+    public void setJoueurDataList(ArrayList<ArrayList<BufferedImage>> joueurDataList) {
+        this.joueurDataList = joueurDataList;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getLbView() {
+        return lbView;
+    }
+
+    public void setLbView(ArrayList<ArrayList<BufferedImage>> lbView) {
+        this.lbView = lbView;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getScoreFinalView() {
+        return scoreFinalView;
+    }
+
+    public void setScoreFinalView(ArrayList<ArrayList<BufferedImage>> scoreFinalView) {
+        this.scoreFinalView = scoreFinalView;
+    }
+
+    public ArrayList<ArrayList<BufferedImage>> getHightScoreView() {
+        return hightScoreView;
+    }
+
+    public void setHightScoreView(ArrayList<ArrayList<BufferedImage>> hightScoreView) {
+        this.hightScoreView = hightScoreView;
+    }
+
+    public Terrain getTerrain() {
+        return terrain;
+    }
+
+    public void setTerrain(Terrain terrain) {
+        this.terrain = terrain;
+    }
+
+    public double getDeltaTime() {
+        return deltaTime;
+    }
+
+    public void setDeltaTime(double deltaTime) {
+        this.deltaTime = deltaTime;
+    }
+
+    public Thread getThread() {
+        return thread;
+    }
+
+    public void setThread(Thread thread) {
+        this.thread = thread;
+    }
+
+    public boolean isMultijoueur() {
+        return multijoueur;
+    }
+
+    public void setMultijoueur(boolean multijoueur) {
+        this.multijoueur = multijoueur;
+    }
+
+    public boolean isHost() {
+        return host;
+    }
+
+    public void setHost(boolean host) {
+        this.host = host;
+    }
+
+    public Serveur getServeur() {
+        return serveur;
+    }
+
+    public void setServeur(Serveur serveur) {
+        this.serveur = serveur;
+    }
+
+    public JoueurConnecte getJconnect() {
+        return jconnect;
+    }
+
+    public void setJconnect(JoueurConnecte jconnect) {
+        this.jconnect = jconnect;
+    }
+
+    public MenuDemarrer geteMenuDemarrer() {
+        return eMenuDemarrer;
+    }
+
+    public void seteMenuDemarrer(MenuDemarrer eMenuDemarrer) {
+        this.eMenuDemarrer = eMenuDemarrer;
+    }
+
+    public MenuClassement geteMenuClassement() {
+        return eMenuClassement;
+    }
+
+    public void seteMenuClassement(MenuClassement eMenuClassement) {
+        this.eMenuClassement = eMenuClassement;
+    }
+
+    public MenuLancement geteMenuLancement() {
+        return eMenuLancement;
+    }
+
+    public void seteMenuLancement(MenuLancement eMenuLancement) {
+        this.eMenuLancement = eMenuLancement;
+    }
+
+    public MenuFin geteMenuFin() {
+        return eMenuFin;
+    }
+
+    public void seteMenuFin(MenuFin eMenuFin) {
+        this.eMenuFin = eMenuFin;
+    }
+
+    public Game geteGame() {
+        return eGame;
+    }
+
+    public ArrayList<BufferedImage> getButtonJouerSolo() {
+        return buttonJouerSolo;
+    }
+
+    public void setButtonJouerSolo(ArrayList<BufferedImage> buttonJouerSolo) {
+        this.buttonJouerSolo = buttonJouerSolo;
+    }
+
+    public String getNom1() {
+        return nom1;
+    }
+
+    public void setNom1(String nom1) {
+        this.nom1 = nom1;
+    }
+
+    public String getNom2() {
+        return nom2;
+    }
+
+    public void setNom2(String nom2) {
+        this.nom2 = nom2;
+    }
+
+    public ArrayList<BufferedImage> getNomJ1() {
+        return nomJ1;
+    }
+
+    public void setNomJ1(ArrayList<BufferedImage> nomJ1) {
+        this.nomJ1 = nomJ1;
+    }
+
+    public ArrayList<BufferedImage> getNomJ2() {
+        return nomJ2;
+    }
+
+    public void setNomJ2(ArrayList<BufferedImage> nomJ2) {
+        this.nomJ2 = nomJ2;
+    }
+
 }

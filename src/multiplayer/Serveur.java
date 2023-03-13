@@ -1,25 +1,19 @@
 package multiplayer;
 
-// Import de packages java
+// Import de packages java :
 import java.net.*;
-import java.util.ArrayList;
 import java.io.*;
 import javax.swing.*;
 
-// Import d'autres dossiers
+// Import d'autres dossiers :
 import gameobjects.*;
 
 public class Serveur implements Runnable {
 
     private ServerSocket serveurSocket;
-    private ArrayList<JoueurConnecte> clients = new ArrayList<JoueurConnecte>();
+    private JoueurConnecte serveur;
 
-    public Serveur() {
-        serveurSocket = null;
-    }
-
-    public String[] start() throws IOException {
-        // initialise et ouvre un serveur au quelle on peut se cconnecter
+    public Serveur() throws IOException { // initialise et ouvre un serveur au quelle on peut se cconnecter
         this.serveurSocket = new ServerSocket(0, 1);
 
         /**
@@ -28,125 +22,58 @@ public class Serveur implements Runnable {
          * connection qui est l'autre joueur.
          * On utilisera getLocalPort() pour voir le numero du port afin de le
          * communiquer a l'autre joueur
-         * Si, apres 120 secondes, personne ne se connecte,il y a un timeout error qu'on
+         * Si, apres 30 secondes, personne ne se connecte,il y a un timeout error qu'on
          * attrape et le programme s'arrete.
          */
-        serveurSocket.setSoTimeout(120000);
-        System.out.println(InetAddress.getLocalHost());
-        String[] tmp = { "port :" + serveurSocket.getLocalPort(), " srv  :" + InetAddress.getLocalHost() };
-        return tmp;
+        this.serveurSocket.setSoTimeout(30000);
     }
 
-    public void accept() {
+    public void sendTerrain(Terrain terrain) {// envoyer les coordonnees du jeu
+        ObjectOutputStream in;
         try {
-            clients.add(new JoueurConnecte(serveurSocket.accept(), clients.size()));
+            in = new ObjectOutputStream(serveur.client.getOutputStream());
+            in.writeObject(terrain.getPlateformesListe());
+            in.writeObject(terrain.getListeJoueurs().get(0));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public String[] show(JoueurConnecte a) {
-        String[] tmp = { "Le joueur " + (a.serveur.getRemoteSocketAddress()) + " est connecté",
-                " il y a " + clients.size() + " joueurs connectés" };
-        return tmp;
-    }
-
-    public void sendTerrain(Terrain terrain) {// envoyer les coordonnees du jeu
-        ObjectOutputStream in;
-        for (JoueurConnecte client : clients) {
-            try {
-                in = new ObjectOutputStream(client.serveur.getOutputStream());
-                in.writeObject(terrain.getPlateformesListe());
-                in.writeObject(terrain.getMyPlayer());
-                in.writeObject(terrain.pause);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     protected void fermerLeServeur() throws IOException {
-        serveurSocket.close();
+        this.serveurSocket.close();
     }
 
-    public volatile boolean end = false;
-
-    @Override
     public void run() {
-        int c = 1;
         try {
-            clients = new ArrayList<JoueurConnecte>();
-            while (!end) {
-                JoueurConnecte a = new JoueurConnecte(serveurSocket.accept(), c++);
-                clients.add(a);
-                System.out.println("Serveur.run()");
-                DataOutputStream out;
-                try {
-                    out = new DataOutputStream(a.serveur.getOutputStream());
-                    out.writeInt(c);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            JOptionPane.showMessageDialog(null, "Le numero du port est :" + serveurSocket.getLocalPort(), "Important",
+                    JOptionPane.INFORMATION_MESSAGE);
+            serveur = new JoueurConnecte();
+            serveur.setClient(serveurSocket.accept());
+            JOptionPane.showMessageDialog(null,
+                    "Le joueur " + serveur.client.getRemoteSocketAddress() + " est connecté", "Succes",
+                    JOptionPane.DEFAULT_OPTION);
         } catch (IOException e) {
+            this.serveur = null;
             JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé pas de se connecter", "Erreur",
                     JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
-            System.exit(-1);
         }
     }
 
-    public ArrayList<String> getNames() {
-        ArrayList<String> l = new ArrayList<String>();
-        for (JoueurConnecte j : clients) {
-            DataInputStream in;
-            try {
-                in = new DataInputStream(j.serveur.getInputStream());
-                l.add(in.readUTF());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return l;
+    JoueurConnecte getServeur() {
+        return serveur;
     }
 
-    public volatile boolean start = false;
-
-    public Thread commence = new Thread(new Runnable() {
-        public void run() {
-            DataOutputStream in;
-            while (!start) {
-                for (JoueurConnecte client : clients) {
-                    try {
-                        in = new DataOutputStream(client.serveur.getOutputStream());
-                        in.writeBoolean(start);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            for (JoueurConnecte client : clients) {
-                try {
-                    in = new DataOutputStream(client.serveur.getOutputStream());
-                    in.writeBoolean(start);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    });
-
-    public Joueur getJoueur(int c) {
+    public Joueur getJoueurB() {
         ObjectInputStream in;
         try {
-            in = new ObjectInputStream(clients.get(c).serveur.getInputStream());
+            in = new ObjectInputStream(serveur.client.getInputStream());
             Joueur i = (Joueur) in.readObject();
             return i;
         } catch (IOException e) {
             e.printStackTrace();
-            return new Joueur(new Personnage(50, 50, 100, 100, -10), "Erreur");
-        } catch (ClassNotFoundException classe) {
-            classe.printStackTrace();
+            return new Joueur(new Personnage(50, 50, 100, 100, -10), "erreur");
+        } catch (ClassNotFoundException c) {
+            c.printStackTrace();
         }
         System.exit(-1);
         return null;

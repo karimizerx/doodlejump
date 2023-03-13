@@ -11,11 +11,12 @@ public class Projectile extends GameObject {
         this.dy = dy;
     }
 
+    // Méthodes de la classe:
     public void collides_monster() {
         return;
     }
 
-    public boolean limite() {
+    public boolean limiteProjectile() {
         return this.getY() - this.getHeight() / 2 <= 0;
     }
 
