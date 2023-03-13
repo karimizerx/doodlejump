@@ -1,0 +1,16 @@
+Sprint du 9.03.2023 :
+Objectifs du sprint précédent :
+- Creation des Etats du jeu & refactoring complet : Mohamed [OK]
+- changement de la génération des plateformes, apprition & disparition : Elyo [OK]
+- ajouter les items et des monstres : Fares [OK]
+- ajout du système de skin : Ayman [NON]
+- Changement de calcul du score : Necerine [NON]
+  -> le score n'est pas un incrément de +1, mais la distance parcourue.
+
+Objectifs pour le prochain sprint :
+- ajouter les items et des monstres :
+  - génération & update : Elyo & Fares
+  - affichage & update : Ayman
+- Système de skin & Création de pack de skin : Ayman
+- Changement de calcul du score : Necerine
+  -> le score n'est pas un incrément de +1, mais la distance parcourue.
