@@ -51,7 +51,7 @@ public class Personnage extends GameObject {
     }
 
     // Colision entre le personnage et un item
-    public void collides_item(Items it, double deltaTime) {
+    // public void collides_item(Items it, double deltaTime) {
         // if(!collides) return;
         // if (it.getNeedsHead()) {
         //     //0.43 c le ccentre .87 centre vertical 
@@ -67,24 +67,45 @@ public class Personnage extends GameObject {
         //         it=null;
         //         System.out.println("test need head");
         //     }
+   /*  public void collides_item(Items it, double deltaTime) {
         double epsilone=5;
-        boolean ver= ((Math.abs(it.getX()-this.getX())<epsilone) ||Math.abs(it.getX()-(this.getX()+this.getWidth()))<epsilone||Math.abs(this.getX()-(it.getX()+it.getWidth()))<epsilone||Math.abs(this.getX()+this.getWidth()-(it.getX()+it.getWidth()))<epsilone);
-        boolean horHead= ((Math.abs(it.getY()-this.getY())<epsilone) ||Math.abs(it.getY()-(this.getY()+this.getHeight()*0.13))<epsilone||Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()*0.13-(it.getY()+it.getHeight()))<epsilone);
-        boolean horNoHead= ((Math.abs(it.getY()-this.getY())<epsilone) ||Math.abs(it.getY()-(this.getY()+this.getHeight()))<epsilone||Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone||Math.abs(this.getY()+this.getHeight()-(it.getY()+it.getHeight()))<epsilone);
-        
+        boolean ver= (((Math.abs(it.getX()-this.getX())<epsilone) && Math.abs(it.getX()-(this.getX()+this.getWidth()))<epsilone)
+        ||(Math.abs(this.getX()-(it.getX()+it.getWidth()))<epsilone && Math.abs(this.getX()+this.getWidth()-(it.getX()+it.getWidth()))<epsilone));
+        boolean horHead=   (((Math.abs(it.getY()-this.getY())<epsilone) && Math.abs(it.getY()-(this.getY()+this.getHeight()*0.13))<epsilone)||(Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone && Math.abs(this.getY()+this.getHeight()*0.13-(it.getY()+it.getHeight()))<epsilone));
+        boolean horNoHead= (((Math.abs(it.getY()-this.getY())<epsilone) && Math.abs(it.getY()-(this.getY()+this.getHeight()))<epsilone)||     (Math.abs(this.getY()-(it.getY()+it.getHeight()))<epsilone && Math.abs(this.getY()+this.getHeight()-(it.getY()+it.getHeight()))<epsilone));
         if (ver && collides) if ((it.getNeedsHead() && horHead ) ||(!it.getNeedsHead() && horNoHead) ){
             it.runEffect(this);
             it=null;
             collides=true;
         }
-
     }
+ */
 
-    public boolean collides_monstre(Monstre m, double deltaTime) {
+ public void collides_item(Items m, double deltaTime) {
+    double epsilone = 5;
+    boolean ver = (Math.abs((m.getY() + m.getHeight() / 2) - (this.getY() + this.getHeight() / 2)) < ((m.getHeight() + this.getHeight()) / 2 + epsilone));
+    boolean horHead = (Math.abs((m.getX() + m.getWidth() / 2) - (this.getX() + this.getWidth() / 2)) < ((m.getWidth() + this.getWidth()) / 2 + epsilone));
+    boolean horNoHead = (Math.abs((m.getX() + m.getWidth() / 2) - (this.getX() + this.getWidth() / 2)) < ((m.getWidth() + this.getWidth()) / 2 + epsilone)) 
+                  && m.getY() + m.getHeight() / 2 < this.getY() + this.getHeight() / 2;
+    if (ver && collides) {
+        if ((m.getNeedsHead() && horHead) || (!m.getNeedsHead() && horNoHead)) {
+            m.runEffect(this);
+            m = null;
+            collides = true;
+        }
+    }
+}
+    public boolean collides_monstre(Monstre m) {
+        /*
         double epsilone=3;
-        boolean ver= ((Math.abs(m.getX()-this.getX())<epsilone) ||Math.abs(m.getX()-(this.getX()+this.getWidth()))<epsilone||Math.abs(this.getX()-(m.getX()+m.getWidth()))<epsilone||Math.abs(this.getX()+this.getWidth()-(m.getX()+m.getWidth()))<epsilone);
-        boolean hor= ((Math.abs(m.getY()-this.getY())<epsilone) ||Math.abs(m.getY()-(this.getY()-this.getHeight()))<epsilone||Math.abs(this.getY()-(m.getY()-m.getHeight()))<epsilone||Math.abs(this.getY()-this.getHeight()-(m.getY()-m.getHeight()))<epsilone);
-        if(ver || hor) System.out.println("ver ="+ver+", hor="+hor);
+        boolean ver= (((Math.abs(m.getX()-this.getX())<epsilone) && Math.abs(m.getX()-(this.getX()+this.getWidth()))<epsilone)
+        ||(Math.abs(this.getX()-(m.getX()+m.getWidth()))<epsilone && Math.abs(this.getX()+this.getWidth()-(m.getX()+m.getWidth()))<epsilone));
+        boolean hor= (((Math.abs(m.getY()-this.getY())<epsilone)  && Math.abs(m.getY()-(this.getY()+this.getHeight()))<epsilone)
+        ||(Math.abs(this.getY()-(m.getY()+m.getHeight()))<epsilone && Math.abs(this.getY()+this.getHeight()-(m.getY()+m.getHeight()))<epsilone));if(ver || hor) System.out.println("ver ="+ver+", hor="+hor);
+       */
+        double epsilone = 0.2;
+        boolean ver = (Math.abs((m.getY() + m.getHeight() / 2) - (this.getY() + this.getHeight() / 2)) < ((m.getHeight() + this.getHeight()) / 2 + epsilone));
+        boolean hor = (Math.abs((m.getX() + m.getWidth() / 2) - (this.getX() + this.getWidth() / 2)) < ((m.getWidth() + this.getWidth()) / 2 + epsilone));
         return (ver && hor);   
     }
 
@@ -94,18 +115,42 @@ public class Personnage extends GameObject {
     }
 
     public boolean projectileCollide(Monstre m){
-        double epsilone=5;
+/*         double epsilone=5;
         for (Projectile p :listProjectiles){
-        boolean ver= ((Math.abs(m.getX()-p.getX())<epsilone) ||Math.abs(m.getX()-(p.getX()+p.getWidth()))<epsilone||Math.abs(p.getX()-(m.getX()+m.getWidth()))<epsilone||Math.abs(p.getX()+p.getWidth()-(m.getX()+m.getWidth()))<epsilone);
-        boolean hor= ((Math.abs(m.getY()-p.getY())<epsilone) ||Math.abs(m.getY()-(p.getY()+p.getHeight()))<epsilone||Math.abs(p.getY()-(m.getY()+m.getHeight()))<epsilone||Math.abs(p.getY()+p.getHeight()-(m.getY()+m.getHeight()))<epsilone);
-            if (ver && hor){ listProjectiles.remove(p);return true;}
+        boolean ver= (((Math.abs(m.getX()-p.getX())<epsilone) && Math.abs(m.getX()-(p.getX()+p.getWidth()))<epsilone)
+        ||(Math.abs(p.getX()-(m.getX()+m.getWidth()))<epsilone && Math.abs(p.getX()+p.getWidth()-(m.getX()+m.getWidth()))<epsilone));
+        boolean hor= (((Math.abs(m.getY()-p.getY())<epsilone)  && Math.abs(m.getY()-(p.getY()+p.getHeight()))<epsilone)
+        ||(Math.abs(p.getY()-(m.getY()+m.getHeight()))<epsilone && Math.abs(p.getY()+p.getHeight()-(m.getY()+m.getHeight()))<epsilone));
+            if (ver && hor){ listProjectiles.remove(p);
+                return true;}
         }
         return false;
+*/
+        double epsilone = 3;
+        for (Projectile p :listProjectiles){
+            boolean ver = (Math.abs((m.getY() + m.getHeight() / 2) - (p.getY() + p.getHeight() / 2)) < ((m.getHeight() + p.getHeight()) / 2 + epsilone));
+            boolean hor = (Math.abs((m.getX() + m.getWidth() / 2) - (p.getX() + p.getWidth() / 2)) < ((m.getWidth() + p.getWidth()) / 2 + epsilone));
+            if (ver && hor){ listProjectiles.remove(p);
+                return true;}
+        }
+        return false;
+
     }
     
     public void dead(){
         collides=false;
-        dy=0;
+        Timer timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                Personnage.this.setDy(0);
+                // p.setCollide(false);
+            }
+        };
+        timer.schedule(task, 3000);
+        this.setDy(3);
+        // p.setCollide(true);
+
         // pour le debug:
         // try {
         //     wait(1000*30);
@@ -115,25 +160,6 @@ public class Personnage extends GameObject {
         // }
     }
 
-    /*
-     * @Override
-     * public void move(double deltaT) {
-     * // partie gravite
-     * double g = 9.81;
-     * double newX, newY;
-     * dy = dy > -g ? (-g * deltaT + dy) : -g;// chute libre ;
-     * 
-     * this.setY((-g / 2) * (deltaT * deltaT) + dy * deltaT + this.getY());
-     * 
-     * // partie horizental
-     * newX = dx * deltaT + this.getX();
-     * // if(newX+this.getHeight()/2>)
-     * this.setX(newX);
-     * 
-     * }
-     */
-
-    // Getter & Setter
 
     public double getDy() {
         return dy;

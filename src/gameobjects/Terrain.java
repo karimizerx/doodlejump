@@ -59,16 +59,17 @@ public class Terrain {
             } else{
                 PlateformeBase pf =new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589));
                 plateformesListe.add(pf);
-                pf.addItem((int) pf.getX(), (int) (pf.getY()-2*pf.getHeight()), 42, 42);
+                pf.addItem((int) (pf.getX()+pf.getWidth()*(1+new Random().nextDouble(0.5))), (int) (pf.getY()-2*pf.getHeight()));
             }
         }
         for (int i = 0; i <3; i++) {
-            // On définit la largeur/hauteur des plateformes de base
-            int x = new Random().nextInt((int) (this.width - w));
-            int y = (int)this.height/4;
-            //TODO add items to plateforme
-            monstres.add(new Monstre(x, y, 80,90, -(this.height * 0.0013645224), new Random().nextInt(2)+1));
-
+            if(new Random().nextInt(100)>75){
+                // On définit la largeur/hauteur des plateformes de base
+                int x = new Random().nextInt((int) (this.width - w));
+                int y = (int)this.height/4;
+                //TODO add items to plateforme
+                monstres.add(new Monstre(x, y, 80,90, -(this.height * 0.0013645224), new Random().nextInt(2)+1));
+            }
         }
     } // On s'assure d'abord toujours une solution au début
 
@@ -143,7 +144,7 @@ public class Terrain {
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                             pf.setItem(null);
                             if (new Random().nextDouble(difficulty) < difficulty/8 && !(pf instanceof MovingPlateforme) )
-                                pf.addItem((int) pf.getX(), (int) (pf.getY()-2*pf.getHeight()), 42, 42);
+                                pf.addItem((int) (pf.getX()*(1+new Random().nextDouble(0.8))), (int) (pf.getY()-2*pf.getHeight()));
                 }
             }
             ArrayList<Monstre> toBeRemoved=new ArrayList<Monstre>();
@@ -167,7 +168,7 @@ public class Terrain {
                 if(m.shot())
                     toBeRemoved.add(m);
             }else 
-            if(p.collides_monstre(m, deltaTime)) {p.dead();break;}
+            if(p.collides_monstre(m)) {p.dead();break;}
            
         }
         monstres.removeAll(toBeRemoved);

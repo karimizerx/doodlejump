@@ -23,13 +23,12 @@ public abstract class Plateforme extends GameObject {
         this.saut = saut;
     }
 
-    public void addItem(double x,double y, double w, double h){
+    public void addItem(double x,double y){
         Random rand =new Random();
         if (rand.nextDouble() >0.5 && !(this instanceof MovingPlateforme)){
-            item=new Fusee(x,y,w,h, -25,rand.nextDouble(0.8), 2.5);
-            System.out.println(x+" "+y+" "+" "+w*4000+" "+h*4000+" "+ 100+" "+ 5);
+            item=new Fusee(x,y,25,30, -25,rand.nextDouble(0.8), 2.5);
         }else{
-            item=new Helicoptere(x,y,w,h, -10, rand.nextDouble(0.8),5);
+            item=new Helicoptere(x,y,30,30, -10, rand.nextDouble(0.8),5);
         }
     }
     public void updateItem(){
