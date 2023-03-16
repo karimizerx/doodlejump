@@ -32,6 +32,10 @@ public class Game extends Etat {
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getChemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/projectile.png")));
+                this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getChemin() + "/monstre1.png")));
+                this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getChemin() + "/monstre2.png")));
+                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getChemin() + "/monstre3.png")));
+
             } catch (Exception e) {
                 this.vue.setTerrainView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/terrainBackground.png")));
@@ -42,6 +46,11 @@ public class Game extends Etat {
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/projectile.png")));
+                this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre1.png")));
+                this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre2.png")));
+
+                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre3.png")));
+            
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -174,6 +183,22 @@ public class Game extends Etat {
             for (Projectile pro : pers.getListProjectiles()) {
                 g2.drawImage(this.vue.getProjectileView(), (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
                         (int) pro.getHeight(), null);
+            }
+        }
+        for (Monstre m : this.vue.getTerrain().getMontresArrayList()){
+            switch(m .getId()){
+                case 1:
+                g2.drawImage(this.vue.getMonstre1View(),(int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+                break;
+                case 2:
+                g2.drawImage(this.vue.getMonstre2View(),(int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+                break;
+                case 3:
+                g2.drawImage(null, (int) m.getX(),(int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+                break;
+                default :
+                g2.drawImage(this.vue.getMonstre1View(),(int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
+                break; 
             }
         }
 
