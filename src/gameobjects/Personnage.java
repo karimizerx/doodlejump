@@ -72,12 +72,12 @@ public class Personnage extends GameObject {
         }
 
     }
+    
     public boolean collides_monstre(Monstre m) {
         if(!collides) return false;
-        double epsilone = 0;
-        boolean ver = (Math.abs((m.getY() + m.getHeight() / 2) - (this.getY() + this.getHeight() / 2)) < ((m.getHeight() + this.getHeight()) / 2 + epsilone));
-        boolean hor = (Math.abs((m.getX() + m.getWidth() / 2) - (this.getX() + this.getWidth() / 2)) < ((m.getWidth() + this.getWidth()) / 2 + epsilone));
-        return (ver && hor);   
+        boolean ver = (Math.abs((m.getY()*0.7 + m.getHeight()*0.6 / 2) - (this.getY() + 0.87*this.getHeight() / 2)) < ((m.getHeight() + 0.87*this.getHeight()) / 2 ));
+        boolean hor = (Math.abs((m.getX()*0.9 + m.getWidth() *0.4/ 2)  - (this.getX() +  this.getWidth() / 2)) < ((m.getWidth()  + this.getWidth()) / 2));
+        return (ver && hor);   //TODO reparer les coeffs
     }
     public boolean projectileCollide(Monstre m){
        double epsilone = 3;
@@ -93,6 +93,12 @@ public class Personnage extends GameObject {
     }
     public void dead(){
         this.collides=false;
+        try {
+            wait();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         // Timer timer = new Timer();
         // TimerTask task = new TimerTask() {
         //     @Override
