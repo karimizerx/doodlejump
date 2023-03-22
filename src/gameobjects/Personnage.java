@@ -74,9 +74,10 @@ public class Personnage extends GameObject {
     }
     
     public boolean collides_monstre(Monstre m) {
-        if(!collides) return false;
-        boolean ver = (Math.abs((m.getY()*0.7 + m.getHeight()*0.6 / 2) - (this.getY() + 0.87*this.getHeight() / 2)) < ((m.getHeight() + 0.87*this.getHeight()) / 2 ));
-        boolean hor = (Math.abs((m.getX()*0.9 + m.getWidth() *0.4/ 2)  - (this.getX() +  this.getWidth() / 2)) < ((m.getWidth()  + this.getWidth()) / 2));
+        if(!collides) return false;    //0.7                       0.6         0.87
+        boolean ver = (Math.abs((m.getY() - m.getHeight() / 2) - (this.getY() -this.getHeight() / 2)) < Math.abs((m.getHeight() + 0.87*this.getHeight()) / 2 ));
+        boolean hor = (Math.abs((m.getX() + m.getWidth() *0.5/ 2)  - (this.getX() +  this.getWidth() / 2)) <((m.getWidth()  + this.getWidth()) / 2));
+        //                              0.9        0.4
         return (ver && hor);   //TODO reparer les coeffs
     }
     public boolean projectileCollide(Monstre m){
