@@ -147,7 +147,8 @@ public class Terrain {
                         plateformesListe.get(plateformesListe.size()-1).setSaut(-(this.height * 0.0009746589));
                     }
                     
-                if(new Random().nextInt(100)>20){
+                if(new Random().nextDouble(1)>1/difficulty){
+                    System.out.println(difficulty);
                     // On définit la largeur/hauteur des plateformes de base
                     int x1 = new Random().nextInt((int) (this.width-80));
                     int id=new Random().nextInt(2)+1;

@@ -94,12 +94,6 @@ public class Personnage extends GameObject {
     }
     public void dead(){
         this.collides=false;
-        try {
-            wait();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         // Timer timer = new Timer();
         // TimerTask task = new TimerTask() {
         //     @Override
