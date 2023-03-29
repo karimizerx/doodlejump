@@ -163,6 +163,8 @@ public class Game extends Etat {
                 Items it = pf.getItem();
                 BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
                         : this.vue.getProjectileView();
+                g2.setColor(Color.BLUE);
+                g2.drawRect((int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight());
                 g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
             }
         }
@@ -192,6 +194,8 @@ public class Game extends Etat {
             BufferedImage jPersoData = this.vue.getJoueurDataList().get(i).get(0);
             ArrayList<BufferedImage> jNomData = this.vue.getJoueurDataList().get(i + 1);
             Personnage p = this.vue.getTerrain().getListeJoueurs().get(i / 2).getPerso();
+            g2.setColor(Color.BLUE);
+            g2.drawRect((int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight());
             g2.drawImage(jPersoData, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
             int c = (int) ((20 * (jNomData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
             afficheMot(g2, jNomData, (int) (p.getX() - c), (int) p.getY() - 15, 20, 20, 15, 10);

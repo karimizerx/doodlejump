@@ -3,6 +3,8 @@ package gameobjects;
 // Import de packages java :
 import java.util.*;
 
+import gui.Vue;
+
 // Le personnage est un objet avec vitesse.
 public class Personnage extends GameObject {
 
@@ -61,8 +63,8 @@ public class Personnage extends GameObject {
                     && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
                     // si ça ne dépasse pas par la droite de la item.
                     // + witdh*0.25 sert à ne compter que le x du premier pied
-                    && (this.getY() <= (it.getY() + it.getHeight()))
-                    && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))
+                    && (this.getY() + 0.87 * this.getHeight() >= it.getY())
+                    && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
                     && (this.getDy() < 0)) { // Si le personnage monte
                 dy = it.getSaut();
                 return true;
