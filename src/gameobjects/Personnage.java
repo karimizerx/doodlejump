@@ -3,10 +3,13 @@ package gameobjects;
 // Import de packages java :
 import java.util.*;
 
+import gui.Vue;
+
 // Le personnage est un objet avec vitesse.
 public class Personnage extends GameObject {
 
     private double dx, dy; // Vitesse en x et en y
+    private Items item;
     // isRight/Left gère les boutons appuyés, isInert gère le relâchement
     // isShoot & canShoot indique si l'on tire/peut tirer un projectile.
     private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot;
@@ -42,7 +45,7 @@ public class Personnage extends GameObject {
     }
 
     // Colision entre le personnage et un item
-    public void collides_item(Items it, double deltaTime) {
+    public boolean collides_item(Items it, double deltaTime) {
         if (it.isNeedPied()) {
             if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
                     // + witdh*0.65 sert à ne compter que le x du dernier pied
@@ -52,7 +55,7 @@ public class Personnage extends GameObject {
                     && (this.getY() + 0.87 * this.getHeight() >= it.getY())
                     && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
                     && (this.getDy() > 0)) { // Si le personnage descend
-                dy = it.getSaut();
+                return true;
             }
         } else {
             if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
@@ -60,12 +63,14 @@ public class Personnage extends GameObject {
                     && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
                     // si ça ne dépasse pas par la droite de la item.
                     // + witdh*0.25 sert à ne compter que le x du premier pied
-                    && (this.getY() <= (it.getY() + it.getHeight()))
-                    && ((it.getY() + it.getHeight()) <= (this.getY() + this.getHeight()))
+                    && (this.getY() + 0.87 * this.getHeight() >= it.getY())
+                    && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
                     && (this.getDy() < 0)) { // Si le personnage monte
                 dy = it.getSaut();
+                return true;
             }
         }
+        return false;
 
     }
 
@@ -164,5 +169,13 @@ public class Personnage extends GameObject {
 
     public void setcanShoot(boolean canShoot) {
         this.canShoot = canShoot;
+    }
+
+    public Items getItem() {
+        return item;
+    }
+
+    public void setItem(Items item) {
+        this.item = item;
     }
 }

@@ -31,7 +31,9 @@ public class Game extends Etat {
                         ImageIO.read(new File(this.vue.getChemin() + "/plateformes/plateformeMobile.png")));
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getChemin() + "/background/scoreBackground1.png")));
-                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/projectile.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/items/projectile.png")));
+
+                this.vue.setFuseeView(ImageIO.read(new File(this.vue.getChemin() + "/items/fusee.png")));
             } catch (Exception e) {
                 this.vue.setTerrainView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/terrainBackground.png")));
@@ -41,7 +43,9 @@ public class Game extends Etat {
                         ImageIO.read(new File(this.vue.getWinchemin() + "/plateformes/plateformeMobile.png")));
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/scoreBackground1.png")));
-                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/projectile.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/projectile.png")));
+
+                this.vue.setFuseeView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/fusee.png")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -145,6 +149,31 @@ public class Game extends Etat {
             BufferedImage pfV = (pf instanceof PlateformeBase) ? this.vue.getPlatformeBaseView()
                     : this.vue.getPlatformeMobileView();
             g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
+            if (pf.getItem() != null) {
+                Items it = pf.getItem();
+                BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
+                        : this.vue.getProjectileView();
+                g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
+            }
+        }
+
+        // Affichage des items.
+        for (Plateforme pf : this.vue.getTerrain().getPlateformesListe()) {
+            if (pf.getItem() != null) {
+                Items it = pf.getItem();
+                BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
+                        : this.vue.getProjectileView();
+                g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
+            }
+        }
+        for (Joueur j : this.vue.getTerrain().getListeJoueurs()) {
+            Personnage p = j.getPerso();
+            if (p.getItem() != null) {
+                Items it = p.getItem();
+                BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
+                        : this.vue.getProjectileView();
+                g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
+            }
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur.
@@ -192,17 +221,19 @@ public class Game extends Etat {
         double acc = 0.0; // Accumulateur qui va gérer les pertes de temps.
         long t0 = System.currentTimeMillis(); // Temps actuel.
         while (Vue.isRunningGame) { // Tant que la GAME tourne :
-            long t1 = System.currentTimeMillis();
-            long t = t1 - t0;
-            t0 = System.currentTimeMillis();
-            acc += t;
-            while (acc > this.vue.getDeltaTime()) { // Si on peut update :
-                update(); // On met à jour les variables.
-                // On retire 1 deltaTime à chaque update. Si le reste > 0 & < Δ, ça veut dire
-                // qu'on a un retard, qu'on stock pour l'ajouter à l'étape suivante.
-                // Si on a reste > Δ, on relance cette boucle
-                acc -= this.vue.getDeltaTime();
-                cnt += this.vue.getDeltaTime(); // On accumule le nombre d'update.
+            if (!this.vue.getTerrain().isPause()) {
+                long t1 = System.currentTimeMillis();
+                long t = t1 - t0;
+                t0 = System.currentTimeMillis();
+                acc += t;
+                while (acc > this.vue.getDeltaTime()) { // Si on peut update :
+                    update(); // On met à jour les variables.
+                    // On retire 1 deltaTime à chaque update. Si le reste > 0 & < Δ, ça veut dire
+                    // qu'on a un retard, qu'on stock pour l'ajouter à l'étape suivante.
+                    // Si on a reste > Δ, on relance cette boucle
+                    acc -= this.vue.getDeltaTime();
+                    cnt += this.vue.getDeltaTime(); // On accumule le nombre d'update.
+                }
             }
             affiche(this.vue.getGraphics()); // On affiche les images une fois les données update.
         }
@@ -347,10 +378,9 @@ public class Game extends Etat {
     // A REFAIRE !s
     private void pause() {
         if (this.vue.getTerrain().isPause()) {
-            Vue.isRunningGame = true;
             this.vue.getTerrain().setPause(false);
+            System.out.println("Un PAUSE");
         } else {
-            Vue.isRunningGame = false;
             this.vue.getTerrain().setPause(true);
             System.out.println("PAUSE !");
         }

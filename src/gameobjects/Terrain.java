@@ -41,15 +41,15 @@ public class Terrain {
         generateObstacles();
     }
 
-    private boolean willMove(double x){//Génère une probabilité croissante selon la difficultée
+    // Génère une probabilité croissante selon la difficultée
+    private boolean willMove(double x) {
         int c = new Random().nextInt(31);
-        if(c*x>=30){
+        if (c * x >= 30) {
             return true;
         }
         return false;
     }
 
-    // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     // Crée la liste des plateforme
     private void generateObstacles() {
         // Taille des plateformes en fonction de la taille de la fenêtre
@@ -59,7 +59,6 @@ public class Terrain {
             // On définit la largeur/hauteur des plateformes de base
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
-            double c = new Random().nextDouble();
             plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
         }
         // On s'assure d'abord toujours une solution au début
@@ -106,6 +105,10 @@ public class Terrain {
         p.setDy(p.getDy() + (ralentissement * deltaTime));
         p.setY(p.getY() + p.getDy());
 
+        // Mise à jour de l'item du perso
+        if (p.getDy() >= 0) { // Si on redescend, on perd l'item
+            p.setItem(null);
+        }
         // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
             Vue.isRunningGame = false;
@@ -126,36 +129,64 @@ public class Terrain {
             // certain seuil qu'on a défini préalablement (la moitié de la taille)
             difficulty = (difficulty > 5) ? 5 : difficulty + 0.1;
             p.setY(this.height / 2);
-            j.setScore(j.getScore() + 1);
+            j.setScore(j.getScore() + 1); // On incrémente le score
+
             // On descend toutes les plateforme
-            for (int i = 0; i<plateformesListe.size() ; ++i) {
-                Plateforme pf=plateformesListe.get(i);
+            for (int i = 0; i < plateformesListe.size(); ++i) {
+                Plateforme pf = plateformesListe.get(i);
                 pf.setY(pf.getY() - (int) p.getDy());
+
                 if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
-                    pf.setX(new Random().nextInt((int)(this.width-pf.getWidth())));
-                    if(willMove(difficulty)){
-                       plateformesListe.remove(pf);
-                       plateformesListe.add(new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(), -(this.height * 0.0013645224), (0.003125 * this.width)));
-                       plateformesListe.get(plateformesListe.size()-1).setDx((0.003125 * this.width)*difficulty/3.5);
-                    }
-                    else{
+                    pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
+                    if (willMove(difficulty)) {
                         plateformesListe.remove(pf);
-                        plateformesListe.add(new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(), -(this.height * 0.0009746589)));
-                        plateformesListe.get(plateformesListe.size()-1).setSaut(-(this.height * 0.0009746589));
+                        Plateforme pf2 = new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                                -(this.height * 0.0013645224), (0.003125 * this.width));
+                        plateformesListe.add(pf2);
+                        plateformesListe.get(plateformesListe.size() - 1)
+                                .setDx((0.003125 * this.width) * difficulty / 3.5);
+                        Items it = new Fusee(pf2.getX(), pf2.getY() - 50, 30, 50, -(this.height * 0.1), 0.5);
+                        pf2.setItem(it);
+                    } else {
+                        plateformesListe.remove(pf);
+                        plateformesListe.add(new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                                -(this.height * 0.0009746589)));
+                        plateformesListe.get(plateformesListe.size() - 1).setSaut(-(this.height * 0.0009746589));
                     }
-            }
-            if(pf.getY()<-50){
-                plateformesListe.remove(pf);
+                }
+                if (pf.getY() < -50) {
+                    plateformesListe.remove(pf);
+                }
             }
         }
-    }
-        // On gère les collisions & les débordements du personnage
+        // On gère les collisions
         for (Plateforme pf : plateformesListe) {
             p.collides_plateforme(pf, deltaTime);
             pf.move(this);
+
+            // On met à jour la position de l'item (s'il existe)
+            if (pf.getItem() != null) {
+                Items it = pf.getItem();
+                it.setY(pf.getY() - it.getHeight());
+                it.setX(pf.getX() + it.getPlacement() * pf.getWidth());
+                pf.setItem(it);
+                if (p.getItem() == null && p.collides_item(it, deltaTime)) {
+                    p.setItem(pf.getItem());
+                    pf.setItem(null);
+                }
+            }
         }
+        // On met à jour la position de l'item (s'il existe)
+        if (p.getItem() != null) {
+            Items it = p.getItem();
+            it.setY(p.getY());
+            it.setX(p.getX());
+            p.setItem(it);
+        }
+
+        // On gère les collisions & les débordements du personnage
         limite(p);
     }
 

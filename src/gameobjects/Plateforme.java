@@ -5,6 +5,7 @@ public abstract class Plateforme extends GameObject {
 
     private double saut; // Constante de saut (différente en fonction de la plateforme)
     private double dx;
+    private Items item;
 
     public Plateforme(double x, double y, double w, double h, double saut, double dx) {
         super(x, y, w, h);
@@ -12,7 +13,6 @@ public abstract class Plateforme extends GameObject {
     }
 
     // Getter & Setter
-
 
     public void move(Terrain t) { // Modifie la position en x
         this.setX(this.getX() + this.getDx());
@@ -35,6 +35,14 @@ public abstract class Plateforme extends GameObject {
 
     public void setDx(double dx) {
         this.dx = dx;
+    }
+
+    public Items getItem() {
+        return item;
+    }
+
+    public void setItem(Items item) {
+        this.item = item;
     }
     
 }
