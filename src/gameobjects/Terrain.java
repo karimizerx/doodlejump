@@ -29,8 +29,8 @@ public class Terrain {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
-        this.monstres=new ArrayList<Monstre>();
-        this. coins=new ArrayList<Coins>();
+        this.monstres = new ArrayList<Monstre>();
+        this.coins = new ArrayList<Coins>();
 
         this.height = height;
         this.width = width;
@@ -45,9 +45,9 @@ public class Terrain {
         generateObstacles();
     }
 
-    private boolean willMove(double x){//Génère une probabilité croissante selon la difficultée
+    private boolean willMove(double x) {// Génère une probabilité croissante selon la difficultée
         int c = new Random().nextInt(31);
-        if(c*x>=30){
+        if (c * x >= 30) {
             return true;
         }
         return false;
@@ -132,78 +132,81 @@ public class Terrain {
             p.setY(this.height / 2);
             j.setScore(j.getScore() + 1);
             // On descend toutes les plateforme
-            for (int i = 0; i<plateformesListe.size() ; ++i) {
-                Plateforme pf=plateformesListe.get(i);
+            for (int i = 0; i < plateformesListe.size(); ++i) {
+                Plateforme pf = plateformesListe.get(i);
                 pf.setY(pf.getY() - (int) p.getDy());
                 if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
-                    pf.setX(new Random().nextInt((int)(this.width-pf.getWidth())));
-                    if(willMove(difficulty)){
-                       plateformesListe.remove(pf);
-                       plateformesListe.add(new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(), -(this.height * 0.0013645224), (0.003125 * this.width)));
-                       plateformesListe.get(plateformesListe.size()-1).setDx((0.003125 * this.width)*difficulty/3.5);
-                    }
-                    else{
+                    pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
+                    if (willMove(difficulty)) {
                         plateformesListe.remove(pf);
-                        plateformesListe.add(new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(), -(this.height * 0.0009746589)));
-                        plateformesListe.get(plateformesListe.size()-1).setSaut(-(this.height * 0.0009746589));
+                        plateformesListe.add(new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                                -(this.height * 0.0013645224), (0.003125 * this.width)));
+                        plateformesListe.get(plateformesListe.size() - 1)
+                                .setDx((0.003125 * this.width) * difficulty / 3.5);
+                    } else {
+                        plateformesListe.remove(pf);
+                        plateformesListe.add(new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                                -(this.height * 0.0009746589)));
+                        plateformesListe.get(plateformesListe.size() - 1).setSaut(-(this.height * 0.0009746589));
                     }
-                // Il faut changer ce qu'il y a dans le if pour changer l'apparition
-                if(new Random().nextDouble(1)>1/difficulty){
-                    System.out.println(difficulty);
-                    // On définit la largeur/hauteur des plateformes de base
-                    int x1 = new Random().nextInt((int) (this.width-80));
-                    int id=new Random().nextInt(2)+1;
-                    monstres.add(new Monstre(x1, -80, id==1 ? 70 : 80,id==1 ? 50 : 90, -(this.height * 0.0013645224), id));
-                        //  pour id =1 70,50
+                    // Il faut changer ce qu'il y a dans le if pour changer l'apparition
+                    if (new Random().nextDouble() > 1 / difficulty) {
+                        System.out.println(difficulty);
+                        // On définit la largeur/hauteur des plateformes de base
+                        int x1 = new Random().nextInt((int) (this.width - 80));
+                        int id = new Random().nextInt(2) + 1;
+                        monstres.add(new Monstre(x1, -80, id == 1 ? 70 : 80, id == 1 ? 50 : 90,
+                                -(this.height * 0.0013645224), id));
+                        // pour id =1 70,50
                         // 80,90 pour id =2
+                    }
+                    // Il faut changer ce qu'il y a dans le if pour changer l'apparition
+                    if (new Random().nextDouble() > 1 / difficulty) {
+                        int x1 = new Random().nextInt((int) (this.width - 80));
+                        coins.add(new Coins(x1, -80, 30, 30));
+                    }
                 }
-                // Il faut changer ce qu'il y a dans le if pour changer l'apparition
-                if(new Random().nextDouble(1)>1/difficulty){
-                    int x1 = new Random().nextInt((int) (this.width-80));
-                    coins.add(new Coins(x1, -80,  30 , 30));
+                if (pf.getY() < -50) {
+                    plateformesListe.remove(pf);
                 }
             }
-            if(pf.getY()<-50){
-                plateformesListe.remove(pf);
+            ArrayList<Monstre> toBeRemoved = new ArrayList<Monstre>();
+            for (Monstre m : monstres) {
+                m.setY(m.getY() - (int) p.getDy());
+                if (m.getY() + m.getHeight() >= this.height) // Si les monstres baissées déborde de l'écran
+                    toBeRemoved.add(m);
             }
-        }
-        ArrayList<Monstre> toBeRemoved=new ArrayList<Monstre>();
-        for (Monstre m : monstres) {
-            m.setY(m.getY() - (int) p.getDy());
-            if (m.getY() + m.getHeight() >= this.height) // Si les monstres baissées déborde de l'écran
-            toBeRemoved.add(m);
-        }
-        monstres.removeAll(toBeRemoved);
+            monstres.removeAll(toBeRemoved);
 
-        ArrayList<Coins> toremove=new ArrayList<Coins>();
-        for (Coins c : coins) {
-            c.setY(c.getY() - (int) p.getDy());
-            if (c.getY() + c.getHeight() >= this.height){ // Si les coins baissées déborde de l'écran
-               toremove.add(c);
+            ArrayList<Coins> toremove = new ArrayList<Coins>();
+            for (Coins c : coins) {
+                c.setY(c.getY() - (int) p.getDy());
+                if (c.getY() + c.getHeight() >= this.height) { // Si les coins baissées déborde de l'écran
+                    toremove.add(c);
+                }
             }
+            coins.removeAll(toremove);
         }
-        coins.removeAll(toremove);
-    }    
 
-        ArrayList<Monstre> toBeRemoved=new ArrayList<Monstre>();
+        ArrayList<Monstre> toBeRemoved = new ArrayList<Monstre>();
         for (Monstre m : monstres) {
             m.move(this);
-            if(p.projectileCollide(m)){
-                if(m.shot())
+            if (p.projectileCollide(m)) {
+                if (m.shot())
                     toBeRemoved.add(m);
-            }else 
-            if(p.collides(m)) {
+            } else if (p.collides(m)) {
                 // if (p.task!=null)p.task.cancel();
-                p.dead();break;
+                p.dead();
+                break;
             }
         }
         monstres.removeAll(toBeRemoved);
         // On gère les collisions & les débordements du personnage
-        ArrayList<Coins> toremove=new ArrayList<Coins>();
+        ArrayList<Coins> toremove = new ArrayList<Coins>();
         for (Coins c : coins) {
-            if(p.collides(c)) {
+            if (p.collides(c)) {
                 p.addCoin();
                 toremove.add(c);
             }
@@ -215,10 +218,7 @@ public class Terrain {
             pf.move(this);
         }
 
-
-
         limite(p);
-
 
     }
 
@@ -320,15 +320,15 @@ public class Terrain {
         this.pause = pause;
     }
 
-    
-    public ArrayList<Monstre> getMontresArrayList(){
+    public ArrayList<Monstre> getMontresArrayList() {
         return monstres;
     }
 
-    public void setMonstres(ArrayList<Monstre> m){
-        monstres=m;
+    public void setMonstres(ArrayList<Monstre> m) {
+        monstres = m;
     }
-    public ArrayList<Coins> getCoins(){
+
+    public ArrayList<Coins> getCoins() {
         return this.coins;
     }
 
