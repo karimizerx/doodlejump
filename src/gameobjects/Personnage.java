@@ -11,7 +11,6 @@ public class Personnage extends GameObject {
     // isShoot & canShoot indique si l'on tire/peut tirer un projectile.
     private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot;
     private ArrayList<Projectile> listProjectiles; // Stock tous les projectiles du personnage encore sur le terrain
-    public TimerTask task;
     public boolean collides=true;
 
     public Personnage(double x, double y, double w, double h, double dy) {

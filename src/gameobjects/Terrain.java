@@ -176,7 +176,9 @@ public class Terrain {
                 if(m.shot())
                     toBeRemoved.add(m);
             }else 
-            if(p.collides_monstre(m)) {if (p.task!=null)p.task.cancel();p.dead();break;
+            if(p.collides_monstre(m)) {
+                // if (p.task!=null)p.task.cancel();
+                p.dead();break;
             }
         }
         monstres.removeAll(toBeRemoved);
