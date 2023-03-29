@@ -31,7 +31,9 @@ public class Game extends Etat {
                         ImageIO.read(new File(this.vue.getChemin() + "/plateformes/plateformeMobile.png")));
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getChemin() + "/background/scoreBackground1.png")));
-                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/projectile.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/items/projectile.png")));
+
+                this.vue.setFuseeView(ImageIO.read(new File(this.vue.getChemin() + "/items/fusee.png")));
             } catch (Exception e) {
                 this.vue.setTerrainView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/terrainBackground.png")));
@@ -41,7 +43,9 @@ public class Game extends Etat {
                         ImageIO.read(new File(this.vue.getWinchemin() + "/plateformes/plateformeMobile.png")));
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/scoreBackground1.png")));
-                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/projectile.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/projectile.png")));
+
+                this.vue.setFuseeView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/fusee.png")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -140,11 +144,17 @@ public class Game extends Etat {
         // Affichage terrain.
         g2.drawImage(this.vue.getTerrainView(), 0, 0, tw, th, null);
 
-        // Affichage des plateformes.
+        // Affichage des plateformes + items.
         for (Plateforme pf : this.vue.getTerrain().getPlateformesListe()) {
             BufferedImage pfV = (pf instanceof PlateformeBase) ? this.vue.getPlatformeBaseView()
                     : this.vue.getPlatformeMobileView();
             g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
+            if (pf.getItem() != null) {
+                Items it = pf.getItem();
+                BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
+                        : this.vue.getProjectileView();
+                g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
+            }
         }
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur.

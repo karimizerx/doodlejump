@@ -24,7 +24,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
-            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, fuseeView;
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
             buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
@@ -579,6 +579,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public void setNomJ2(ArrayList<BufferedImage> nomJ2) {
         this.nomJ2 = nomJ2;
+    }
+
+    public BufferedImage getFuseeView() {
+        return fuseeView;
+    }
+
+    public void setFuseeView(BufferedImage fuseeView) {
+        this.fuseeView = fuseeView;
     }
 
 }
