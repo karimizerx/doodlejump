@@ -124,7 +124,7 @@ public class Terrain {
         if (p.getY() < this.height / 2 && (((isHost && multiplayer) || !multiplayer))) {
             // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
             // certain seuil qu'on a défini préalablement (la moitié de la taille)
-            difficulty = (difficulty > 5) ? 5 : difficulty + 0.0001;
+            difficulty = (difficulty > 5) ? 5 : difficulty + 0.1;
             p.setY(this.height / 2);
             j.setScore(j.getScore() + 1);
             // On descend toutes les plateforme
