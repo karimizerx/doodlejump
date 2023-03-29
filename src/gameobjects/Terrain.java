@@ -154,7 +154,7 @@ public class Terrain {
                         plateformesListe.add(pf2);
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
-                        Items it = new Fusee(pf2.getX(), pf2.getY() - 50, 30, 50, -(this.height * 0.013645224), 0.5);
+                        Items it = new Fusee(pf2.getX(), pf2.getY() - 50, 30, 50, -(this.height * 0.1), 0.5);
                         pf2.setItem(it);
                     } else {
                         plateformesListe.remove(pf);
