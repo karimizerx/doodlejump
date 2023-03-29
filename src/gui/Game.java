@@ -163,8 +163,6 @@ public class Game extends Etat {
                 Items it = pf.getItem();
                 BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
                         : this.vue.getProjectileView();
-                g2.setColor(Color.BLUE);
-                g2.drawRect((int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight());
                 g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
             }
         }
@@ -194,8 +192,6 @@ public class Game extends Etat {
             BufferedImage jPersoData = this.vue.getJoueurDataList().get(i).get(0);
             ArrayList<BufferedImage> jNomData = this.vue.getJoueurDataList().get(i + 1);
             Personnage p = this.vue.getTerrain().getListeJoueurs().get(i / 2).getPerso();
-            g2.setColor(Color.BLUE);
-            g2.drawRect((int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight());
             g2.drawImage(jPersoData, (int) p.getX(), (int) p.getY(), (int) p.getWidth(), (int) p.getHeight(), null);
             int c = (int) ((20 * (jNomData.size() - 1)) - p.getWidth()) / 2; // Pour placer le nom au centre du perso
             afficheMot(g2, jNomData, (int) (p.getX() - c), (int) p.getY() - 15, 20, 20, 15, 10);
@@ -225,17 +221,19 @@ public class Game extends Etat {
         double acc = 0.0; // Accumulateur qui va gérer les pertes de temps.
         long t0 = System.currentTimeMillis(); // Temps actuel.
         while (Vue.isRunningGame) { // Tant que la GAME tourne :
-            long t1 = System.currentTimeMillis();
-            long t = t1 - t0;
-            t0 = System.currentTimeMillis();
-            acc += t;
-            while (acc > this.vue.getDeltaTime()) { // Si on peut update :
-                update(); // On met à jour les variables.
-                // On retire 1 deltaTime à chaque update. Si le reste > 0 & < Δ, ça veut dire
-                // qu'on a un retard, qu'on stock pour l'ajouter à l'étape suivante.
-                // Si on a reste > Δ, on relance cette boucle
-                acc -= this.vue.getDeltaTime();
-                cnt += this.vue.getDeltaTime(); // On accumule le nombre d'update.
+            if (!this.vue.getTerrain().isPause()) {
+                long t1 = System.currentTimeMillis();
+                long t = t1 - t0;
+                t0 = System.currentTimeMillis();
+                acc += t;
+                while (acc > this.vue.getDeltaTime()) { // Si on peut update :
+                    update(); // On met à jour les variables.
+                    // On retire 1 deltaTime à chaque update. Si le reste > 0 & < Δ, ça veut dire
+                    // qu'on a un retard, qu'on stock pour l'ajouter à l'étape suivante.
+                    // Si on a reste > Δ, on relance cette boucle
+                    acc -= this.vue.getDeltaTime();
+                    cnt += this.vue.getDeltaTime(); // On accumule le nombre d'update.
+                }
             }
             affiche(this.vue.getGraphics()); // On affiche les images une fois les données update.
         }
@@ -380,10 +378,9 @@ public class Game extends Etat {
     // A REFAIRE !s
     private void pause() {
         if (this.vue.getTerrain().isPause()) {
-            Vue.isRunningGame = true;
             this.vue.getTerrain().setPause(false);
+            System.out.println("Un PAUSE");
         } else {
-            Vue.isRunningGame = false;
             this.vue.getTerrain().setPause(true);
             System.out.println("PAUSE !");
         }
