@@ -258,7 +258,7 @@ public class Game extends Etat {
 
         /// Gestion de la pause :
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // Si on appuie sur ECHAP :
-            this.pause(); // On met le jeu en pause.
+            this.vue.isMenuPause = !this.vue.isMenuPause; // On met le jeu en pause.
         }
     }
 

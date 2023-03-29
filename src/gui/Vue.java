@@ -16,7 +16,7 @@ import javax.swing.*;
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique l'état actuel du panel.
-    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement;
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement, isMenuPause;
     private final int width, height; // Dimensions du panel.
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
@@ -26,7 +26,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
             terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView;
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
-            buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
+            buttonQuitter, buttonReprendre, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
 
     private double deltaTime; // Le temps nécessaire pour update une GAME.
@@ -44,6 +44,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private MenuDemarrer eMenuDemarrer;
     private MenuClassement eMenuClassement;
     private MenuLancement eMenuLancement;
+    private MenuPause eMenuPause;
 
     public Vue(App frame, String skin) {
         // Taille du panel.
@@ -67,6 +68,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.eMenuLancement.initFixe();
         this.eGame.initFixe();
         this.eMenuFin.initFixe();
+        this.eMenuPause.initFixe();
     }
 
     // Fait tourner le jeu Doodle Jump au complet.
@@ -86,6 +88,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             this.eMenuLancement = new MenuLancement(this);
             this.eGame = new Game(this);
             this.eMenuFin = new MenuFin(this);
+            this.eMenuPause= new MenuPause(this);
 
             this.initGENERAL(); // On initialise les images qui ne changent pas en fonction de l'état.
 
@@ -113,6 +116,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     this.eMenuLancement.running();
                 }
 
+                if (isMenuPause) { // Si on a fait pause :
+                    this.eMenuPause = new MenuPause(this);
+                    this.eMenuPause.init();
+                    this.eMenuPause.running();
+                }
+
                 if (isRunningGame) { // Si on a lancé une GAME :
                     this.eGame = new Game(this);
                     this.eGame.init();
@@ -123,7 +132,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     }
                 }
 
-                if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin
+                if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin && !isMenuPause
                         && this.eGame.endGame()) { // Si c'est la fin de la GAME (quelqu'un a perdu) :
                     // On met à jour toutes les variables boolean.
                     isRunningGame = false;
@@ -178,6 +187,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         if (isMenuFin) { // Si on est au niveau du menu FIN :
             this.eMenuFin.keyControlPressed(e);
+        }
+
+        if (isMenuPause) { // Si on est au niveau du menu FIN :
+            this.eMenuPause.keyControlPressed(e);
         }
     }
 
@@ -393,6 +406,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.buttonQuitter = buttonQuitter;
     }
 
+    public ArrayList<BufferedImage> getButtonReprendre() {
+        return buttonReprendre;
+    }
+
+    public void setButtonReprendre(ArrayList<BufferedImage> buttonReprendre) {
+        this.buttonReprendre = buttonReprendre;
+    }
+
     public ArrayList<BufferedImage> getButtonRetourMenu() {
         return buttonRetourMenu;
     }
@@ -535,6 +556,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public void seteMenuFin(MenuFin eMenuFin) {
         this.eMenuFin = eMenuFin;
+    }
+
+    public static void setMenuPause(boolean isMenuPause) {
+        Vue.isMenuPause = isMenuPause;
+    }
+
+    public MenuPause geteMenuPause() {
+        return eMenuPause;
     }
 
     public Game geteGame() {
