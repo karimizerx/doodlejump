@@ -3,6 +3,8 @@ package gameobjects;
 // Import de packages java :
 import java.util.*;
 
+import gui.Game;
+
 // Le personnage est un objet avec vitesse.
 public class Personnage extends GameObject {
 
@@ -12,6 +14,7 @@ public class Personnage extends GameObject {
     private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot;
     private ArrayList<Projectile> listProjectiles; // Stock tous les projectiles du personnage encore sur le terrain
     public boolean collides=true;
+    private int monnaie;
 
     public Personnage(double x, double y, double w, double h, double dy) {
         super(x, y, w, h);
@@ -24,6 +27,7 @@ public class Personnage extends GameObject {
         this.isShoot = false;
         this.canShoot = true;
         this.listProjectiles = new ArrayList<Projectile>();
+        monnaie=0;
     }
 
     // Méthodes de la classe
@@ -72,7 +76,7 @@ public class Personnage extends GameObject {
 
     }
     
-    public boolean collides_monstre(Monstre m) {
+    public boolean collides(GameObject m) {
         if(!collides) return false;    //0.7                       0.6         0.87
         boolean ver = (Math.abs((m.getY() - m.getHeight() / 2) - (this.getY() -this.getHeight() / 2)) < Math.abs((m.getHeight() + 0.87*this.getHeight()) / 2 ));
         boolean hor = (Math.abs((m.getX() + m.getWidth() *0.5/ 2)  - (this.getX() +  this.getWidth() / 2)) <((m.getWidth()  + this.getWidth()) / 2));
@@ -215,5 +219,9 @@ public class Personnage extends GameObject {
 
     public void setcanShoot(boolean canShoot) {
         this.canShoot = canShoot;
+    }
+
+    public void addCoin(){
+        monnaie++;
     }
 }

@@ -35,6 +35,7 @@ public class Game extends Etat {
                 this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getChemin() + "/monstre1.png")));
                 this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getChemin() + "/monstre2.png")));
                 // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getChemin() + "/monstre3.png")));
+                this.vue.setcoinView(ImageIO.read(new File(this.vue.getChemin() + "/coin.png")));
 
             } catch (Exception e) {
                 this.vue.setTerrainView(
@@ -48,6 +49,7 @@ public class Game extends Etat {
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/projectile.png")));
                 this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre1.png")));
                 this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre2.png")));
+                this.vue.setcoinView(ImageIO.read(new File(this.vue.getWinchemin() + "/coin.png")));
 
                 // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getWinchemin() + "/monstre3.png")));
             
@@ -200,6 +202,9 @@ public class Game extends Etat {
                 g2.drawImage(this.vue.getMonstre1View(),(int) m.getX(), (int) m.getY(), (int)m.getWidth(), (int)m.getHeight(), null);
                 break; 
             }
+        }
+        for(Coins c : this.vue.getTerrain().getCoins()){
+            g2.drawImage(this.vue.getcoinView(),(int)c.getX() ,(int)c.getY(),(int)c.getWidth(),(int)c.getHeight(),null);
         }
 
         // Affichage final.
