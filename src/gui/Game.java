@@ -197,7 +197,7 @@ public class Game extends Etat {
             t0 = System.currentTimeMillis();
             acc += t;
             while (acc > this.vue.getDeltaTime()) { // Si on peut update :
-                update(); // On met à jour les variables.
+                if(!this.vue.getTerrain().isPause()) update(); // On met à jour les variables.
                 // On retire 1 deltaTime à chaque update. Si le reste > 0 & < Δ, ça veut dire
                 // qu'on a un retard, qu'on stock pour l'ajouter à l'étape suivante.
                 // Si on a reste > Δ, on relance cette boucle
@@ -258,7 +258,8 @@ public class Game extends Etat {
 
         /// Gestion de la pause :
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // Si on appuie sur ECHAP :
-            this.vue.isMenuPause = !this.vue.isMenuPause; // On met le jeu en pause.
+            System.out.println(this.vue.getTerrain().isPause());
+            this.vue.getTerrain().setPause(!this.vue.getTerrain().isPause()); // On met le jeu en pause.
         }
     }
 
