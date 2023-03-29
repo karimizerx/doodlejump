@@ -144,13 +144,32 @@ public class Game extends Etat {
         // Affichage terrain.
         g2.drawImage(this.vue.getTerrainView(), 0, 0, tw, th, null);
 
-        // Affichage des plateformes + items.
+        // Affichage des plateformes.
         for (Plateforme pf : this.vue.getTerrain().getPlateformesListe()) {
             BufferedImage pfV = (pf instanceof PlateformeBase) ? this.vue.getPlatformeBaseView()
                     : this.vue.getPlatformeMobileView();
             g2.drawImage(pfV, (int) pf.getX(), (int) pf.getY(), (int) pf.getWidth(), (int) pf.getHeight(), null);
             if (pf.getItem() != null) {
                 Items it = pf.getItem();
+                BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
+                        : this.vue.getProjectileView();
+                g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
+            }
+        }
+
+        // Affichage des items.
+        for (Plateforme pf : this.vue.getTerrain().getPlateformesListe()) {
+            if (pf.getItem() != null) {
+                Items it = pf.getItem();
+                BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
+                        : this.vue.getProjectileView();
+                g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
+            }
+        }
+        for (Joueur j : this.vue.getTerrain().getListeJoueurs()) {
+            Personnage p = j.getPerso();
+            if (p.getItem() != null) {
+                Items it = p.getItem();
                 BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
                         : this.vue.getProjectileView();
                 g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);

@@ -43,7 +43,7 @@ public class Terrain {
 
         // Ajout d'un item
         Plateforme pf = plateformesListe.get(plateformesListe.size() - 1);
-        Items i = new Fusee(pf.getX() + 0.5 * pf.getWidth(), pf.getY() - 50, 30, 50, 5, 0.5);
+        Items i = new Fusee(pf.getX() + 0.5 * pf.getWidth(), pf.getY() - 50, 30, 50, -5, 0);
         pf.setItem(i);
     }
 
@@ -56,7 +56,6 @@ public class Terrain {
         return false;
     }
 
-    // Crée la liste des plateformes (avec un nbPlateformes en entrée)
     // Crée la liste des plateforme
     private void generateObstacles() {
         // Taille des plateformes en fonction de la taille de la fenêtre
@@ -113,6 +112,10 @@ public class Terrain {
         p.setDy(p.getDy() + (ralentissement * deltaTime));
         p.setY(p.getY() + p.getDy());
 
+        // Mise à jour de l'item du perso
+        if (p.getDy() >= 0) { // Si on redescend, on perd l'item
+            p.setItem(null);
+        }
         // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
             Vue.isRunningGame = false;
@@ -140,14 +143,6 @@ public class Terrain {
                 Plateforme pf = plateformesListe.get(i);
                 pf.setY(pf.getY() - (int) p.getDy());
 
-                // On met à jour la position de l'item (s'il existe)
-                if (pf.getItem() != null) {
-                    Items it = pf.getItem();
-                    it.setY(pf.getY() - it.getHeight());
-                    it.setX(pf.getX() + it.getPlacement() * pf.getWidth());
-                    pf.setItem(it);
-                }
-
                 if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
@@ -159,7 +154,7 @@ public class Terrain {
                         plateformesListe.add(pf2);
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
-                        Items it = new Fusee(pf2.getX(), pf2.getY() - 50, 30, 50, 5, 0.5);
+                        Items it = new Fusee(pf2.getX(), pf2.getY() - 50, 30, 50, -(this.height * 0.013645224), 0.5);
                         pf2.setItem(it);
                     } else {
                         plateformesListe.remove(pf);
@@ -173,11 +168,32 @@ public class Terrain {
                 }
             }
         }
-        // On gère les collisions & les débordements du personnage
+        // On gère les collisions
         for (Plateforme pf : plateformesListe) {
             p.collides_plateforme(pf, deltaTime);
             pf.move(this);
+
+            // On met à jour la position de l'item (s'il existe)
+            if (pf.getItem() != null) {
+                Items it = pf.getItem();
+                it.setY(pf.getY() - it.getHeight());
+                it.setX(pf.getX() + it.getPlacement() * pf.getWidth());
+                pf.setItem(it);
+                if (p.getItem() == null && p.collides_item(it, deltaTime)) {
+                    p.setItem(pf.getItem());
+                    pf.setItem(null);
+                }
+            }
         }
+        // On met à jour la position de l'item (s'il existe)
+        if (p.getItem() != null) {
+            Items it = p.getItem();
+            it.setY(p.getY());
+            it.setX(p.getX());
+            p.setItem(it);
+        }
+
+        // On gère les collisions & les débordements du personnage
         limite(p);
     }
 
