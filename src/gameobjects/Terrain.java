@@ -10,7 +10,6 @@ import multiplayer.*;
 public class Terrain {
 
     private ArrayList<Plateforme> plateformesListe; // Liste des plateformes sur le terrain
-    private ArrayList<Items> itemsListe; // La liste des items sur le terrain
     private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
@@ -65,7 +64,6 @@ public class Terrain {
             // On définit la largeur/hauteur des plateformes de base
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
-            double c = new Random().nextDouble();
             plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
         }
         // On s'assure d'abord toujours une solution au début
