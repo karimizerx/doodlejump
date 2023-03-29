@@ -39,11 +39,6 @@ public class Terrain {
 
         // Création des plateformes
         generateObstacles();
-
-        // Ajout d'un item
-        Plateforme pf = plateformesListe.get(plateformesListe.size() - 1);
-        Items i = new Fusee(pf.getX() + 0.5 * pf.getWidth(), pf.getY() - 50, 30, 50, -5, 0);
-        pf.setItem(i);
     }
 
     // Génère une probabilité croissante selon la difficultée
