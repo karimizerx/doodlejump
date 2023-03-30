@@ -3,9 +3,6 @@ package gameobjects;
 // Import de packages java :
 import java.util.*;
 
-// Import d'autres dossiers :
-import gui.*;
-
 // Le personnage est un objet avec vitesse.
 public class Personnage extends GameObject {
 
@@ -119,6 +116,7 @@ public class Personnage extends GameObject {
             this.collides = false;
             return false;
         }
+
         if ((this.getX() + (this.getWidth()) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
                 && (this.getX() <= m.getX() + m.getWidth())
                 // si ça ne dépasse pas par la droite de la item.

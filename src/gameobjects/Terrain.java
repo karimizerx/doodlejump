@@ -145,10 +145,13 @@ public class Terrain {
                     pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
                     if (willMove(difficulty)) {
                         plateformesListe.remove(pf);
-                        plateformesListe.add(new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
-                                -(this.height * 0.0013645224), (0.003125 * this.width)));
+                        Plateforme pf2 = new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                                -(this.height * 0.0013645224), (0.003125 * this.width));
+                        plateformesListe.add(pf2);
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
+                        Items it = new Fusee(pf2.getX(), pf2.getY(), 50, 50, -(this.height * 0.013645224), 0.5);
+                        pf2.setItem(it);
                     } else {
                         plateformesListe.remove(pf);
                         plateformesListe.add(new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
