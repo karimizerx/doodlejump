@@ -157,7 +157,6 @@ public class Terrain {
                     }
                     // Il faut changer ce qu'il y a dans le if pour changer l'apparition
                     if (new Random().nextDouble() > 1 / difficulty) {
-                        System.out.println(difficulty);
                         // On définit la largeur/hauteur des plateformes de base
                         int x1 = new Random().nextInt((int) (this.width - 80));
                         int id = new Random().nextInt(2) + 1;
@@ -176,48 +175,44 @@ public class Terrain {
                     plateformesListe.remove(pf);
                 }
             }
+
+            // On descend tous les coins.
+            for (Coins c : coins) {
+                c.setY(c.getY() - (int) p.getDy());
+                if (c.getY() + c.getHeight() >= this.height) { // Si les coins baissés débordent de l'écran.
+                    this.coins.remove(c);
+                }
+            }
+
+            ArrayList<Monstre> toBeRemoved = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
+            for (Monstre m : monstres) {
+                m.setY(m.getY() - (int) p.getDy());
+                if (m.getY() + m.getHeight() >= this.height) // Si les monstres baissés débordent de l'écran.
+                    this.monstres.remove(m);
+            }
         }
 
         /// On gère les collisions.
-        ArrayList<Monstre> toBeRemoved = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
-        for (Monstre m : monstres) {
-            m.setY(m.getY() - (int) p.getDy());
-            if (m.getY() + m.getHeight() >= this.height) // Si les monstres baissés débordent de l'écran.
-                toBeRemoved.add(m);
-        }
-        monstres.removeAll(toBeRemoved); // On supprime tous les monstres de cette liste.
 
-        ArrayList<Coins> toremove = new ArrayList<Coins>(); // La liste des coins à supprimer.
-        for (Coins c : coins) {
-            c.setY(c.getY() - (int) p.getDy());
-            if (c.getY() + c.getHeight() >= this.height) { // Si les coins baissés débordent de l'écran.
-                toremove.add(c);
-            }
-        }
-        coins.removeAll(toremove); // On supprime tous les coins de cette liste.
-
-        toBeRemoved = new ArrayList<Monstre>();
+        // toBeRemoved = new ArrayList<Monstre>();
         for (Monstre m : monstres) {
             m.move(this);
-            if (p.projectileCollide(m)) {
+            if (p.collides_projectile(m)) {
                 if (m.shot())
-                    toBeRemoved.add(m);
+                    this.monstres.remove(m);
             } else if (p.collides(m)) {
                 // if (p.task!=null)p.task.cancel();
                 p.dead();
                 break;
             }
         }
-        monstres.removeAll(toBeRemoved);
 
-        toremove = new ArrayList<Coins>();
         for (Coins c : coins) {
-            if (p.collides(c)) {
+            if (p.collides_coin(c, deltaTime)) {
                 j.addCoin();
-                toremove.add(c);
+                coins.remove(c);
             }
         }
-        coins.removeAll(toremove);
 
         // On gère les collisions du personnage / item
         for (Plateforme pf : plateformesListe) {

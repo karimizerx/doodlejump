@@ -78,10 +78,9 @@ public class Personnage extends GameObject {
             }
         }
         return false;
-
     }
 
-    public boolean collides(GameObject m) {
+    public boolean collides(Monstre m) {
         if (!collides)
             return false; // 0.7 0.6 0.87
         boolean ver = (Math.abs((m.getY() - m.getHeight() / 2) - (this.getY() - this.getHeight() / 2)) < Math
@@ -92,7 +91,49 @@ public class Personnage extends GameObject {
         return (ver && hor); // TODO reparer les coeffs
     }
 
-    public boolean projectileCollide(Monstre m) {
+    public boolean collides_coin(Coins c, double deltaTime) {
+        if (!collides)
+            return false;
+
+        if ((this.getX() + (this.getWidth()) >= c.getX())
+                && (this.getX() <= c.getX() + c.getWidth())
+                && (this.getY() + 0.87 * this.getHeight() >= c.getY())
+                && (this.getY() <= c.getY() + c.getHeight())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean collides_monstre(Monstre m, double deltaTime) {
+        if (!collides)
+            return false;
+
+        if ((this.getX() + (this.getWidth()) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
+                && (this.getX() <= m.getX() + m.getWidth())
+                // si ça ne dépasse pas par la droite de la item.
+                // Les pieds ne doivent pas être au-dessus de la tête du monstre.
+                && (this.getY() + 0.87 * this.getWidth() > m.getY())
+                // Soit la tête est dans le corps du monstre, soit les pieds le sont
+                && ((this.getY() <= m.getY() + m.getHeight())
+                        || (this.getY() + 0.87 * this.getWidth() <= m.getY() + m.getHeight()))) {
+            return true;
+        }
+        if ((this.getX() + (this.getWidth()) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
+                && (this.getX() <= m.getX() + m.getWidth())
+                // si ça ne dépasse pas par la droite de la item.
+                // Les pieds ne doivent pas être au-dessus de la tête du monstre.
+                && (this.getY() + 0.87 * this.getWidth() > m.getY())
+                // Soit la tête est dans le corps du monstre, soit les pieds le sont
+                && ((this.getY() <= m.getY() + m.getHeight())
+                        || (this.getY() + 0.87 * this.getWidth() <= m.getY() + m.getHeight()))
+                && (this.getDy() > 0)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean collides_projectile(Monstre m) {
         double epsilone = 3;
         for (Projectile p : listProjectiles) {
             boolean ver = (Math.abs((m.getY() + m.getHeight() / 2)

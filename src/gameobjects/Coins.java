@@ -4,9 +4,5 @@ public class Coins extends GameObject {
 
     public Coins(double x, double y, double w, double h) {
         super(x, y, w, h);
-        //TODO Auto-generated constructor stub
     }
-    
-
-
 }
