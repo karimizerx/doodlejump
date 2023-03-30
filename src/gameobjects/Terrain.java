@@ -161,7 +161,7 @@ public class Terrain {
                         int x1 = new Random().nextInt((int) (this.width - 80));
                         int id = new Random().nextInt(2) + 1;
                         monstres.add(new Monstre(x1, -80, id == 1 ? 70 : 80, id == 1 ? 50 : 90,
-                                -(this.height * 0.0013645224), id));
+                                -(this.height * 0.0009746589), -(this.height * 0.0013645224), id));
                         // pour id = 1 : 70,50
                         // pour id = 2 : 80,90
                     }
@@ -177,42 +177,46 @@ public class Terrain {
             }
 
             // On descend tous les coins.
+            ArrayList<Coins> suppCoins = new ArrayList<Coins>();
             for (Coins c : coins) {
                 c.setY(c.getY() - (int) p.getDy());
                 if (c.getY() + c.getHeight() >= this.height) { // Si les coins baissés débordent de l'écran.
-                    this.coins.remove(c);
+                    suppCoins.add(c);
                 }
             }
+            coins.removeAll(suppCoins);
 
-            ArrayList<Monstre> toBeRemoved = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
+            ArrayList<Monstre> suppMonstres = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
             for (Monstre m : monstres) {
                 m.setY(m.getY() - (int) p.getDy());
                 if (m.getY() + m.getHeight() >= this.height) // Si les monstres baissés débordent de l'écran.
-                    this.monstres.remove(m);
+                    suppMonstres.add(m);
             }
+            monstres.removeAll(suppMonstres);
         }
 
         /// On gère les collisions.
 
-        // toBeRemoved = new ArrayList<Monstre>();
+        ArrayList<Monstre> suppMonstres = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
         for (Monstre m : monstres) {
             m.move(this);
             if (p.collides_projectile(m)) {
                 if (m.shot())
-                    this.monstres.remove(m);
-            } else if (p.collides(m)) {
-                // if (p.task!=null)p.task.cancel();
-                p.dead();
-                break;
+                    suppMonstres.add(m);
+            } else if (p.collides_monstre(m, deltaTime)) { // Si on a tué le monstre par rebond
+                suppMonstres.add(m);
             }
         }
+        monstres.removeAll(suppMonstres);
 
+        ArrayList<Coins> suppCoins = new ArrayList<Coins>();
         for (Coins c : coins) {
             if (p.collides_coin(c, deltaTime)) {
                 j.addCoin();
-                coins.remove(c);
+                suppCoins.add(c);
             }
         }
+        coins.removeAll(suppCoins);
 
         // On gère les collisions du personnage / item
         for (Plateforme pf : plateformesListe) {

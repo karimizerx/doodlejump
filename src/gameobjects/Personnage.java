@@ -73,7 +73,7 @@ public class Personnage extends GameObject {
                     && (this.getY() + 0.87 * this.getHeight() >= it.getY())
                     && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
                     && (this.getDy() < 0)) { // Si le personnage monte
-                dy = it.getSaut();
+                dy = it.getSaut() * deltaTime;
                 return true;
             }
         }
@@ -116,17 +116,17 @@ public class Personnage extends GameObject {
                 // Soit la tête est dans le corps du monstre, soit les pieds le sont
                 && ((this.getY() <= m.getY() + m.getHeight())
                         || (this.getY() + 0.87 * this.getWidth() <= m.getY() + m.getHeight()))) {
-            return true;
+            this.collides = false;
+            return false;
         }
         if ((this.getX() + (this.getWidth()) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
                 && (this.getX() <= m.getX() + m.getWidth())
                 // si ça ne dépasse pas par la droite de la item.
-                // Les pieds ne doivent pas être au-dessus de la tête du monstre.
-                && (this.getY() + 0.87 * this.getWidth() > m.getY())
+                && (this.getY() < m.getY())
                 // Soit la tête est dans le corps du monstre, soit les pieds le sont
-                && ((this.getY() <= m.getY() + m.getHeight())
-                        || (this.getY() + 0.87 * this.getWidth() <= m.getY() + m.getHeight()))
+                && (this.getY() + 0.87 * this.getHeight() < m.getY() + m.getHeight() * 0.1)
                 && (this.getDy() > 0)) {
+            dy = m.getSaut() * deltaTime;
             return true;
         }
 
