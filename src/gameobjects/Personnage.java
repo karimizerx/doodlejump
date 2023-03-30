@@ -3,7 +3,8 @@ package gameobjects;
 // Import de packages java :
 import java.util.*;
 
-import gui.Vue;
+// Import d'autres dossiers :
+import gui.*;
 
 // Le personnage est un objet avec vitesse.
 public class Personnage extends GameObject {
@@ -14,6 +15,7 @@ public class Personnage extends GameObject {
     // isShoot & canShoot indique si l'on tire/peut tirer un projectile.
     private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot;
     private ArrayList<Projectile> listProjectiles; // Stock tous les projectiles du personnage encore sur le terrain
+    public boolean collides = true;
 
     public Personnage(double x, double y, double w, double h, double dy) {
         super(x, y, w, h);
@@ -32,6 +34,8 @@ public class Personnage extends GameObject {
 
     // Colision entre le personnage et une plateforme
     public void collides_plateforme(Plateforme pf, double deltaTime) {
+        if (!collides)
+            return;
         if ((this.getX() + (this.getWidth() * 0.65) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
                 // plateforme. + witdh*0.65 sert à ne compter que le x du dernier pied
                 && (this.getX() + (this.getWidth() * 0.25) <= pf.getX() + pf.getWidth())
@@ -45,7 +49,10 @@ public class Personnage extends GameObject {
     }
 
     // Colision entre le personnage et un item
+
     public boolean collides_item(Items it, double deltaTime) {
+        if (!collides)
+            return false;
         if (it.isNeedPied()) {
             if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
                     // + witdh*0.65 sert à ne compter que le x du dernier pied
@@ -72,6 +79,61 @@ public class Personnage extends GameObject {
         }
         return false;
 
+    }
+
+    public boolean collides(GameObject m) {
+        if (!collides)
+            return false; // 0.7 0.6 0.87
+        boolean ver = (Math.abs((m.getY() - m.getHeight() / 2) - (this.getY() - this.getHeight() / 2)) < Math
+                .abs((m.getHeight() + 0.87 * this.getHeight()) / 2));
+        boolean hor = (Math.abs((m.getX() + m.getWidth() * 0.5 / 2)
+                - (this.getX() + this.getWidth() / 2)) < ((m.getWidth() + this.getWidth()) / 2));
+        // 0.9 0.4
+        return (ver && hor); // TODO reparer les coeffs
+    }
+
+    public boolean projectileCollide(Monstre m) {
+        double epsilone = 3;
+        for (Projectile p : listProjectiles) {
+            boolean ver = (Math.abs((m.getY() + m.getHeight() / 2)
+                    - (p.getY() + p.getHeight() / 2)) < ((m.getHeight() + p.getHeight()) / 2 + epsilone));
+            boolean hor = (Math.abs((m.getX() + m.getWidth() / 2)
+                    - (p.getX() + p.getWidth() / 2)) < ((m.getWidth() + p.getWidth()) / 2 + epsilone));
+            if (ver && hor) {
+                listProjectiles.remove(p);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void dead() {
+        this.collides = false;
+        // Timer timer = new Timer();
+        // TimerTask task = new TimerTask() {
+        // @Override
+        // public void run() {
+        // Personnage.this.setDy(0);
+        // }
+        // };
+        // timer.schedule(task, 3000);
+        // task = new TimerTask() {
+        // @Override
+        // public void run() {
+        // Personnage.this.setDy(-1);
+        // // p.setCollide(false);
+        // }
+        // };
+        // timer.schedule(task, 1000);
+        // task = new TimerTask() {
+        // @Override
+        // public void run() {
+        // Personnage.this.setDy(10);
+        // // p.setCollide(false);
+        // }
+        // };
+        // timer.schedule(task, 1000);
+        // task=null;
     }
 
     // Tir un projectile avec ce personnage

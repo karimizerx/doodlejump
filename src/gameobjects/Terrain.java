@@ -11,12 +11,13 @@ public class Terrain {
 
     private ArrayList<Plateforme> plateformesListe; // Liste des plateformes sur le terrain
     private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
+    private ArrayList<Coins> coins; // Liste des coins sur le terrain
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0;
     private double diff_plateformes; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
-
+    private ArrayList<Monstre> monstres;
     private boolean pause;
     public boolean multiplayer, isHost;
     public Serveur host = null;
@@ -28,6 +29,8 @@ public class Terrain {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
+        this.monstres = new ArrayList<Monstre>();
+        this.coins = new ArrayList<Coins>();
         this.height = height;
         this.width = width;
         this.diff_plateformes = 41040 / this.height;
@@ -142,18 +145,31 @@ public class Terrain {
                     pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
                     if (willMove(difficulty)) {
                         plateformesListe.remove(pf);
-                        Plateforme pf2 = new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
-                                -(this.height * 0.0013645224), (0.003125 * this.width));
-                        plateformesListe.add(pf2);
+                        plateformesListe.add(new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                                -(this.height * 0.0013645224), (0.003125 * this.width)));
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
-                        Items it = new Fusee(pf2.getX(), pf2.getY() - 50, 30, 50, -(this.height * 0.1), 0.5);
-                        pf2.setItem(it);
                     } else {
                         plateformesListe.remove(pf);
                         plateformesListe.add(new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
                                 -(this.height * 0.0009746589)));
                         plateformesListe.get(plateformesListe.size() - 1).setSaut(-(this.height * 0.0009746589));
+                    }
+                    // Il faut changer ce qu'il y a dans le if pour changer l'apparition
+                    if (new Random().nextDouble() > 1 / difficulty) {
+                        System.out.println(difficulty);
+                        // On définit la largeur/hauteur des plateformes de base
+                        int x1 = new Random().nextInt((int) (this.width - 80));
+                        int id = new Random().nextInt(2) + 1;
+                        monstres.add(new Monstre(x1, -80, id == 1 ? 70 : 80, id == 1 ? 50 : 90,
+                                -(this.height * 0.0013645224), id));
+                        // pour id = 1 : 70,50
+                        // pour id = 2 : 80,90
+                    }
+                    // Il faut changer ce qu'il y a dans le if pour changer l'apparition
+                    if (new Random().nextDouble() > 1 / difficulty) {
+                        int x1 = new Random().nextInt((int) (this.width - 80));
+                        coins.add(new Coins(x1, -80, 30, 30));
                     }
                 }
                 if (pf.getY() < -50) {
@@ -161,7 +177,49 @@ public class Terrain {
                 }
             }
         }
-        // On gère les collisions
+
+        /// On gère les collisions.
+        ArrayList<Monstre> toBeRemoved = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
+        for (Monstre m : monstres) {
+            m.setY(m.getY() - (int) p.getDy());
+            if (m.getY() + m.getHeight() >= this.height) // Si les monstres baissés débordent de l'écran.
+                toBeRemoved.add(m);
+        }
+        monstres.removeAll(toBeRemoved); // On supprime tous les monstres de cette liste.
+
+        ArrayList<Coins> toremove = new ArrayList<Coins>(); // La liste des coins à supprimer.
+        for (Coins c : coins) {
+            c.setY(c.getY() - (int) p.getDy());
+            if (c.getY() + c.getHeight() >= this.height) { // Si les coins baissés débordent de l'écran.
+                toremove.add(c);
+            }
+        }
+        coins.removeAll(toremove); // On supprime tous les coins de cette liste.
+
+        toBeRemoved = new ArrayList<Monstre>();
+        for (Monstre m : monstres) {
+            m.move(this);
+            if (p.projectileCollide(m)) {
+                if (m.shot())
+                    toBeRemoved.add(m);
+            } else if (p.collides(m)) {
+                // if (p.task!=null)p.task.cancel();
+                p.dead();
+                break;
+            }
+        }
+        monstres.removeAll(toBeRemoved);
+
+        toremove = new ArrayList<Coins>();
+        for (Coins c : coins) {
+            if (p.collides(c)) {
+                j.addCoin();
+                toremove.add(c);
+            }
+        }
+        coins.removeAll(toremove);
+
+        // On gère les collisions du personnage / item
         for (Plateforme pf : plateformesListe) {
             p.collides_plateforme(pf, deltaTime);
             pf.move(this);
@@ -286,6 +344,18 @@ public class Terrain {
 
     public void setPause(boolean pause) {
         this.pause = pause;
+    }
+
+    public ArrayList<Monstre> getMontresArrayList() {
+        return monstres;
+    }
+
+    public void setMonstres(ArrayList<Monstre> m) {
+        monstres = m;
+    }
+
+    public ArrayList<Coins> getCoins() {
+        return this.coins;
     }
 
 }

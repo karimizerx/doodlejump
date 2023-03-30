@@ -32,8 +32,14 @@ public class Game extends Etat {
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getChemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/items/projectile.png")));
-
                 this.vue.setFuseeView(ImageIO.read(new File(this.vue.getChemin() + "/items/fusee.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/items/projectile.png")));
+                this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getChemin() + "/items/monstre1.png")));
+                this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getChemin() + "/items/monstre2.png")));
+                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getChemin() +
+                // "monstre3.png")));
+                this.vue.setcoinView(ImageIO.read(new File(this.vue.getChemin() + "/items/coin.png")));
+
             } catch (Exception e) {
                 this.vue.setTerrainView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/terrainBackground.png")));
@@ -44,8 +50,14 @@ public class Game extends Etat {
                 this.vue.setScoreBackgroundView(
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/projectile.png")));
-
                 this.vue.setFuseeView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/fusee.png")));
+                this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/projectile.png")));
+                this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getWinchemin() + "/items/monstre1.png")));
+                this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getWinchemin() + "/items/monstre2.png")));
+                this.vue.setcoinView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/coin.png")));
+
+                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getWinchemin() +
+                // "/monstre3.png")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -178,12 +190,22 @@ public class Game extends Etat {
 
         // Affichage du Score : seulement s'il n'y a qu'un joueur.
         if (this.vue.getTerrain().getListeJoueurs().size() == 1) {
-            String score = String.valueOf(this.vue.getTerrain().getListeJoueurs().get(0).getScore());
+            Joueur j = this.vue.getTerrain().getListeJoueurs().get(0);
+            String score = String.valueOf(j.getScore());
             int sw = (int) (tw * 0.09375), sh = (int) (th * 0.0536062378);
             g2.drawImage(this.vue.getScoreBackgroundView(), 2, 2, sw + (sw / 2 * (score.length() - 1)), sh, null);
             ArrayList<BufferedImage> scoreView = createImageOfMot(score);
             int x = (int) (tw * 0.0078125); // Variable pour adapter en fonction de la résolution
             afficheMot(g2, scoreView, x, 5, x * 10, x * 10, 5 * x, 0);
+
+            //
+            String argent = String.valueOf(j.getMonnaie());
+            g2.drawImage(this.vue.getcoinView(), tw - 50, 2, 50, 50, null);
+            ArrayList<BufferedImage> argentView = createImageOfMot(argent);
+            int ecartorigine = 5 * x;
+            // La position du premier chiffre dépend de la longeur de "argent".
+            int xorigine = (int) (tw - 50 - 10 * x) - ecartorigine * (argent.length() - 1);
+            afficheMot(g2, argentView, xorigine, 5, x * 10, x * 10, ecartorigine, 0);
         }
 
         // Affichage des personnages + nom.
@@ -204,6 +226,29 @@ public class Game extends Etat {
                 g2.drawImage(this.vue.getProjectileView(), (int) pro.getX(), (int) pro.getY(), (int) pro.getWidth(),
                         (int) pro.getHeight(), null);
             }
+        }
+        for (Monstre m : this.vue.getTerrain().getMontresArrayList()) {
+            switch (m.getId()) {
+                case 1:
+                    g2.drawImage(this.vue.getMonstre1View(), (int) m.getX(), (int) m.getY(), (int) m.getWidth(),
+                            (int) m.getHeight(), null);
+                    break;
+                case 2:
+                    g2.drawImage(this.vue.getMonstre2View(), (int) m.getX(), (int) m.getY(), (int) m.getWidth(),
+                            (int) m.getHeight(), null);
+                    break;
+                case 3:
+                    g2.drawImage(null, (int) m.getX(), (int) m.getY(), (int) m.getWidth(), (int) m.getHeight(), null);
+                    break;
+                default:
+                    g2.drawImage(this.vue.getMonstre1View(), (int) m.getX(), (int) m.getY(), (int) m.getWidth(),
+                            (int) m.getHeight(), null);
+                    break;
+            }
+        }
+        for (Coins c : this.vue.getTerrain().getCoins()) {
+            g2.drawImage(this.vue.getcoinView(), (int) c.getX(), (int) c.getY(), (int) c.getWidth(),
+                    (int) c.getHeight(), null);
         }
 
         // Affichage final.

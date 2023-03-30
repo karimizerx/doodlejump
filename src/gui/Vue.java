@@ -24,7 +24,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
-            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, fuseeView;
+            terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, monstre1View,
+            monstre2View, monstre3View, coinView, fuseeView;
+
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
             buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
@@ -341,6 +343,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         return scoreBackgroundView;
     }
 
+    public BufferedImage getcoinView() {
+        return coinView;
+    }
+
+    public void setcoinView(BufferedImage img) {
+        this.coinView = img;
+    }
+
     public void setScoreBackgroundView(BufferedImage scoreBackgroundView) {
         this.scoreBackgroundView = scoreBackgroundView;
     }
@@ -589,4 +599,27 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         this.fuseeView = fuseeView;
     }
 
+    public void setMonstre1View(BufferedImage monstre1View) {
+        this.monstre1View = monstre1View;
+    }
+
+    public void setMonstre2View(BufferedImage monstre2View) {
+        this.monstre2View = monstre2View;
+    }
+
+    public void setMonstre3View(BufferedImage monstre3View) {
+        this.monstre3View = monstre3View;
+    }
+
+    public BufferedImage getMonstre1View() {
+        return this.monstre1View;
+    }
+
+    public BufferedImage getMonstre2View() {
+        return this.monstre2View;
+    }
+
+    public BufferedImage getMonstre3View() {
+        return this.monstre3View;
+    }
 }

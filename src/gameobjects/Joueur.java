@@ -12,6 +12,7 @@ public class Joueur implements Serializable {
     private String id, nom;
     private int score;
     private Personnage perso;
+    private int monnaie;
 
     public Joueur(Personnage p, String name) {
         History h = new History();
@@ -24,6 +25,7 @@ public class Joueur implements Serializable {
         this.perso = p;
         this.score = 0;
         this.nom = name; // Nom par défaut est Mizer ou nom de la dernière partie.
+        this.monnaie = 0;
     }
 
     // Getter & Setter
@@ -58,6 +60,18 @@ public class Joueur implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public void addCoin() {
+        monnaie++;
+    }
+
+    public int getMonnaie() {
+        return monnaie;
+    }
+
+    public void setMonnaie(int monnaie) {
+        this.monnaie = monnaie;
     }
 
 }
