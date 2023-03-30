@@ -123,7 +123,6 @@ public class Personnage extends GameObject {
                 && (this.getX() <= m.getX() + m.getWidth())
                 // si ça ne dépasse pas par la droite de la item.
                 && (this.getY() < m.getY())
-                // Soit la tête est dans le corps du monstre, soit les pieds le sont
                 && (this.getY() + 0.87 * this.getHeight() < m.getY() + m.getHeight() * 0.1)
                 && (this.getDy() > 0)) {
             dy = m.getSaut() * deltaTime;

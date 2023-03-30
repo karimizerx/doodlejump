@@ -161,7 +161,7 @@ public class Terrain {
                         int x1 = new Random().nextInt((int) (this.width - 80));
                         int id = new Random().nextInt(2) + 1;
                         monstres.add(new Monstre(x1, -80, id == 1 ? 70 : 80, id == 1 ? 50 : 90,
-                                -(this.height * 0.0009746589), -(this.height * 0.0013645224), id));
+                                -(this.height * 0.0013645224), -(0.003125 * this.width), id));
                         // pour id = 1 : 70,50
                         // pour id = 2 : 80,90
                     }
