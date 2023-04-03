@@ -48,6 +48,7 @@ public class MenuDemarrer extends Etat {
         this.vue.setButtonLb(createImageOfMot("Classement"));
         this.vue.setButtonQuitter(createImageOfMot("Quitter"));
         this.vue.setButtonRejouer(createImageOfMot("Rejouer"));
+        this.vue.setButtonReprendre(createImageOfMot("Reprendre"));
         this.vue.setButtonRetourMenu(createImageOfMot("Revenir au menu"));
     }
 
