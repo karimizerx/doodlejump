@@ -92,6 +92,9 @@ public class Personnage extends GameObject {
         if (!collides)
             return false;
 
+        if (this.item != null) // Si on a un jetPack, on collecte automatiquement
+            return true;
+
         if ((this.getX() + (this.getWidth()) >= c.getX())
                 && (this.getX() <= c.getX() + c.getWidth())
                 && (this.getY() + 0.87 * this.getHeight() >= c.getY())
@@ -102,7 +105,7 @@ public class Personnage extends GameObject {
     }
 
     public boolean collides_monstre(Monstre m, double deltaTime) {
-        if (!collides)
+        if (!collides || this.item != null) // Si on a un jetpack, on ne meurs pas en tuant les montres
             return false;
 
         if ((this.getX() + (this.getWidth()) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
