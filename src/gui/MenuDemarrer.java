@@ -59,14 +59,14 @@ public class MenuDemarrer extends Etat {
     @Override
     public void update() {
         // Dimensions de la fleche.
-        this.vue.setWfleche(30);
-        this.vue.setHfleche(30);
+        this.vue.setWfleche((int) (this.vue.getWidth() * 0.04688));
+        this.vue.setHfleche((int) (this.vue.getWidth() * 0.02924));
 
         // La fleche a toujours la même coordonnée x.
-        this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
+        this.vue.setXfleche((int) (this.vue.getWidth() * 0.07) - this.vue.getWfleche());
 
         // Le placement de la fleche en y dépend de ce qu'elle pointe.
-        this.vue.setYfleche((10 * vue.getHeight() / 100) + this.vue.getFleche() * this.vue.getSautLigne());
+        this.vue.setYfleche((int) (this.vue.getWidth() * 0.1) + this.vue.getFleche() * this.vue.getSautLigne());
     }
 
     // Affiche les images.
