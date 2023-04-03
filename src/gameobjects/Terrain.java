@@ -23,7 +23,7 @@ public class Terrain {
     public Serveur host = null;
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
-
+    public static int intervalle=1;
     public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer,
             int id) {
         // Initialisation des champs
@@ -48,6 +48,14 @@ public class Terrain {
     private boolean willMove(double x) {
         int c = new Random().nextInt(31);
         if (c * x >= 30) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean willMonstre(double x){
+        int c = new Random().nextInt(1300);
+        if (c + x > 1298) {
             return true;
         }
         return false;
@@ -89,6 +97,10 @@ public class Terrain {
             p.setX(-(p.getWidth() * 0.43));
     }
 
+    public boolean jetpack(Joueur j, int intervalle){
+        return j.getScore()>=(2000*intervalle)+(new Random().nextInt(500));
+    }
+
     // Mises à jour du jeu.
     public void update(double deltaTime) {
         if ((isHost && multiplayer))
@@ -98,6 +110,7 @@ public class Terrain {
                 update(j, deltaTime);
         }
     }
+    
 
     private void update(Joueur j, double deltaTime) {
         // On effectue une mise à jour pour tous les joueurs
@@ -145,29 +158,31 @@ public class Terrain {
                     pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
                     if (willMove(difficulty)) {
                         plateformesListe.remove(pf);
-                        Plateforme pf2 = new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                        Plateforme pf_mobile = new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
                                 -(this.height * 0.0013645224), (0.003125 * this.width));
-                        plateformesListe.add(pf2);
+                        plateformesListe.add(pf_mobile);
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
-                        Items it = new Fusee(pf2.getX(), pf2.getY(), 50, 50, -(this.height * 0.013645224), 0.5);
-                        pf2.setItem(it);
+                        if(jetpack(j,intervalle)){
+                                intervalle++;
+                                Items it = new Fusee(pf_mobile.getX(), pf_mobile.getY(), 50, 50, -(this.height * 0.013645224), 0.5);
+                                pf_mobile.setItem(it);
+                        }
                     } else {
                         plateformesListe.remove(pf);
-                        plateformesListe.add(new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
-                                -(this.height * 0.0009746589)));
+                        Plateforme pf_statique=new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                        -(this.height * 0.0009746589));
+                        plateformesListe.add(pf_statique);
                         plateformesListe.get(plateformesListe.size() - 1).setSaut(-(this.height * 0.0009746589));
+                        if(jetpack(j,intervalle)){
+                            intervalle++;
+                            Items it = new Fusee(pf_statique.getX(), pf_statique.getY(), 50, 50, - (this.height * 0.013645224), 0.5);
+                            pf_statique.setItem(it);
+                        }
                     }
+
                     // Il faut changer ce qu'il y a dans le if pour changer l'apparition
-                    if (new Random().nextDouble() > 1 / difficulty) {
-                        // On définit la largeur/hauteur des plateformes de base
-                        int x1 = new Random().nextInt((int) (this.width - 80));
-                        int id = new Random().nextInt(2) + 1;
-                        monstres.add(new Monstre(x1, -80, id == 1 ? 70 : 80, id == 1 ? 50 : 90,
-                                -(this.height * 0.0013645224), -(0.003125 * this.width), id));
-                        // pour id = 1 : 70,50
-                        // pour id = 2 : 80,90
-                    }
+
                     // Il faut changer ce qu'il y a dans le if pour changer l'apparition
                     if (new Random().nextDouble() > 1 / difficulty) {
                         int x1 = new Random().nextInt((int) (this.width - 80));
@@ -177,6 +192,16 @@ public class Terrain {
                 if (pf.getY() < -50) {
                     plateformesListe.remove(pf);
                 }
+            }
+
+            if (willMonstre(difficulty)) {
+                // On définit la largeur/hauteur des plateformes de base
+                int x1 = new Random().nextInt((int) (this.width - 80));
+                int id = new Random().nextInt(2) + 1;
+                monstres.add(new Monstre(x1, -80, id == 1 ? 70 : 80, id == 1 ? 50 : 90,
+                        -(this.height * 0.0013645224), -(0.003125 * this.width), id));
+                // pour id = 1 : 70,50
+                // pour id = 2 : 80,90
             }
 
             // On descend tous les coins.
