@@ -1,19 +1,16 @@
 .PHONY: build run clean
 
 FILES := $(patsubst src/%,../src/%,$(shell find src | grep '\.java$$'))
-IMAGES := $(patsubst src/%,../src/%,../src/%/%	,$(shell find src | grep '\.png$$'))
+CLASS := $(patsubst out/%,../out/%,$(shell find out | grep '\.class$$'))
 
 
 
 build:
-	-mkdir out
 	cd out; javac $(FILES) -d .
 
-	-mkdir out/gui/images 	
-	mv $(IMAGES) out/gui/images/
 
 run: build
-	cd out; java App
+	cd out; java gui.App
 
 clean:
-	-rm -r out
+	cd out; rm $(CLASS)
