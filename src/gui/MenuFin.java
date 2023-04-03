@@ -135,6 +135,10 @@ public class MenuFin extends Etat {
         x = (9 * this.vue.getWidth() / 100);
         y += this.vue.getSautLigne();
         afficheMot(g2, this.vue.getButtonQuitter(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y += this.vue.getSautLigne();
+        afficheMot(g2, this.vue.getButtonRejouer(), x, y, w, h, ecart, espacement);
+ 
 
         // Affichage de la fleche.
         g2.drawImage(this.vue.getFlecheView(), this.vue.getXfleche(), this.vue.getYfleche(), this.vue.getWfleche(),
@@ -173,14 +177,19 @@ public class MenuFin extends Etat {
                 Vue.isQuitte = true; // On quitte l'application.
                 System.exit(0); // On ferme toutes les fenêtres & le programme.
             }
+            if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Quitter" :
+                Vue.isMenuFin = false;    
+                this.vue.geteGame().createPartie(); // On crée une partie.
+                Vue.isRunningGame = true;
+            }
         }
 
         /// Gestion de la flèche :
         if (e.getKeyCode() == KeyEvent.VK_UP) // Si on monte avec la fleche :
-            this.vue.setFleche((this.vue.getFleche() == 0) ? 1 : this.vue.getFleche() - 1);
+            this.vue.setFleche((this.vue.getFleche() == 0) ? 2 : this.vue.getFleche() - 1);
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN) // Si on descend avec la fleche :
-            this.vue.setFleche((this.vue.getFleche() == 1) ? 0 : this.vue.getFleche() + 1);
+            this.vue.setFleche((this.vue.getFleche() == 2) ? 0  : this.vue.getFleche() + 1);
 
     }
 

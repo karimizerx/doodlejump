@@ -28,7 +28,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             monstre2View, monstre3View, coinView, fuseeView;
 
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
-            buttonQuitter, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
+            buttonQuitter, buttonRejouer, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
 
     private double deltaTime; // Le temps nécessaire pour update une GAME.
@@ -401,6 +401,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public void setButtonQuitter(ArrayList<BufferedImage> buttonQuitter) {
         this.buttonQuitter = buttonQuitter;
+    }
+
+    public ArrayList<BufferedImage> getButtonRejouer() {
+        return buttonRejouer;
+    }
+
+    public void setButtonRejouer(ArrayList<BufferedImage> buttonRejouer) {
+        this.buttonRejouer = buttonRejouer;
     }
 
     public ArrayList<BufferedImage> getButtonRetourMenu() {
