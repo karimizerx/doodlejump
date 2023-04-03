@@ -270,6 +270,7 @@ public class Game extends Etat {
             long t = t1 - t0;
             if (this.vue.getTerrain().isPause())
                 t = 0;
+
             t0 = System.currentTimeMillis();
             acc += t;
             while (acc > this.vue.getDeltaTime()) { // Si on peut update :
@@ -420,12 +421,11 @@ public class Game extends Etat {
         return isFin;
     }
 
-    // A REFAIRE !s
-    private void pause() {
+    void pause() {
         if (this.vue.getTerrain().isPause()) {
             this.vue.getTerrain().setPause(false);
         } else {
-            this.vue.getTerrain().setPause(true);
+            this.vue.getTerrain().setPause(true);              
         }
 
     }

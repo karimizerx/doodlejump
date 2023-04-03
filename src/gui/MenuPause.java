@@ -60,30 +60,6 @@ public class MenuPause extends Etat {
         int w = 30, h = 30, espacement = 15, ecart = 20;
         afficheMot(g2, this.vue.getTitreStatut(), x, y, w, h, ecart, espacement);
 
-        // Affichage des scores (entre () l'adaptation pour les parties à 2 joueurs):
-        // Affichage du score à cette partie (score du joueur 1).
-        y += this.vue.getSautLigne() * 2;
-        x = afficheMot(g2, this.vue.getScoreFinalView().get(0), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
-        x += espacement;
-        x = afficheMot(g2, this.vue.getScoreFinalView().get(1), x, y, w, h, ecart, espacement);
-
-        // Affichage du meilleur score local (score du joueur 2).
-        y += this.vue.getSautLigne();
-        x = (9 * this.vue.getWidth() / 100);
-        x = afficheMot(g2, this.vue.getHightScoreView().get(0), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
-        x += espacement;
-        x = afficheMot(g2, this.vue.getHightScoreView().get(1), x, y, w, h, ecart, espacement);
-
-        // Affichage du meilleur score global (vainqueur).
-        y += this.vue.getSautLigne();
-        x = (9 * this.vue.getWidth() / 100);
-        x = afficheMot(g2, this.vue.getHightScoreView().get(2), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
-        x += espacement;
-        x = afficheMot(g2, this.vue.getHightScoreView().get(3), x, y, w, h, ecart, espacement);
-
         // Affichage des boutons.
         y += this.vue.getSautLigne() * 2;
         x = (9 * this.vue.getWidth() / 100);
@@ -127,19 +103,22 @@ public class MenuPause extends Etat {
     public void keyControlPressed(KeyEvent e) { // KeyEvent de la vue.
         /// Gestion du bouton "ENTREE" :
         if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
-            if (this.vue.getFleche() == 0) { // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :
-                Vue.isMenuFin = false; // On quitte le menu FIN.
-                Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+            if (this.vue.getFleche() == 0) { // Si la flèche pointe sur le bouton "Reprendre" :
+                this.vue.geteGame().pause();
+                Vue.isMenuPause = false; // On sort du menu Pause.
             }
-            if (this.vue.getFleche() == 1) { // Si la flèche pointe sur le bouton "Quitter" :
-                System.out.println("À la prochaine !");
-                Vue.isQuitte = true; // On quitte l'application.
-                System.exit(0); // On ferme toutes les fenêtres & le programme.
-            }
-            if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Quitter" :
-                Vue.isMenuFin = false;    
+            if (this.vue.getFleche() == 1) { // Si la flèche pointe sur le bouton "Rejouer" :
+                Vue.isMenuPause = false;    
                 this.vue.geteGame().createPartie(); // On crée une partie.
                 Vue.isRunningGame = true;
+            }
+            if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Retour Menu" :
+                Vue.isMenuPause = false;
+                Vue.isMenuDemarrer = true;
+            }
+            if (this.vue.getFleche() == 3) { // Si la flèche pointe sur le bouton "Quitter" :
+                Vue.isQuitte = true; // On quitte l'application.
+                System.exit(0); // On ferme toutes les fenêtres & le programme.
             }
         }
 

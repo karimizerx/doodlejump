@@ -16,7 +16,7 @@ import javax.swing.*;
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique l'état actuel du panel.
-    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement;
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement, isMenuPause;
     private final int width, height; // Dimensions du panel.
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
@@ -46,6 +46,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private MenuDemarrer eMenuDemarrer;
     private MenuClassement eMenuClassement;
     private MenuLancement eMenuLancement;
+    private MenuPause eMenuPause;
 
     public Vue(App frame, String skin) {
         // Taille du panel.
@@ -109,6 +110,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     this.eMenuClassement.running();
                 }
 
+
                 if (isMenuLancement) { // Si on a cliqué sur le boutton "Jouer solo/à 2" :
                     this.eMenuLancement = new MenuLancement(this);
                     this.eMenuLancement.init();
@@ -125,7 +127,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     }
                 }
 
-                if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin
+
+                if(isMenuPause){
+                    this.eMenuPause = new MenuPause(this);
+                    this.eMenuPause.init();
+                    this.eMenuFin.running();
+                }
+
+                if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin && !isMenuPause
                         && this.eGame.endGame()) { // Si c'est la fin de la GAME (quelqu'un a perdu) :
                     // On met à jour toutes les variables boolean.
                     isRunningGame = false;
@@ -138,6 +147,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     this.eMenuFin.init();
                     this.eMenuFin.running();
                 }
+
+                
+                
             }
             System.exit(0); // Si on a quitté le jeu, on ferme tout le programme.
         } catch (Exception e) {
@@ -176,6 +188,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         if (isRunningGame) { // Si on est en cours de GAME :
             this.eGame.keyControlPressed(e);
+        }
+
+        if (isMenuPause) { // Si on est au niveau du menu FIN :
+            this.eMenuFin.keyControlPressed(e);
         }
 
         if (isMenuFin) { // Si on est au niveau du menu FIN :

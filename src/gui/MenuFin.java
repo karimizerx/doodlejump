@@ -177,7 +177,7 @@ public class MenuFin extends Etat {
                 Vue.isQuitte = true; // On quitte l'application.
                 System.exit(0); // On ferme toutes les fenêtres & le programme.
             }
-            if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Quitter" :
+            if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Rejouer" :
                 Vue.isMenuFin = false;    
                 this.vue.geteGame().createPartie(); // On crée une partie.
                 Vue.isRunningGame = true;
