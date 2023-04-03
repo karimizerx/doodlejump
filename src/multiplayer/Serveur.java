@@ -47,6 +47,7 @@ public class Serveur implements Runnable {
         try {
             JOptionPane.showMessageDialog(null, "Le numero du port est :" + serveurSocket.getLocalPort(), "Important",
                     JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Nom du serveur :"+InetAddress.getLocalHost(),"Important",JOptionPane.INFORMATION_MESSAGE); 
             serveur = new JoueurConnecte();
             serveur.setClient(serveurSocket.accept());
             JOptionPane.showMessageDialog(null,
