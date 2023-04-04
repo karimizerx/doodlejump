@@ -1,4 +1,4 @@
-Sprint du 9.03.2023 :
+Sprint du 30.03.2023 :
 Objectifs du sprint précédent :
 - ajout des items : 
     -> fusée & coins & monstres : Fares [OK]
