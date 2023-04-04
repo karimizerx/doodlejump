@@ -171,7 +171,6 @@ public class MenuDemarrer extends Etat {
                 Vue.isMenuClassement = true; // On passe au menu CLASSEMENT.
             }
             if (this.vue.getFleche() == 4) {
-                System.out.println("*");
                 Vue.isMenuDemarrer = false;
                 Vue.isSetting = true;
                 this.vue.setFleche(-1);
