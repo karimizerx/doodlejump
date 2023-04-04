@@ -153,7 +153,7 @@ public class Terrain {
             // certain seuil qu'on a défini préalablement (la moitié de la taille)
             difficulty = (difficulty > 5) ? 5 : difficulty + difficulty_level;
             p.setY(this.height / 2);
-            j.setScore(j.getScore() + 1); // On incrémente le score
+            j.setScore(j.getScore() + Math.abs((int)(p.getDy()*deltaTime))) ; // On incrémente le score
 
             // On descend toutes les plateforme
             for (int i = 0; i < plateformesListe.size(); ++i) {
