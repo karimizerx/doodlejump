@@ -131,14 +131,13 @@ public class MenuFin extends Etat {
         // Affichage des boutons.
         y += this.vue.getSautLigne() * 2;
         x = (9 * this.vue.getWidth() / 100);
+        afficheMot(g2, this.vue.getButtonRejouer(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y += this.vue.getSautLigne();
         afficheMot(g2, this.vue.getButtonRetourMenu(), x, y, w, h, ecart, espacement);
         x = (9 * this.vue.getWidth() / 100);
         y += this.vue.getSautLigne();
         afficheMot(g2, this.vue.getButtonQuitter(), x, y, w, h, ecart, espacement);
-        x = (9 * this.vue.getWidth() / 100);
-        y += this.vue.getSautLigne();
-        afficheMot(g2, this.vue.getButtonRejouer(), x, y, w, h, ecart, espacement);
- 
 
         // Affichage de la fleche.
         g2.drawImage(this.vue.getFlecheView(), this.vue.getXfleche(), this.vue.getYfleche(), this.vue.getWfleche(),
@@ -169,18 +168,19 @@ public class MenuFin extends Etat {
         /// Gestion du bouton "ENTREE" :
         if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
             if (this.vue.getFleche() == 0) { // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :
+                Vue.isMenuFin = false;
+                this.vue.geteGame().createPartie(); // On crée une partie.
+                Vue.isRunningGame = true;
+            }
+            if (this.vue.getFleche() == 1) { // Si la flèche pointe sur le bouton "Quitter" :
                 Vue.isMenuFin = false; // On quitte le menu FIN.
                 Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
             }
-            if (this.vue.getFleche() == 1) { // Si la flèche pointe sur le bouton "Quitter" :
+            if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Quitter" :
+
                 System.out.println("À la prochaine !");
                 Vue.isQuitte = true; // On quitte l'application.
                 System.exit(0); // On ferme toutes les fenêtres & le programme.
-            }
-            if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Quitter" :
-                Vue.isMenuFin = false;    
-                this.vue.geteGame().createPartie(); // On crée une partie.
-                Vue.isRunningGame = true;
             }
         }
 
@@ -189,7 +189,7 @@ public class MenuFin extends Etat {
             this.vue.setFleche((this.vue.getFleche() == 0) ? 2 : this.vue.getFleche() - 1);
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN) // Si on descend avec la fleche :
-            this.vue.setFleche((this.vue.getFleche() == 2) ? 0  : this.vue.getFleche() + 1);
+            this.vue.setFleche((this.vue.getFleche() == 2) ? 0 : this.vue.getFleche() + 1);
 
     }
 
