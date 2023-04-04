@@ -117,8 +117,8 @@ public class Game extends Etat {
             Personnage p = this.vue.getTerrain().getListeJoueurs().get(i).getPerso();
             // Gère les boutons flèches, avec inertie.
             // Quand on appuie, on set la vitesse à ± 4, et on avance de cette distance.
-            double vitesse = 0.0078125 * this.vue.getTerrain().getWidth();
-            double ralentissement = 0.000375 * this.vue.getTerrain().getWidth();
+            double vitesse = 0.0078125 * vue.getTerrain().getWidth();
+            p.setInertie(this.vue.isInertie() ? this.vue : null);
             if (p.isRight()) {
                 p.setDx(+vitesse);
                 p.setX(p.getX() + p.getDx());
@@ -126,10 +126,10 @@ public class Game extends Etat {
                 p.setDx(-vitesse);
                 p.setX(p.getX() + p.getDx());
             } else if (p.isInertRight() && p.getDx() > 0) { // Si on arrête d'appuyer :
-                p.setDx(p.getDx() - ralentissement); // la vitesse ralentie petit à petit jusqu'à devenir nulle.
+                p.setDx(p.getDx() - p.getRalentissement()); // la vitesse ralentie petit à petit jusqu'à devenir nulle.
                 p.setX(p.getX() + p.getDx());
             } else if (p.isInertLeft() && p.getDx() < 0) {
-                p.setDx(p.getDx() + ralentissement);
+                p.setDx(p.getDx() + p.getRalentissement());
                 p.setX(p.getX() + p.getDx());
             } else {
                 p.setInertRight(false);

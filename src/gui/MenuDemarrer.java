@@ -47,8 +47,12 @@ public class MenuDemarrer extends Etat {
         this.vue.setButtonMultiJoueur(createImageOfMot("Mode multijoueurs"));
         this.vue.setButtonLb(createImageOfMot("Classement"));
         this.vue.setButtonQuitter(createImageOfMot("Quitter"));
-        this.vue.setButtonRejouer(createImageOfMot("Rejouer"));
         this.vue.setButtonRetourMenu(createImageOfMot("Revenir au menu"));
+        this.vue.setButtonRejouer(createImageOfMot("Rejouer"));
+        this.vue.setButtonSetting(createImageOfMot("Parametre"));
+        this.vue.setButtonNiveau(createImageOfMot("Niveau "));
+        this.vue.setButtonSkin(createImageOfMot("Skin "));
+        this.vue.setButtonInertie(createImageOfMot("Inertie "));
     }
 
     // Initialise les images & les autres variables.
@@ -91,6 +95,9 @@ public class MenuDemarrer extends Etat {
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
         afficheMot(g2, this.vue.getButtonLb(), x, y, w, h, ecart, espacement);
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+        afficheMot(g2, this.vue.getButtonSetting(), x, y, w, h, ecart, espacement);
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
         afficheMot(g2, this.vue.getButtonQuitter(), x, y, w, h, ecart, espacement);
@@ -163,7 +170,13 @@ public class MenuDemarrer extends Etat {
                 Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
                 Vue.isMenuClassement = true; // On passe au menu CLASSEMENT.
             }
-            if (this.vue.getFleche() == 4) { // Si la flèche pointe sur le bouton "Quitter" :
+            if (this.vue.getFleche() == 4) {
+                System.out.println("*");
+                Vue.isMenuDemarrer = false;
+                Vue.isSetting = true;
+                this.vue.setFleche(-1);
+            }
+            if (this.vue.getFleche() == 5) { // Si la flèche pointe sur le bouton "Quitter" :
                 System.out.println("À la prochaine !");
                 Vue.isQuitte = true; // On quitte le jeu.
                 System.exit(0); // On ferme toutes les fenêtres & le programme.
@@ -172,10 +185,10 @@ public class MenuDemarrer extends Etat {
 
         /// Gestion de la flèche :
         if (e.getKeyCode() == KeyEvent.VK_UP) // Si on monte avec la fleche :
-            this.vue.setFleche((this.vue.getFleche() == 0) ? 4 : this.vue.getFleche() - 1);
+            this.vue.setFleche((this.vue.getFleche() == 0) ? 5 : this.vue.getFleche() - 1);
 
         if (e.getKeyCode() == KeyEvent.VK_DOWN) // Si on descend avec la fleche :
-            this.vue.setFleche((this.vue.getFleche() == 4) ? 0 : this.vue.getFleche() + 1);
+            this.vue.setFleche((this.vue.getFleche() == 5) ? 0 : this.vue.getFleche() + 1);
     }
 
     @Override

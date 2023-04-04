@@ -1,7 +1,10 @@
 package gameobjects;
 
-// Import de packages java :
+// Import de packages java
 import java.util.*;
+
+// Import d'autres dossiers
+import gui.*;
 
 // Le personnage est un objet avec vitesse.
 public class Personnage extends GameObject {
@@ -13,6 +16,7 @@ public class Personnage extends GameObject {
     private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot;
     private ArrayList<Projectile> listProjectiles; // Stock tous les projectiles du personnage encore sur le terrain
     public boolean collides = true;
+    private double ralentissement;
 
     public Personnage(double x, double y, double w, double h, double dy) {
         super(x, y, w, h);
@@ -25,6 +29,7 @@ public class Personnage extends GameObject {
         this.isShoot = false;
         this.canShoot = true;
         this.listProjectiles = new ArrayList<Projectile>();
+        this.ralentissement = 0;
     }
 
     // Méthodes de la classe
@@ -202,6 +207,13 @@ public class Personnage extends GameObject {
 
     // Getter & Setter
 
+    public void setInertie(Vue vue) {
+        if (vue == null)
+            this.ralentissement = this.getDx() < 0 ? -this.getDx() : this.getDx();
+        else
+            this.ralentissement = 0.000375 * vue.getWidth();
+    }
+
     public double getDy() {
         return dy;
     }
@@ -280,5 +292,9 @@ public class Personnage extends GameObject {
 
     public void setItem(Items item) {
         this.item = item;
+    }
+
+    public double getRalentissement() {
+        return ralentissement;
     }
 }

@@ -16,11 +16,12 @@ import javax.swing.*;
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique l'état actuel du panel.
-    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement;
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement,
+            isSetting;
     private final int width, height; // Dimensions du panel.
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
-    private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur;
-    private String chemin, winchemin, nom1, nom2; // Le chemin vers le package d'images & les noms des joueurs.
+    private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur, niveau;
+    private String chemin, winchemin, nom1, nom2, skin; // Le chemin vers le package d'images & les noms des joueurs.
 
     // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
@@ -28,7 +29,9 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             monstre2View, monstre3View, coinView, fuseeView;
 
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
-            buttonQuitter, buttonRejouer, buttonRetourMenu, titreStatut, messageNom, nomJ1, nomJ2;
+            buttonQuitter, buttonRejouer, buttonRetourMenu, buttonSetting, buttonNiveau, buttonSkin, buttonInertie,
+            titreStatut, messInertie, messNiveau, messSkin,
+            messageNom, nomJ1, nomJ2;
     private ArrayList<ArrayList<BufferedImage>> joueurDataList, lbView, scoreFinalView, hightScoreView;
 
     private double deltaTime; // Le temps nécessaire pour update une GAME.
@@ -38,7 +41,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Variables liées au mode multijoueurs.
     private Serveur serveur;
     private JoueurConnecte jconnect;
-    private boolean multijoueur, host;
+    private boolean multijoueur, host, isInertie;
 
     // Ces variables représentent les différents états du jeu.
     private Game eGame;
@@ -46,6 +49,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private MenuDemarrer eMenuDemarrer;
     private MenuClassement eMenuClassement;
     private MenuLancement eMenuLancement;
+    private MenuSetting eMenuSetting;
 
     public Vue(App frame, String skin) {
         // Taille du panel.
@@ -56,6 +60,11 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         // Chemins des images.
         this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
         this.winchemin = "src/gui/images/" + skin + "/";
+
+        // Quelques variables par défaut.
+        this.niveau = 1;
+        this.skin = skin;
+        this.isInertie = true;
 
         // Gestion d'évènements boutons.
         this.addKeyListener(this);
@@ -84,6 +93,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
             /// ETAPE 1 : Premières initialisations.
             // On initialise les différents états.
             this.eMenuDemarrer = new MenuDemarrer(this);
+            this.eMenuSetting = new MenuSetting(this);
             this.eMenuClassement = new MenuClassement(this);
             this.eMenuLancement = new MenuLancement(this);
             this.eGame = new Game(this);
@@ -101,6 +111,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                 if (isMenuDemarrer) { // Si on est au niveau du menu DEMARRER :
                     this.eMenuDemarrer = new MenuDemarrer(this);
                     this.eMenuDemarrer.running();
+                }
+
+                if (isSetting) { // Si on a cliqué sur le boutton "Classement" :
+                    this.eMenuSetting = new MenuSetting(this);
+                    this.eMenuSetting.init();
+                    this.eMenuSetting.running();
                 }
 
                 if (isMenuClassement) { // Si on a cliqué sur le boutton "Classement" :
@@ -168,6 +184,10 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
         if (isMenuClassement) { // Si on est au niveau du CLASSEMENT :
             this.eMenuClassement.keyControlPressed(e);
+        }
+
+        if (isSetting) { // Si on est au niveau du CLASSEMENT :
+            this.eMenuSetting.keyControlPressed(e);
         }
 
         if (isMenuLancement) { // Si on est au niveau du menu LANCEMENT :
@@ -629,5 +649,85 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public BufferedImage getMonstre3View() {
         return this.monstre3View;
+    }
+
+    public ArrayList<BufferedImage> getButtonSetting() {
+        return buttonSetting;
+    }
+
+    public void setButtonSetting(ArrayList<BufferedImage> buttonSetting) {
+        this.buttonSetting = buttonSetting;
+    }
+
+    public ArrayList<BufferedImage> getButtonNiveau() {
+        return buttonNiveau;
+    }
+
+    public void setButtonNiveau(ArrayList<BufferedImage> buttonNiveau) {
+        this.buttonNiveau = buttonNiveau;
+    }
+
+    public ArrayList<BufferedImage> getButtonSkin() {
+        return buttonSkin;
+    }
+
+    public void setButtonSkin(ArrayList<BufferedImage> buttonSkin) {
+        this.buttonSkin = buttonSkin;
+    }
+
+    public ArrayList<BufferedImage> getButtonInertie() {
+        return buttonInertie;
+    }
+
+    public void setButtonInertie(ArrayList<BufferedImage> buttonInertie) {
+        this.buttonInertie = buttonInertie;
+    }
+
+    public ArrayList<BufferedImage> getMessInertie() {
+        return messInertie;
+    }
+
+    public void setMessInertie(ArrayList<BufferedImage> messInertie) {
+        this.messInertie = messInertie;
+    }
+
+    public ArrayList<BufferedImage> getMessNiveau() {
+        return messNiveau;
+    }
+
+    public void setMessNiveau(ArrayList<BufferedImage> messNiveau) {
+        this.messNiveau = messNiveau;
+    }
+
+    public ArrayList<BufferedImage> getMessSkin() {
+        return messSkin;
+    }
+
+    public void setMessSkin(ArrayList<BufferedImage> messSkin) {
+        this.messSkin = messSkin;
+    }
+
+    public int getNiveau() {
+        return niveau;
+    }
+
+    public void setNiveau(int niveau) {
+        this.niveau = niveau;
+    }
+
+    public boolean isInertie() {
+        return isInertie;
+    }
+
+    public void setInertie(boolean isInertie) {
+        this.isInertie = isInertie;
+    }
+
+    public String getSkin() {
+        return skin;
+    }
+
+    public void setSkin(String skin) {
+        this.skin = skin;
     }
 }
