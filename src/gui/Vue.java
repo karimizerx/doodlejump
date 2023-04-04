@@ -22,6 +22,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur, niveau;
     private String chemin, winchemin, nom1, nom2, skin; // Le chemin vers le package d'images & les noms des joueurs.
+    private final ArrayList<String> listPackSkin;
 
     // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
@@ -51,20 +52,25 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private MenuLancement eMenuLancement;
     private MenuSetting eMenuSetting;
 
-    public Vue(App frame, String skin) {
+    public Vue(App frame) {
         // Taille du panel.
         this.width = frame.getWidth();
         this.height = frame.getHeight();
         this.setPreferredSize(new Dimension(this.width / 3, (int) (this.height * 0.95)));
 
-        // Chemins des images.
-        this.chemin = (new File("gui/images/" + skin + "/")).getAbsolutePath();
-        this.winchemin = "src/gui/images/" + skin + "/";
+        // Liste des skins
+        this.listPackSkin = new ArrayList<String>();
+        this.listPackSkin.add("packBase");
+        this.listPackSkin.add("packTux");
 
         // Quelques variables par défaut.
         this.niveau = 1;
-        this.skin = skin;
+        this.skin = listPackSkin.get(0);
         this.isInertie = true;
+
+        // Chemins des images.
+        this.chemin = (new File("gui/images/" + this.skin + "/")).getAbsolutePath();
+        this.winchemin = "src/gui/images/" + this.skin + "/";
 
         // Gestion d'évènements boutons.
         this.addKeyListener(this);
@@ -74,6 +80,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Initialise les images qui changent pas en fonction de l'état.
     private void initGENERAL() {
         this.eMenuDemarrer.initFixe();
+        this.eMenuSetting.initFixe();
         this.eMenuClassement.initFixe();
         this.eMenuLancement.initFixe();
         this.eGame.initFixe();
@@ -729,5 +736,12 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public void setSkin(String skin) {
         this.skin = skin;
+        // Chemins des images.
+        this.chemin = (new File("gui/images/" + this.skin + "/")).getAbsolutePath();
+        this.winchemin = "src/gui/images/" + this.skin + "/";
+    }
+
+    public ArrayList<String> getListPackSkin() {
+        return listPackSkin;
     }
 }

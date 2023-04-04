@@ -12,19 +12,23 @@ import java.awt.event.KeyEvent;
 
 public class MenuSetting extends Etat {
 
+    private int pack;
+
     public MenuSetting(Vue vue) {
         super(vue);
+        this.pack = 0;
     }
 
     @Override
     public void initFixe() {
+
+        this.vue.setMessNiveau(createImageOfMot(String.valueOf(this.vue.getNiveau())));
+        this.vue.setMessSkin(createImageOfMot(this.vue.getSkin()));
+        this.vue.setMessInertie(createImageOfMot("OUI"));
     }
 
     @Override
     public void init() {
-        this.vue.setMessNiveau(createImageOfMot(String.valueOf(this.vue.getNiveau())));
-        this.vue.setMessSkin(createImageOfMot(this.vue.getSkin()));
-        this.vue.setMessInertie(createImageOfMot("OUI"));
     }
 
     @Override
@@ -124,9 +128,13 @@ public class MenuSetting extends Etat {
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
             if (this.vue.getFleche() == 0) {
-                int lvl = (this.vue.getNiveau() == 4) ? 1 : this.vue.getNiveau() + 1;
-                this.vue.setNiveau(lvl);
-                this.vue.setMessNiveau(createImageOfMot(String.valueOf(lvl)));
+                this.vue.setNiveau((this.vue.getNiveau() == 4) ? 1 : this.vue.getNiveau() + 1);
+                this.vue.setMessNiveau(createImageOfMot(String.valueOf(this.vue.getNiveau())));
+            }
+            if (this.vue.getFleche() == 1) {
+                this.pack = (this.pack == this.vue.getListPackSkin().size() - 1) ? 0 : this.pack + 1;
+                this.vue.setSkin(this.vue.getListPackSkin().get(this.pack));
+                this.vue.setMessSkin(createImageOfMot(this.vue.getSkin()));
             }
             if (this.vue.getFleche() == 2) {
                 String iner = (this.vue.isInertie()) ? "NON" : "OUI";
@@ -137,9 +145,13 @@ public class MenuSetting extends Etat {
 
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {
             if (this.vue.getFleche() == 0) {
-                int lvl = (this.vue.getNiveau() == 1) ? 4 : this.vue.getNiveau() - 1;
-                this.vue.setNiveau(lvl);
-                this.vue.setMessNiveau(createImageOfMot(String.valueOf(lvl)));
+                this.vue.setNiveau((this.vue.getNiveau() == 1) ? 4 : this.vue.getNiveau() - 1);
+                this.vue.setMessNiveau(createImageOfMot(String.valueOf(this.vue.getNiveau())));
+            }
+            if (this.vue.getFleche() == 1) {
+                this.pack = (this.pack == 0) ? this.vue.getListPackSkin().size() - 1 : this.pack - 1;
+                this.vue.setSkin(this.vue.getListPackSkin().get(this.pack));
+                this.vue.setMessSkin(createImageOfMot(this.vue.getSkin()));
             }
             if (this.vue.getFleche() == 2) {
                 String iner = (this.vue.isInertie()) ? "NON" : "OUI";

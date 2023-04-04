@@ -21,6 +21,18 @@ public class Game extends Etat {
     // Initialise les images qui ne changeront jamais.
     @Override
     public void initFixe() {
+        // On initialise les variables du mode multijoueurs.
+        this.vue.setMultijoueur(false);
+        this.vue.setHost(false);
+    }
+
+    // Initialise les images & les autres variables.
+    @Override
+    public void init() {
+        // Stock des listes qui elles-mêmes stockes les données d'image de chaque joueur
+        // & qui ne changent jamais, i.e le perso et le nom, contrairement au score.
+        this.vue.setJoueurDataList(new ArrayList<ArrayList<BufferedImage>>());
+
         try {
             try {
                 this.vue.setTerrainView(
@@ -62,18 +74,6 @@ public class Game extends Etat {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // On initialise les variables du mode multijoueurs.
-        this.vue.setMultijoueur(false);
-        this.vue.setHost(false);
-    }
-
-    // Initialise les images & les autres variables.
-    @Override
-    public void init() {
-        // Stock des listes qui elles-mêmes stockes les données d'image de chaque joueur
-        // & qui ne changent jamais, i.e le perso et le nom, contrairement au score.
-        this.vue.setJoueurDataList(new ArrayList<ArrayList<BufferedImage>>());
 
         // Double try_catch pour gérer la différence entre windows & linux.
         try {
