@@ -200,7 +200,7 @@ public class MenuFin extends Etat {
     }
 
     public void mouseClicked(MouseEvent e) {        
-        int y = (12 * this.vue.getHeight() / 100)+6*this.vue.getSautLigne();
+        int y = (12 * this.vue.getHeight() / 100)+7*this.vue.getSautLigne();
         if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :   
             Vue.isMenuFin = false; // On quitte le menu FIN.
             Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
