@@ -404,7 +404,7 @@ public class Game extends Etat {
 
         int i = this.vue.isMultijoueur() ? this.vue.isHost() ? 0 : 1 : 0;
         this.vue.setTerrain(new Terrain(ljou, this.vue.getHeight(), this.vue.getWidth(), this.vue.isHost(),
-                this.vue.isMultijoueur(), i)); // On crée le
+                this.vue.isMultijoueur(), i, 0.0006)); // On crée le
         this.vue.getTerrain().setClient(this.vue.getJconnect());
         this.vue.getTerrain().setHost(this.vue.getServeur());
     }

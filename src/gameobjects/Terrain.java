@@ -13,7 +13,7 @@ public class Terrain {
     private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
     private ArrayList<Coins> coins; // Liste des coins sur le terrain
     private final double height, width; // Dimensions du terrain
-    private double difficulty = 1.0;
+    private double difficulty = 1.0; // facteur qui augmente au cours de la partie et qui permet d'avoir une difficulté progréssive
     private double diff_plateformes; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
@@ -24,8 +24,15 @@ public class Terrain {
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
     public static int intervalle=1;
+    private double difficulty_level;//coefficient de variation de la difficulté, permet de choisir a quelle vitesse la difficuté augmente.
+    //Facile = 0.0001
+    //Moyen = 0.0003
+    //Difficile = 0.0006
+    //Extreme 0.002
+
+
     public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer,
-            int id) {
+            int id, double diff_l) {
         // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
@@ -37,6 +44,7 @@ public class Terrain {
         this.multiplayer = multiplayer;
         this.isHost = host;
         this.playerID = id;
+        difficulty_level=diff_l;
         if (!multiplayer)
             isHost = false;
 
@@ -143,7 +151,7 @@ public class Terrain {
         if (p.getY() < this.height / 2 && (((isHost && multiplayer) || !multiplayer))) {
             // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
             // certain seuil qu'on a défini préalablement (la moitié de la taille)
-            difficulty = (difficulty > 5) ? 5 : difficulty + 0.0001;
+            difficulty = (difficulty > 5) ? 5 : difficulty + difficulty_level;
             p.setY(this.height / 2);
             j.setScore(j.getScore() + 1); // On incrémente le score
 
