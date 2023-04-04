@@ -23,6 +23,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur, niveau;
     private String chemin, winchemin, nom1, nom2, skin; // Le chemin vers le package d'images & les noms des joueurs.
     private final ArrayList<String> listPackSkin;
+    protected MouseListener mouse;
 
     // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,

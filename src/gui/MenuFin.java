@@ -153,6 +153,8 @@ public class MenuFin extends Etat {
     // Fait tourner cet état.
     @Override
     public void running() {
+        removelistners();
+        this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
         this.vue.setSautLigne(50); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
@@ -195,5 +197,27 @@ public class MenuFin extends Etat {
 
     @Override
     public void keyControlReleased(KeyEvent e) {
+    }
+
+    public void mouseClicked(MouseEvent e) {        
+        int y = (12 * this.vue.getHeight() / 100)+6*this.vue.getSautLigne();
+        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :   
+            Vue.isMenuFin = false; // On quitte le menu FIN.
+            Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
+            return;
+        }
+        y += this.vue.getSautLigne();
+        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Quitter" :
+            System.out.println("À la prochaine !");
+            Vue.isQuitte = true; // On quitte l'application.
+            System.exit(0); // On ferme toutes les fenêtres & le programme.
+        }
+        y += this.vue.getSautLigne();
+        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Quitter" :
+            Vue.isMenuFin = false;    
+            this.vue.geteGame().createPartie(); // On crée une partie.
+            Vue.isRunningGame = true;
+            return;
+        }
     }
 }

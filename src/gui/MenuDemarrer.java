@@ -112,9 +112,12 @@ public class MenuDemarrer extends Etat {
         g.dispose(); // On libère les ressources.
     }
 
+
     // Fait tourner cet état.
     @Override
     public void running() {
+        removelistners();
+        this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
         this.vue.setSautLigne(50); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
@@ -193,5 +196,85 @@ public class MenuDemarrer extends Etat {
 
     @Override
     public void keyControlReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        int x = (9 * this.vue.getWidth() / 100), y = (10 * this.vue.getHeight() / 100);
+        int h = 30;
+
+        if(e.getY()>y && e.getY()<y+h){
+            this.vue.setNbJoueur(1); // On initialise le nombre de joueurs.
+            Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
+            Vue.isMenuLancement = true;
+            return ;
+        }
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+
+        if(e.getY()>y && e.getY()<y+h){
+            this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
+            Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
+            Vue.isMenuLancement = true;
+            return ;
+        }
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+
+        if(e.getY()>y && e.getY()<y+h){
+            this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
+            this.vue.setMultijoueur(true); // On indique qu'on est en mode multijoueurs.
+
+            // Boîte de dialogue pour savoir si le joueur accueille (host) la partie.
+            int option = JOptionPane.showConfirmDialog(this.vue, "Voulez-vous accueillir la partie ?",
+                    "Paramètrage multijoueur...", JOptionPane.YES_NO_OPTION);
+            if (option == 0) { // Si oui :
+                this.vue.setHost(true); // On indique que le joueur est host.
+                try { // On tente la connexion.
+                    this.vue.setServeur(new Serveur());
+                    this.vue.getServeur().run();
+                } catch (IOException io) {
+                    JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
+                            JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
+                    System.exit(-1);
+                }
+            } else { // Si le joueur ne host pas la partie :
+                this.vue.setHost(false); // On indique qu'il n'est pas host.
+                this.vue.setJconnect(new JoueurConnecte()); // ???
+                this.vue.getJconnect().connecter();
+            }
+
+            Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
+            Vue.isMenuLancement = true; // On passe au menu LANCEMENT.        
+            return ;
+        }
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+
+        if(e.getY()>y && e.getY()<y+h){
+            Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
+            Vue.isMenuClassement = true; // On passe au menu CLASSEMENT.
+
+            return ;
+        }
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+
+        if(e.getY()>y && e.getY()<y+h){
+            System.out.println("*");
+            Vue.isMenuDemarrer = false;
+            Vue.isSetting = true;
+            return ;
+        }
+        x = (9 * this.vue.getWidth() / 100);
+        y = y + this.vue.getSautLigne();
+
+        if(e.getY()>y && e.getY()<y+h){
+            System.out.println("À la prochaine !");
+            Vue.isQuitte = true; // On quitte le jeu.
+            System.exit(0); // On ferme toutes les fenêtres & le programme.
+            return ;
+        }
+
     }
 }

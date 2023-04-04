@@ -138,6 +138,8 @@ public class MenuClassement extends Etat {
     // Fait tourner cet état.
     @Override
     public void running() {
+        removelistners();
+        this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
         this.vue.setSautLigne(50); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
@@ -192,5 +194,21 @@ public class MenuClassement extends Etat {
 
     @Override
     public void keyControlReleased(KeyEvent e) {
+    }
+
+    public void mouseClicked(MouseEvent e) {
+        int y = (12 * this.vue.getHeight() / 100)+(this.vue.getLbView().size()+2)*this.vue.getSautLigne();
+        if(e.getY()>y && e.getY()<y+30){
+            Vue.isMenuClassement = false; // On quitte le menu CLASSEMENT.
+            Vue.isMenuDemarrer = true; // On passe dans le menu DEMARRER.
+            return;
+        } 
+        y=+this.vue.getSautLigne();
+        if(e.getY()>y && e.getY()<y+30){
+            System.out.println("À la prochaine !");
+            Vue.isQuitte = true; // On quitte le jeu.
+            System.exit(0); // On ferme toutes les fenêtres & le programme.
+            return;
+        }
     }
 }

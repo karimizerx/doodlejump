@@ -112,6 +112,8 @@ public class MenuLancement extends Etat {
     // Fait tourner cet état.
     @Override
     public void running() {
+        removelistners();
+        this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
         this.vue.setSautLigne(50); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
@@ -263,4 +265,29 @@ public class MenuLancement extends Etat {
         return "";
     }
 
+    public void mouseClicked(MouseEvent e) {
+        int y = (12 * this.vue.getHeight() / 100) +3*this.vue.getSautLigne();
+        if (this.vue.getNbJoueur() == 2) {
+            y=+this.vue.getSautLigne();
+        }
+        if (e.getY()>y &&e.getY()<y+30 ) { 
+            this.vue.geteGame().createPartie(); // On crée une partie.
+            Vue.isMenuLancement = false; // On quitte le menu LANCEMENT.
+            Vue.isRunningGame = true; // On passe à la GAME.
+            return;
+        }
+        y += this.vue.getSautLigne();
+        // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :
+        if (e.getY()>y &&e.getY()<y+30) {
+            Vue.isMenuLancement = false; // On quitte le menu LANCEMENT.
+            Vue.isMenuDemarrer = true; // On passe dans le menu DEMARRER.
+            return;
+        }
+        y += this.vue.getSautLigne();
+        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Quitter" :
+            System.out.println("À la prochaine !");
+            Vue.isQuitte = true; // On quitte le jeu.
+            System.exit(0); // On ferme toutes les fenêtres & le programme.
+        }
+    }
 }

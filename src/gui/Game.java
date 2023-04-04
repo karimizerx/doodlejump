@@ -10,10 +10,12 @@ import java.awt.*;
 import java.awt.image.*;
 import java.awt.event.*;
 import javax.imageio.*;
+import javax.swing.event.MouseInputListener;
 
 // Représente l'état où le jeu est au niveau d'une "GAME".
-public class Game extends Etat {
+public class Game extends Etat implements MouseInputListener{
 
+    boolean mouseControls=false;
     public Game(Vue vue) {
         super(vue);
     }
@@ -260,6 +262,11 @@ public class Game extends Etat {
     // Fait tourner cet état.
     @Override
     public void running() {
+        removelistners();
+        if(mouseControls){
+            vue.addMouseListener(this);
+            vue.addMouseMotionListener(this);
+        }
         // Gestion de l'ups constant
         this.vue.setDeltaTime(10); // Le temps nécessaire pour update une GAME.
         double cnt = 0.0; // Compteur du nombre d'updates.
@@ -287,6 +294,7 @@ public class Game extends Etat {
     // Gestion des boutons.
     @Override
     public void keyControlPressed(KeyEvent e) { // KeyEvent e de la vue.
+        if(mouseControls) return ;
         Personnage p1, p2;
         if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
             p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du 1er joueur.
@@ -340,6 +348,7 @@ public class Game extends Etat {
 
     @Override
     public void keyControlReleased(KeyEvent e) {
+        if(mouseControls) return ;
         Personnage p1, p2;
         if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
             p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du 1er joueur.
@@ -429,6 +438,58 @@ public class Game extends Etat {
         } else {
             this.vue.getTerrain().setPause(true);
         }
+
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if(!mouseControls) return;
+        Personnage p=this.vue.getTerrain().getMyPlayer().getPerso();
+        p.setShoot(true);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if(!mouseControls) return;
+        Personnage p=this.vue.getTerrain().getMyPlayer().getPerso();
+        p.setShoot(false);
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e){
+        if(!mouseControls) return;
+        Personnage p=this.vue.getTerrain().getMyPlayer().getPerso();
+        if (e.getX()>p.getX()+p.getWidth()*0.43) { // Si on relâche pendant que l'on se déplace vers la droite :
+            p.setRight(true); // On arrête de se déplacer.
+            p.setInertRight(false); // On lance le ralentissement (inertie).
+        }else if (e.getX()<p.getX()+p.getWidth()*0.43) { // Si on relâche pendant que l'on se déplace vers la gauche :
+            p.setLeft(true); // On arrête de se déplacer.
+            p.setInertLeft(false); // On lance le ralentissement (inertie).
+        }else {
+            p.setRight(false); // On arrête de se déplacer.
+            p.setInertRight(false); // On lance le ralentissement (inertie).
+            p.setLeft(false); // On arrête de se déplacer.
+            p.setInertLeft(false); 
+        }
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        // if(!mouseControls) return;
+        // Personnage p=this.vue.getTerrain().getMyPlayer().getPerso();
+   
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
 
     }
 }

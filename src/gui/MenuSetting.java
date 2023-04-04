@@ -4,6 +4,7 @@ package gui;
 import java.awt.*;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 public class MenuSetting extends Etat {
 
@@ -94,6 +95,8 @@ public class MenuSetting extends Etat {
 
     @Override
     void running() {
+        removelistners();
+        this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
         this.vue.setSautLigne(50); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
@@ -166,4 +169,40 @@ public class MenuSetting extends Etat {
     void keyControlReleased(KeyEvent e) {
     }
 
+    public void mouseClicked(MouseEvent e) {
+        int y = (10 * this.vue.getHeight() / 100);
+        if (e.getY()>y &&e.getY()<y+30) { 
+            this.vue.setNiveau((this.vue.getNiveau()+1)%4);
+            this.vue.setMessNiveau(createImageOfMot(String.valueOf(this.vue.getNiveau())));
+            return;
+        }
+        y += this.vue.getSautLigne();
+
+        if (e.getY()>y &&e.getY()<y+30) { 
+            this.pack = (this.pack == this.vue.getListPackSkin().size() - 1) ? 0 : this.pack + 1;
+            this.vue.setSkin(this.vue.getListPackSkin().get(this.pack));
+            this.vue.setMessSkin(createImageOfMot(this.vue.getSkin()));
+            return;
+        }
+        y += this.vue.getSautLigne();
+        if (e.getY()>y &&e.getY()<y+30) { 
+            String iner = (this.vue.isInertie()) ? "NON" : "OUI";
+            this.vue.setInertie(!this.vue.isInertie());
+            this.vue.setMessInertie(createImageOfMot(String.valueOf(iner)));
+            return;
+        }
+        y += this.vue.getSautLigne();
+        if (e.getY()>y &&e.getY()<y+30) { 
+            Vue.isSetting = false;
+            Vue.isMenuDemarrer = true;
+            return;
+        }
+        y += this.vue.getSautLigne();
+        if (e.getY()>y &&e.getY()<y+30) { 
+            System.out.println("À la prochaine !");
+            Vue.isQuitte = true; // On quitte le jeu.
+            System.exit(0); // On ferme toutes les fenêtres & le programme.
+        }
+
+    }
 }
