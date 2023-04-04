@@ -4,4 +4,15 @@ Sprint du 6 avril 2023 :
 - ajout des niveaux : Elyo [OK]
 - ajout du menu paramétrage skin & inertie & niveau : Mohamed [OK]
 - ajout des items :
-    -> fréquence d'apparition : Elyo [OK]
+    -> fréquence d'apparition : Elyo [OK]
+- Changement de calcul du score : Necerine [NON]
+  -> le score n'est pas un incrément de +1, mais la distance parcourue.
+  
+Objectifs pour le prochain sprint :
+- ajout du menu pause : Ayman
+- réglage des bugs : tous
+- Système de skin & Création de pack de skin : Ayman
+- Changement de calcul du score : Necerine
+  -> le score n'est pas un incrément de +1, mais la distance parcourue.
+- refactoring & réglage des coeff (adaptation à toutes les résolutions) : Mohamed
+- Commmencer le rapport
