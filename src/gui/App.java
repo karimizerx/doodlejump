@@ -2,6 +2,8 @@ package gui;
 
 // Import de packages java :
 import java.awt.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
@@ -25,7 +27,8 @@ public class App extends JFrame {
         this.setLocationRelativeTo(null);
 
         // Ajout des éléments à la fenêtre
-        this.vue = new Vue(this, "packBase");
+
+        this.vue = new Vue(this);
         this.add(vue);
     }
 
