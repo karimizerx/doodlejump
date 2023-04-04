@@ -294,6 +294,10 @@ public class Game extends Etat implements MouseInputListener{
     // Gestion des boutons.
     @Override
     public void keyControlPressed(KeyEvent e) { // KeyEvent e de la vue.
+        /// Gestion de la pause :
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // Si on appuie sur ECHAP :
+            this.pause(); // On met le jeu en pause.
+        }
         if(mouseControls) return ;
         Personnage p1, p2;
         if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
@@ -340,10 +344,6 @@ public class Game extends Etat implements MouseInputListener{
             }
         }
 
-        /// Gestion de la pause :
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // Si on appuie sur ECHAP :
-            this.pause(); // On met le jeu en pause.
-        }
     }
 
     @Override
@@ -467,16 +467,20 @@ public class Game extends Etat implements MouseInputListener{
     public void mouseMoved(MouseEvent e){
         if(!mouseControls) return;
         Personnage p=this.vue.getTerrain().getMyPlayer().getPerso();
-        if (e.getX()>p.getX()+p.getWidth()*0.43) { // Si on relâche pendant que l'on se déplace vers la droite :
-            p.setRight(true); // On arrête de se déplacer.
-            p.setInertRight(false); // On lance le ralentissement (inertie).
-        }else if (e.getX()<p.getX()+p.getWidth()*0.43) { // Si on relâche pendant que l'on se déplace vers la gauche :
-            p.setLeft(true); // On arrête de se déplacer.
-            p.setInertLeft(false); // On lance le ralentissement (inertie).
-        }else {
+        if (e.getX()>=p.getX() && e.getX()<=p.getX()+p.getWidth()*0.78 ) { // Si on relâche pendant que l'on se déplace vers la droite :
             p.setRight(false); // On arrête de se déplacer.
             p.setInertRight(false); // On lance le ralentissement (inertie).
             p.setLeft(false); // On arrête de se déplacer.
+            p.setInertLeft(false); 
+        }else if (e.getX()<p.getX()+p.getWidth()*0.43) { // Si on relâche pendant que l'on se déplace vers la gauche :
+            p.setLeft(true); // On arrête de se déplacer.
+            p.setInertLeft(false); // On lance le ralentissement (inertie).
+            p.setRight(false);
+            p.setInertRight(false);
+        }else if(e.getX()>p.getX()+p.getWidth()*0.43) {
+            p.setRight(true); // On arrête de se déplacer.
+            p.setInertRight(false); // On lance le ralentissement (inertie).
+            p.setLeft(false); 
             p.setInertLeft(false); 
         }
     }
