@@ -62,11 +62,8 @@ ID,Nom,Score
 15,MOHAMED,1022
 19,MIZER,999
 14,Mizer 0,959
-<<<<<<< HEAD
 19,ELYO,924
-=======
 19,MIZER,917
->>>>>>> settings
 18,MOHAMED RANK 1,892
 19,MIZER,869
 19,MIZER,864
@@ -115,12 +112,9 @@ ID,Nom,Score
 17,MIZER,310
 15,,306
 14,Mizer 0,304
-<<<<<<< HEAD
 19,ELYO,295
-=======
 19,MIZER,299
 19,MIZER,296
->>>>>>> settings
 19,MIZER,278
 13,Mizer 0,276
 19,MIZER,276
@@ -254,8 +248,6 @@ ID,Nom,Score
 19,MIZER,0
 19,MIZER,0
 19,MIZER,0
-<<<<<<< HEAD
-=======
 19,MIZER,0
 19,MIZER,0
 19,MIZER,0
@@ -266,4 +258,3 @@ ID,Nom,Score
 19,MIZER,0
 19,MIZER,0
 19,MIZER,0
->>>>>>> settings
