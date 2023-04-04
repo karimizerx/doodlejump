@@ -1,0 +1,17 @@
+Sprint du 30.03.2023 :
+Objectifs du sprint précédent :
+- ajout des items : 
+    -> fusée & coins & monstres : Fares [OK]
+    -> affichage & collides : Mohamed [OK]
+- make file : Elyo [OK]
+- ajout du menu pause : Ayman [Essai mais pas réussi]
+- Changement de calcul du score : Necerine [NON]
+  -> le score n'est pas un incrément de +1, mais la distance parcourue.
+
+Objectifs pour le prochain sprint :
+- ajout du menu pause : Ayman & Mohamed
+- ajout du bouton rejouer : Ayman
+- réglage des bugs : tous
+- Système de skin & Création de pack de skin : Ayman
+- Changement de calcul du score : Necerine
+  -> le score n'est pas un incrément de +1, mais la distance parcourue.

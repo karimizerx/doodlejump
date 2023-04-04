@@ -112,7 +112,6 @@ public class MenuSetting extends Etat {
         /// Gestion du bouton "ENTREE" :
         if (e.getKeyCode() == KeyEvent.VK_ENTER) { // L'action du bouton "ENTREE" dépend de ce que l'on pointe :
             if (this.vue.getFleche() == 3) {
-                System.out.println("");
                 Vue.isSetting = false;
                 Vue.isMenuDemarrer = true;
                 this.vue.setFleche(-1);
