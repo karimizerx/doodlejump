@@ -1,12 +1,7 @@
 package gui;
 
 // Import de packages java
-import java.io.*;
 import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.imageio.*;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 
