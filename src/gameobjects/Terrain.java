@@ -7,6 +7,7 @@ import java.util.*;
 import gui.*;
 import multiplayer.*;
 
+// Classe principale qui fait le lien entre tous les éléments du jeu.
 public class Terrain {
 
     private ArrayList<Plateforme> plateformesListe; // Liste des plateformes sur le terrain
@@ -14,12 +15,12 @@ public class Terrain {
     private ArrayList<Coins> coins; // Liste des coins sur le terrain
     private final double height, width; // Dimensions du terrain
     private double difficulty = 1.0; // facteur qui augmente au cours de la partie et qui permet d'avoir une
-                                     // difficulté progréssive
-    private double diff_plateformes; // Différence de y entre 2 plateformes
+                                     // difficulté progressive.
+    private double diff_plateformes; // Différence de y entre 2 plateformes.
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
-    // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
-    private ArrayList<Monstre> monstres;
-    private boolean pause;
+    // Affecte la proba qu'un item bonus ou malus apparaisse.
+    private ArrayList<Monstre> monstres; // Liste des monstres présents.
+    private boolean pause; // Si le jeu est en pause.
     public boolean multiplayer, isHost;
     public Serveur host = null;
     public JoueurConnecte client = null;
@@ -34,7 +35,6 @@ public class Terrain {
 
     public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer,
             int id, double diff_l) {
-        // Initialisation des champs
         this.plateformesListe = new ArrayList<Plateforme>();
         this.ListeJoueurs = ljoueur;
         this.monstres = new ArrayList<Monstre>();
@@ -45,7 +45,7 @@ public class Terrain {
         this.multiplayer = multiplayer;
         this.isHost = host;
         this.playerID = id;
-        difficulty_level = diff_l;
+        this.difficulty_level = diff_l;
         if (!multiplayer)
             isHost = false;
 
@@ -53,59 +53,56 @@ public class Terrain {
         generateObstacles();
     }
 
-    // Génère une probabilité croissante selon la difficultée
+    // Génèrent une probabilité croissante selon la difficultée.
     private boolean willMove(double x) {
         int c = new Random().nextInt(31);
-        if (c * x >= 30) {
+        if (c * x >= 30)
             return true;
-        }
         return false;
     }
 
     private boolean willMonstre(double x) {
         int c = new Random().nextInt(1300);
-        if (c + x > 1298) {
+        if (c + x > 1298)
             return true;
-        }
         return false;
     }
 
-    // Crée la liste des plateforme
+    // Crée la liste des plateformes.
     private void generateObstacles() {
-        // Taille des plateformes en fonction de la taille de la fenêtre
+        // Taille des plateformes en fonction de la taille de la fenêtre.
         double w = this.width * 0.09375, h = 0.0194931774 * this.height;
-        // Génère des plateformes à coord aléatoires pour la liste des plateformes
+        // Génère des plateformes à coord aléatoires pour la liste des plateformes.
         for (int i = (int) height; i > 0; i -= diff_plateformes) {
-            // On définit la largeur/hauteur des plateformes de base
+            // On définit la largeur/hauteur des plateformes de base.
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
             plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
         }
-        // On s'assure d'abord toujours une solution au début
     }
 
-    // Renvoie la plateforme la plus haute sur le terrain
+    // Renvoie la plateforme la plus haute sur le terrain.
     private Plateforme highestPlateforme() {
         Plateforme plateformeLaPlusHaute = plateformesListe.get(0);
         for (Plateforme p : plateformesListe) {
-            if (p.getY() <= plateformeLaPlusHaute.getY()) {
+            if (p.getY() <= plateformeLaPlusHaute.getY())
                 plateformeLaPlusHaute = p;
-            }
         }
         return plateformeLaPlusHaute;
     }
 
-    // Gère, pour le perso, le débordement de l'écran
+    // Gère, pour le perso, le débordement de l'écran.
     private void limite(Personnage p) {
-        // 0.43 est la valeur exacte de la moitié du perso
-        // Si + de la moitié du perso est sortie du côté gauche de l'écran
-        // => on place la moitié du perso au côté droit de l'écran
+        // 0.43 est la valeur exacte de la moitié du perso.
+        // Si + de la moitié du perso est sortie du côté gauche de l'écran.
+        // => on place la moitié du perso au côté droit de l'écran.
         if (p.getX() + p.getWidth() * 0.43 <= 0)
             p.setX(this.width - (p.getWidth() * 0.43));
-        else if (p.getX() + p.getWidth() * 0.43 >= width) // Et inversement
+        else if (p.getX() + p.getWidth() * 0.43 >= width) // Et inversement.
             p.setX(-(p.getWidth() * 0.43));
     }
 
+    // Indique ?????????????????????????????????????????????
     private boolean jetpack(Joueur j, int intervalle) {
         return j.getScore() >= (100000 * intervalle) + (new Random().nextInt(500));
     }
@@ -121,24 +118,24 @@ public class Terrain {
     }
 
     private void update(Joueur j, double deltaTime) {
-        // On effectue une mise à jour pour tous les joueurs
+        // On effectue une mise à jour pour tous les joueurs.
         Personnage p = j.getPerso();
 
-        // Ralentissement progressif après un saut
+        // Ralentissement progressif après un saut.
         double ralentissement = 0.0000194942 * this.height;
         p.setDy(p.getDy() + (ralentissement * deltaTime));
         p.setY(p.getY() + p.getDy());
 
-        // Mise à jour de l'item du perso
-        if (p.getDy() >= 0) { // Si on redescend, on perd l'item
+        // Mise à jour de l'item du perso.
+        if (p.getDy() >= 0) { // Si on redescend, on perd l'item.
             p.setItem(null);
         }
-        // Si les pieds du perso touchent le bas de la fenêtre, on a perdu
+        // Si les pieds du perso touchent le bas de la fenêtre, on a perdu.
         if (p.getY() + 0.87 * p.getHeight() >= this.height) {
             Vue.isRunningGame = false;
         }
 
-        // Affichage des projectiles :
+        // Positions des projectiles.
         for (int i = 0; i < p.getListProjectiles().size(); ++i) {
             Projectile pro = p.getListProjectiles().get(i);
             pro.setY(pro.getY() + pro.getDy());
@@ -147,23 +144,24 @@ public class Terrain {
             }
         }
 
-        // Si la tête du personnage dépasse la moitié de l'écran
+        // Si la tête du personnage dépasse la moitié de l'écran.
         if (p.getY() < this.height / 2 && (((isHost && multiplayer) || !multiplayer))) {
             // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
-            // certain seuil qu'on a défini préalablement (la moitié de la taille)
-            difficulty = (difficulty > 5) ? 5 : difficulty + difficulty_level;
+            // certain seuil qu'on a défini préalablement (la moitié de la taille).
+            this.difficulty = (this.difficulty > 5) ? 5 : this.difficulty + this.difficulty_level;
             p.setY(this.height / 2);
-            j.setScore(j.getScore() + Math.abs((int) (p.getDy() * deltaTime))); // On incrémente le score
+            j.setScore(j.getScore() + Math.abs((int) (p.getDy() * deltaTime))); // On incrémente le score.
 
-            // On descend toutes les plateforme
+            // On descend toutes les plateformes.
             for (int i = 0; i < plateformesListe.size(); ++i) {
                 Plateforme pf = plateformesListe.get(i);
                 pf.setY(pf.getY() - (int) p.getDy());
 
-                if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateformes baissées déborde de l'écran
+                if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateforme baissée déborde de l'écran.
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
                     pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
+
                     if (willMove(difficulty)) {
                         plateformesListe.remove(pf);
                         Plateforme pf_mobile = new MovingPlateforme(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
@@ -171,41 +169,42 @@ public class Terrain {
                         plateformesListe.add(pf_mobile);
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
+
                         if (jetpack(j, intervalle)) {
                             intervalle++;
                             Items it = new Fusee(pf_mobile.getX(), pf_mobile.getY(), 50, 50,
                                     -(this.height * 0.013645224), 0.5);
                             pf_mobile.setItem(it);
                         }
+
                     } else {
                         plateformesListe.remove(pf);
                         Plateforme pf_statique = new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
                                 -(this.height * 0.0009746589));
                         plateformesListe.add(pf_statique);
                         plateformesListe.get(plateformesListe.size() - 1).setSaut(-(this.height * 0.0009746589));
+
                         if (jetpack(j, intervalle)) {
                             intervalle++;
                             Items it = new Fusee(pf_statique.getX(), pf_statique.getY(), 50, 50,
                                     -(this.height * 0.013645224), 0.5);
                             pf_statique.setItem(it);
                         }
+
                     }
 
-                    // Il faut changer ce qu'il y a dans le if pour changer l'apparition
-
-                    // Il faut changer ce qu'il y a dans le if pour changer l'apparition
                     if (new Random().nextDouble() > 1 / difficulty) {
                         int x1 = new Random().nextInt((int) (this.width - 80));
                         coins.add(new Coins(x1, -80, 30, 30));
                     }
                 }
+
                 if (pf.getY() < -50) {
                     plateformesListe.remove(pf);
                 }
             }
 
             if (willMonstre(difficulty)) {
-                // On définit la largeur/hauteur des plateformes de base
                 int x1 = new Random().nextInt((int) (this.width - 80));
                 int id = new Random().nextInt(2) + 1;
                 monstres.add(new Monstre(x1, -80, id == 1 ? 70 : 80, id == 1 ? 50 : 90,
@@ -224,6 +223,7 @@ public class Terrain {
             }
             coins.removeAll(suppCoins);
 
+            // On descend tous les monstres.
             ArrayList<Monstre> suppMonstres = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
             for (Monstre m : monstres) {
                 m.setY(m.getY() - (int) p.getDy());
@@ -235,6 +235,7 @@ public class Terrain {
 
         /// On gère les collisions.
 
+        // Collisions de monstres.
         ArrayList<Monstre> suppMonstres = new ArrayList<Monstre>(); // La liste des monstres à supprimer.
         for (Monstre m : monstres) {
             m.move(this);
@@ -247,6 +248,7 @@ public class Terrain {
         }
         monstres.removeAll(suppMonstres);
 
+        // Collisions de coins
         ArrayList<Coins> suppCoins = new ArrayList<Coins>();
         for (Coins c : coins) {
             if (p.collides_coin(c, deltaTime)) {
@@ -256,12 +258,12 @@ public class Terrain {
         }
         coins.removeAll(suppCoins);
 
-        // On gère les collisions du personnage / item
+        // Collisions du personnage / items.
         for (Plateforme pf : plateformesListe) {
             p.collides_plateforme(pf, deltaTime);
             pf.move(this);
 
-            // On met à jour la position de l'item (s'il existe)
+            // On met à jour la position de l'item (s'il existe).
             if (pf.getItem() != null) {
                 Items it = pf.getItem();
                 it.setY(pf.getY() - it.getHeight());
@@ -273,6 +275,7 @@ public class Terrain {
                 }
             }
         }
+
         // On met à jour la position de l'item (s'il existe)
         if (p.getItem() != null) {
             Items it = p.getItem();
@@ -281,7 +284,7 @@ public class Terrain {
             p.setItem(it);
         }
 
-        // On gère les collisions & les débordements du personnage
+        // On gère les collisions & les débordements du personnage.
         limite(p);
     }
 

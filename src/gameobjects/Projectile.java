@@ -1,9 +1,9 @@
 package gameobjects;
 
+// Un projectile est un objet qui élimine les monstres.
 public class Projectile extends GameObject {
 
-    private double dx;
-    private double dy;
+    private double dx, dy; // Vitesse en x,y.
 
     public Projectile(double x, double y, double w, double h, double dx, double dy) {
         super(x, y, w, h);
@@ -11,10 +11,7 @@ public class Projectile extends GameObject {
         this.dy = dy;
     }
 
-    // Méthodes de la classe:
-    public void collides_monster() {
-        return;
-    }
+    // Méthodes de la classe
 
     public boolean limiteProjectile() {
         return this.getY() - this.getHeight() / 2 <= 0;
