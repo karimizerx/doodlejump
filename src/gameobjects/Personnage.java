@@ -114,6 +114,7 @@ public class Personnage extends GameObject {
         return false;
     }
 
+    // Colision entre le personnage et un monstre.
     public boolean collides_monstre(Monstre m, double deltaTime) {
         if (!collides || this.item != null) // Si on a un jetpack, on ne meurs pas en touchant les montres.
             return false;
@@ -142,81 +143,33 @@ public class Personnage extends GameObject {
         return false;
     }
 
+    // Colision entre les projectiles et un monstre.
     public boolean collides_projectile(Monstre m) {
-        double epsilone = 3;
-        for (Projectile p : listProjectiles) {
-            boolean ver = (Math.abs((m.getY() + m.getHeight() / 2)
-                    - (p.getY() + p.getHeight() / 2)) < ((m.getHeight() + p.getHeight()) / 2 + epsilone));
-            boolean hor = (Math.abs((m.getX() + m.getWidth() / 2)
-                    - (p.getX() + p.getWidth() / 2)) < ((m.getWidth() + p.getWidth()) / 2 + epsilone));
-            if (ver && hor) {
-                listProjectiles.remove(p);
+        for (Projectile p : listProjectiles) { // True si l'un des projectiles à collides.
+            if ((p.getX() + p.getWidth() >= m.getX())
+                    && (p.getX() + p.getWidth() <= m.getX() + m.getWidth())
+                    && (p.getY() + p.getHeight() >= m.getY())
+                    && (p.getY() <= m.getY() + m.getHeight())) {
                 return true;
             }
         }
         return false;
     }
 
-    public void dead() {
-        this.collides = false;
-        // Timer timer = new Timer();
-        // TimerTask task = new TimerTask() {
-        // @Override
-        // public void run() {
-        // Personnage.this.setDy(0);
-        // }
-        // };
-        // timer.schedule(task, 3000);
-        // task = new TimerTask() {
-        // @Override
-        // public void run() {
-        // Personnage.this.setDy(-1);
-        // // p.setCollide(false);
-        // }
-        // };
-        // timer.schedule(task, 1000);
-        // task = new TimerTask() {
-        // @Override
-        // public void run() {
-        // Personnage.this.setDy(10);
-        // // p.setCollide(false);
-        // }
-        // };
-        // timer.schedule(task, 1000);
-        // task=null;
-    }
-
-    // Tir un projectile avec ce personnage
+    // Tir un projectile avec ce personnage.
     public void tirer(double w, double h, double vx, double vy) {
         this.listProjectiles.add(new Projectile(this.getX() + this.getWidth() * 0.43, this.getY(), w, h, vx, vy));
     }
 
-    /*
-     * @Override
-     * public void move(double deltaT) {
-     * // partie gravite
-     * double g = 9.81;
-     * double newX, newY;
-     * dy = dy > -g ? (-g * deltaT + dy) : -g;// chute libre ;
-     * 
-     * this.setY((-g / 2) * (deltaT * deltaT) + dy * deltaT + this.getY());
-     * 
-     * // partie horizental
-     * newX = dx * deltaT + this.getX();
-     * // if(newX+this.getHeight()/2>)
-     * this.setX(newX);
-     * 
-     * }
-     */
-
-    // Getter & Setter
-
+    // Règle le ralentissement (inertie activée ou pas).
     public void setInertie(Vue vue) {
-        if (vue == null)
+        if (vue == null) // Sans d'inertie.
             this.ralentissement = this.getDx() < 0 ? -this.getDx() : this.getDx();
-        else
+        else // Avec inertie.
             this.ralentissement = 0.000375 * vue.getWidth();
     }
+
+    // Getter & Setter
 
     public double getDy() {
         return dy;
