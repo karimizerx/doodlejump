@@ -13,7 +13,8 @@ public class Terrain {
     private ArrayList<Joueur> ListeJoueurs; // Liste des joueurs
     private ArrayList<Coins> coins; // Liste des coins sur le terrain
     private final double height, width; // Dimensions du terrain
-    private double difficulty = 1.0; // facteur qui augmente au cours de la partie et qui permet d'avoir une difficulté progréssive
+    private double difficulty = 1.0; // facteur qui augmente au cours de la partie et qui permet d'avoir une
+                                     // difficulté progréssive
     private double diff_plateformes; // Différence de y entre 2 plateformes
     // La difficulté baisse plus le score monte. Affecte la densite des plateformes.
     // Affecte la proba qu'un item bonus ou malus (sûrement 1/diff) apparaisse.
@@ -23,13 +24,13 @@ public class Terrain {
     public Serveur host = null;
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
-    public static int intervalle=1;
-    private double difficulty_level;//coefficient de variation de la difficulté, permet de choisir a quelle vitesse la difficuté augmente.
-    //Facile = 0.0001
-    //Moyen = 0.0003
-    //Difficile = 0.0006
-    //Extreme 0.002
-
+    public static int intervalle = 1;
+    private double difficulty_level;// coefficient de variation de la difficulté, permet de choisir à quelle vitesse
+                                    // la difficuté augmente.
+    // Facile = 0.0001
+    // Moyen = 0.0003
+    // Difficile = 0.0006
+    // Extreme 0.002
 
     public Terrain(ArrayList<Joueur> ljoueur, double height, double width, boolean host, boolean multiplayer,
             int id, double diff_l) {
@@ -44,7 +45,7 @@ public class Terrain {
         this.multiplayer = multiplayer;
         this.isHost = host;
         this.playerID = id;
-        difficulty_level=diff_l;
+        difficulty_level = diff_l;
         if (!multiplayer)
             isHost = false;
 
@@ -61,7 +62,7 @@ public class Terrain {
         return false;
     }
 
-    private boolean willMonstre(double x){
+    private boolean willMonstre(double x) {
         int c = new Random().nextInt(1300);
         if (c + x > 1298) {
             return true;
@@ -105,8 +106,8 @@ public class Terrain {
             p.setX(-(p.getWidth() * 0.43));
     }
 
-    public boolean jetpack(Joueur j, int intervalle){
-        return j.getScore()>=(2000*intervalle)+(new Random().nextInt(500));
+    private boolean jetpack(Joueur j, int intervalle) {
+        return j.getScore() >= (100000 * intervalle) + (new Random().nextInt(500));
     }
 
     // Mises à jour du jeu.
@@ -118,7 +119,6 @@ public class Terrain {
                 update(j, deltaTime);
         }
     }
-    
 
     private void update(Joueur j, double deltaTime) {
         // On effectue une mise à jour pour tous les joueurs
@@ -153,7 +153,7 @@ public class Terrain {
             // certain seuil qu'on a défini préalablement (la moitié de la taille)
             difficulty = (difficulty > 5) ? 5 : difficulty + difficulty_level;
             p.setY(this.height / 2);
-            j.setScore(j.getScore() + Math.abs((int)(p.getDy()*deltaTime))) ; // On incrémente le score
+            j.setScore(j.getScore() + Math.abs((int) (p.getDy() * deltaTime))); // On incrémente le score
 
             // On descend toutes les plateforme
             for (int i = 0; i < plateformesListe.size(); ++i) {
@@ -171,20 +171,22 @@ public class Terrain {
                         plateformesListe.add(pf_mobile);
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
-                        if(jetpack(j,intervalle)){
-                                intervalle++;
-                                Items it = new Fusee(pf_mobile.getX(), pf_mobile.getY(), 50, 50, -(this.height * 0.013645224), 0.5);
-                                pf_mobile.setItem(it);
+                        if (jetpack(j, intervalle)) {
+                            intervalle++;
+                            Items it = new Fusee(pf_mobile.getX(), pf_mobile.getY(), 50, 50,
+                                    -(this.height * 0.013645224), 0.5);
+                            pf_mobile.setItem(it);
                         }
                     } else {
                         plateformesListe.remove(pf);
-                        Plateforme pf_statique=new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
-                        -(this.height * 0.0009746589));
+                        Plateforme pf_statique = new PlateformeBase(pf.getX(), pf.getY(), pf.getWidth(), pf.getHeight(),
+                                -(this.height * 0.0009746589));
                         plateformesListe.add(pf_statique);
                         plateformesListe.get(plateformesListe.size() - 1).setSaut(-(this.height * 0.0009746589));
-                        if(jetpack(j,intervalle)){
+                        if (jetpack(j, intervalle)) {
                             intervalle++;
-                            Items it = new Fusee(pf_statique.getX(), pf_statique.getY(), 50, 50, - (this.height * 0.013645224), 0.5);
+                            Items it = new Fusee(pf_statique.getX(), pf_statique.getY(), 50, 50,
+                                    -(this.height * 0.013645224), 0.5);
                             pf_statique.setItem(it);
                         }
                     }

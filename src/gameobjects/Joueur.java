@@ -9,23 +9,29 @@ import leaderboard.*;
 // Cette classe représente la personne qui joue.
 public class Joueur implements Serializable {
 
-    private String id, nom;
-    private int score;
-    private Personnage perso;
-    private int monnaie;
+    private String id, nom; // L'identifiant (unique) & le nom du joueur.
+    private int score; // Son score à cette partie.
+    private Personnage perso; // Le personnage utilisé.
+    private int monnaie; // Compteur de pièces (coins).
 
     public Joueur(Personnage p, String name) {
         History h = new History();
-        if (h.getLbData().size() > 0) // Si le joueur local a déjà un id
+        if (h.getLbData().size() > 0) // Si le joueur local a déjà un id.
             this.id = h.getLbData().get(h.getLbData().size() - 1)[0];
         else {
-            Classement c = new Classement();
+            Classement c = new Classement(); // Sinon on lui en génère un.
             this.id = (c.getLbData().size() == 0) ? "0" : String.valueOf(c.getMaxId() + 1);
         }
+        this.nom = name; // Nom par défaut est Mizer ou nom de la dernière partie.
         this.perso = p;
         this.score = 0;
-        this.nom = name; // Nom par défaut est Mizer ou nom de la dernière partie.
         this.monnaie = 0;
+    }
+
+    // Méthodes de la classe
+
+    public void addCoin() {
+        monnaie++;
     }
 
     // Getter & Setter
@@ -60,10 +66,6 @@ public class Joueur implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public void addCoin() {
-        monnaie++;
     }
 
     public int getMonnaie() {

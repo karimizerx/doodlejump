@@ -112,7 +112,6 @@ public class MenuDemarrer extends Etat {
         g.dispose(); // On libère les ressources.
     }
 
-
     // Fait tourner cet état.
     @Override
     public void running() {
@@ -202,25 +201,25 @@ public class MenuDemarrer extends Etat {
         int x = (9 * this.vue.getWidth() / 100), y = (10 * this.vue.getHeight() / 100);
         int h = 30;
 
-        if(e.getY()>y && e.getY()<y+h){
+        if (e.getY() > y && e.getY() < y + h) {
             this.vue.setNbJoueur(1); // On initialise le nombre de joueurs.
             Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
             Vue.isMenuLancement = true;
-            return ;
+            return;
         }
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
 
-        if(e.getY()>y && e.getY()<y+h){
+        if (e.getY() > y && e.getY() < y + h) {
             this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
             Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
             Vue.isMenuLancement = true;
-            return ;
+            return;
         }
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
 
-        if(e.getY()>y && e.getY()<y+h){
+        if (e.getY() > y && e.getY() < y + h) {
             this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
             this.vue.setMultijoueur(true); // On indique qu'on est en mode multijoueurs.
 
@@ -244,35 +243,35 @@ public class MenuDemarrer extends Etat {
             }
 
             Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
-            Vue.isMenuLancement = true; // On passe au menu LANCEMENT.        
-            return ;
+            Vue.isMenuLancement = true; // On passe au menu LANCEMENT.
+            return;
         }
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
 
-        if(e.getY()>y && e.getY()<y+h){
+        if (e.getY() > y && e.getY() < y + h) {
             Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
             Vue.isMenuClassement = true; // On passe au menu CLASSEMENT.
 
-            return ;
+            return;
         }
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
 
-        if(e.getY()>y && e.getY()<y+h){
+        if (e.getY() > y && e.getY() < y + h) {
             System.out.println("*");
             Vue.isMenuDemarrer = false;
             Vue.isSetting = true;
-            return ;
+            return;
         }
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
 
-        if(e.getY()>y && e.getY()<y+h){
+        if (e.getY() > y && e.getY() < y + h) {
             System.out.println("À la prochaine !");
             Vue.isQuitte = true; // On quitte le jeu.
             System.exit(0); // On ferme toutes les fenêtres & le programme.
-            return ;
+            return;
         }
 
     }

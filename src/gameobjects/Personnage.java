@@ -6,17 +6,17 @@ import java.util.*;
 // Import d'autres dossiers
 import gui.*;
 
-// Le personnage est un objet avec vitesse.
+// Le personnage est l'objet principale du jeu, pour chaque joueur.
 public class Personnage extends GameObject {
 
-    private double dx, dy; // Vitesse en x et en y
-    private Items item;
-    // isRight/Left gère les boutons appuyés, isInert gère le relâchement
+    private double dx, dy, ralentissement; // Vitesse en x et en y.
+    // Pour l'inertie, ralentissement gère le ralentissement de la vitesse du perso.
+    // isRight/Left gère les boutons appuyés, isInert gère le relâchement.
     // isShoot & canShoot indique si l'on tire/peut tirer un projectile.
-    private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot;
-    private ArrayList<Projectile> listProjectiles; // Stock tous les projectiles du personnage encore sur le terrain
-    public boolean collides = true;
-    private double ralentissement;
+    // collides indique si l'on a PAS touché un monstre.
+    private boolean isRight, isInertRight, isLeft, isInertLeft, isShoot, canShoot, collides;
+    private ArrayList<Projectile> listProjectiles; // Stock tous les projectiles du personnage encore sur le terrain.
+    private Items item; // Peut être équipé d'un item (jetpack...).
 
     public Personnage(double x, double y, double w, double h, double dy) {
         super(x, y, w, h);
@@ -30,109 +30,113 @@ public class Personnage extends GameObject {
         this.canShoot = true;
         this.listProjectiles = new ArrayList<Projectile>();
         this.ralentissement = 0;
+        this.collides = true;
     }
 
     // Méthodes de la classe
+    /*
+     * Conditions d'un collides :
+     * coordoonnées du perso : x,xw (= x + w) & y,yh (= y + h)
+     * coordoonnées de l'objet : ox,oxw (= x + w) & oy,oyh (= y + h)
+     * x <= oxw (sinon impossible d'avoir collides)
+     * xw >= ox (sinon impossible d'avoir collides)
+     * y <= oyh (sinon impossible d'avoir collides)
+     * yh >= oy (sinon impossible d'avoir collides)
+     */
 
-    // Colision entre le personnage et une plateforme
+    // Colision entre le personnage et une plateforme.
     public void collides_plateforme(Plateforme pf, double deltaTime) {
-        if (!collides)
+        if (!collides) // Si on a collides un monstre, on n'applique plus les collides aux plateformes.
             return;
-        if ((this.getX() + (this.getWidth() * 0.65) >= pf.getX()) // si ça ne dépasse pas par la gauche de la
-                // plateforme. + witdh*0.65 sert à ne compter que le x du dernier pied
-                && (this.getX() + (this.getWidth() * 0.25) <= pf.getX() + pf.getWidth())
-                // si ça ne dépasse pas par la droite de la plateforme.
-                // + witdh*0.25 sert à ne compter que le x du premier pied
-                && (this.getY() + 0.87 * this.getHeight() >= pf.getY())
-                && (this.getY() + 0.87 * this.getHeight() <= pf.getY() + pf.getHeight())
-                && (this.getDy() > 0)) { // Si le personnage descent
-            dy = pf.getSaut() * deltaTime;
+        if ((this.getX() + this.getWidth() * 0.65 >= pf.getX())
+                // + w*0.65 sert à ne compter que le x du dernier pied.
+                && (this.getX() + this.getWidth() * 0.25 <= pf.getX() + pf.getWidth())
+                // + w*0.25 sert à ne compter que le x du premier pied.
+                && (this.getY() + this.getHeight() * 0.87 >= pf.getY())
+                // + h*0.87 sert à ne compter que le y des pieds.
+                && (this.getY() + this.getHeight() * 0.87 <= pf.getY() + pf.getHeight())
+                && (this.getDy() > 0)) { // Si le personnage descend.
+            this.dy = pf.getSaut() * deltaTime; // On incrémente la vitesse (simulation de saut).
         }
     }
 
-    // Colision entre le personnage et un item
-
+    // Colision entre le personnage et un item.
     public boolean collides_item(Items it, double deltaTime) {
-        if (!collides)
+        if (!collides) // Si on a collides un monstre, on n'applique plus les collides aux items.
             return false;
-        if (it.isNeedPied()) {
-            if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
-                    // + witdh*0.65 sert à ne compter que le x du dernier pied
-                    && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
-                    // si ça ne dépasse pas par la droite de la item.
-                    // + witdh*0.25 sert à ne compter que le x du premier pied
-                    && (this.getY() + 0.87 * this.getHeight() >= it.getY())
-                    && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
-                    && (this.getDy() > 0)) { // Si le personnage descend
+
+        if (it.isNeedPied()) { // Si l'item doit être touché avec les pieds
+            if ((this.getX() + this.getWidth() * 0.65 >= it.getX())
+                    // + w*0.65 sert à ne compter que le x du dernier pied.
+                    && (this.getX() + this.getWidth() * 0.25 <= it.getX() + it.getWidth())
+                    // + w*0.25 sert à ne compter que le x du premier pied.
+                    && (this.getY() + this.getHeight() * 0.87 >= it.getY())
+                    // + h*0.87 sert à ne compter que le y des pieds.
+                    && (this.getY() + this.getHeight() * 0.87 <= it.getY() + it.getHeight())
+                    && (this.getDy() > 0)) { // Si le personnage descend.
+                this.dy = it.getSaut() * deltaTime; // On incrémente la vitesse (simulation de saut).
                 return true;
             }
         } else {
-            if ((this.getX() + (this.getWidth() * 0.65) >= it.getX()) // si ça ne dépasse pas par la gauche de l'item.
-                    // + witdh*0.5 sert à ne compter que le x du dernier pied
-                    && (this.getX() + (this.getWidth() * 0.25) <= it.getX() + it.getWidth())
-                    // si ça ne dépasse pas par la droite de la item.
-                    // + witdh*0.25 sert à ne compter que le x du premier pied
-                    && (this.getY() + 0.87 * this.getHeight() >= it.getY())
-                    && (this.getY() + 0.87 * this.getHeight() <= it.getY() + it.getHeight())
-                    && (this.getDy() < 0)) { // Si le personnage monte
-                dy = it.getSaut() * deltaTime;
+            if ((this.getX() + this.getWidth() * 0.65 >= it.getX())
+                    // + w*0.65 sert à ne compter que le x du dernier pied.
+                    && (this.getX() + this.getWidth() * 0.25 <= it.getX() + it.getWidth())
+                    // + w*0.25 sert à ne compter que le x du premier pied.
+                    && (this.getY() + this.getHeight() * 0.87 >= it.getY())
+                    // + h*0.87 sert à ne compter que le y des pieds.
+                    && (this.getY() <= it.getY() + it.getHeight())) {
+                this.dy = it.getSaut() * deltaTime; // On incrémente la vitesse (simulation de saut).
                 return true;
             }
         }
+
         return false;
     }
 
-    public boolean collides(Monstre m) {
-        if (!collides)
-            return false; // 0.7 0.6 0.87
-        boolean ver = (Math.abs((m.getY() - m.getHeight() / 2) - (this.getY() - this.getHeight() / 2)) < Math
-                .abs((m.getHeight() + 0.87 * this.getHeight()) / 2));
-        boolean hor = (Math.abs((m.getX() + m.getWidth() * 0.5 / 2)
-                - (this.getX() + this.getWidth() / 2)) < ((m.getWidth() + this.getWidth()) / 2));
-        // 0.9 0.4
-        return (ver && hor); // TODO reparer les coeffs
-    }
-
+    // Colision entre le personnage et un coins.
     public boolean collides_coin(Coins c, double deltaTime) {
-        if (!collides)
+        if (!collides) // Si on a collides un monstre, on n'applique plus les collides aux coins.
             return false;
 
-        if (this.item != null) // Si on a un jetPack, on collecte automatiquement
+        if (this.item != null) // Si on a un jetPack, on collecte automatiquement.
             return true;
 
-        if ((this.getX() + (this.getWidth()) >= c.getX())
-                && (this.getX() <= c.getX() + c.getWidth())
-                && (this.getY() + 0.87 * this.getHeight() >= c.getY())
+        if ((this.getX() + this.getWidth() * 0.65 >= c.getX())
+                // + w*0.65 sert à ne compter que le x du dernier pied.
+                && (this.getX() + this.getWidth() * 0.25 <= c.getX() + c.getWidth())
+                // + w*0.25 sert à ne compter que le x du premier pied.
+                && (this.getY() + this.getHeight() * 0.87 >= c.getY())
+                // + h*0.87 sert à ne compter que le y des pieds.
                 && (this.getY() <= c.getY() + c.getHeight())) {
             return true;
         }
+
         return false;
     }
 
     public boolean collides_monstre(Monstre m, double deltaTime) {
-        if (!collides || this.item != null) // Si on a un jetpack, on ne meurs pas en tuant les montres
+        if (!collides || this.item != null) // Si on a un jetpack, on ne meurs pas en touchant les montres.
             return false;
 
-        if ((this.getX() + (this.getWidth()) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
+        // Cas du rebond sur le monstre.
+        if ((this.getX() + this.getWidth() >= m.getX())
                 && (this.getX() <= m.getX() + m.getWidth())
-                // si ça ne dépasse pas par la droite de la item.
-                // Les pieds ne doivent pas être au-dessus de la tête du monstre.
-                && (this.getY() + 0.87 * this.getWidth() > m.getY())
-                // Soit la tête est dans le corps du monstre, soit les pieds le sont
-                && ((this.getY() <= m.getY() + m.getHeight())
-                        || (this.getY() + 0.87 * this.getWidth() <= m.getY() + m.getHeight()))) {
-            this.collides = false;
-            return false;
+                && (this.getY() + 0.87 * this.getHeight() >= m.getY())
+                // + h*0.87 sert à ne compter que le y des pieds.
+                && (this.getY() + 0.87 * this.getHeight() <= m.getY() + m.getHeight() * 0.1)
+                && (this.getDy() > 0)) { // Si le personnage descend.
+            this.dy = m.getSaut() * deltaTime;
+            return true;
         }
 
-        if ((this.getX() + (this.getWidth()) >= m.getX()) // si ça ne dépasse pas par la gauche de l'item.
-                && (this.getX() <= m.getX() + m.getWidth())
-                // si ça ne dépasse pas par la droite de la item.
-                && (this.getY() < m.getY())
-                && (this.getY() + 0.87 * this.getHeight() < m.getY() + m.getHeight() * 0.1)
-                && (this.getDy() > 0)) {
-            dy = m.getSaut() * deltaTime;
-            return true;
+        // Cas de collides & mort.
+        if ((this.getX() + this.getWidth() >= m.getX())
+                && (this.getX() + this.getWidth() <= m.getX() + m.getWidth())
+                && (this.getY() + this.getHeight() * 0.87 >= m.getY())
+                // + h*0.87 sert à ne compter que le y des pieds.
+                && (this.getY() <= m.getY() + m.getHeight())) {
+            this.collides = false;
+            return false;
         }
 
         return false;
