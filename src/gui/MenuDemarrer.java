@@ -64,8 +64,8 @@ public class MenuDemarrer extends Etat {
     @Override
     public void update() {
         // Dimensions de la fleche.
-        this.vue.setWfleche(30);
-        this.vue.setHfleche(30);
+        this.vue.setWfleche((int) 0.046875 * this.vue.getWidth());
+        this.vue.setHfleche((int) 0.02924 * this.vue.getHeight());
 
         // La fleche a toujours la même coordonnée x.
         this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
@@ -84,7 +84,8 @@ public class MenuDemarrer extends Etat {
 
         // Affichage des boutons.
         int x = (9 * this.vue.getWidth() / 100), y = (10 * this.vue.getHeight() / 100);
-        int w = 30, h = 30, espacement = 15, ecart = 20;
+        int w = (int) 0.046875 * this.vue.getWidth(), h = (int) 0.02924 * this.vue.getHeight(),
+                espacement = (int) 0.0234375 * this.vue.getWidth(), ecart = (int) 0.03125 * this.vue.getWidth();
         afficheMot(g2, this.vue.getButtonJouerSolo(), x, y, w, h, ecart, espacement);
         x = (9 * this.vue.getWidth() / 100);
         y = y + this.vue.getSautLigne();
@@ -118,7 +119,7 @@ public class MenuDemarrer extends Etat {
         removelistners();
         this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
-        this.vue.setSautLigne(50); // Distance entre 2 lignes.
+        this.vue.setSautLigne((int) 0.04873 * this.vue.getHeight()); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
 
         while (Vue.isMenuDemarrer) { // Tant que l'on est dans le menu DEMARRER :
@@ -199,7 +200,7 @@ public class MenuDemarrer extends Etat {
     @Override
     public void mouseClicked(MouseEvent e) {
         int x = (9 * this.vue.getWidth() / 100), y = (10 * this.vue.getHeight() / 100);
-        int h = 30;
+        int h = (int) 0.02924 * this.vue.getHeight();
 
         if (e.getY() > y && e.getY() < y + h) {
             this.vue.setNbJoueur(1); // On initialise le nombre de joueurs.
@@ -273,6 +274,5 @@ public class MenuDemarrer extends Etat {
             System.exit(0); // On ferme toutes les fenêtres & le programme.
             return;
         }
-
     }
 }

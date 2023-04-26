@@ -81,8 +81,8 @@ public class MenuFin extends Etat {
     @Override
     public void update() {
         // Dimensions de la fleche.
-        this.vue.setWfleche(30);
-        this.vue.setHfleche(30);
+        this.vue.setWfleche((int) 0.046875 * this.vue.getWidth());
+        this.vue.setHfleche((int) 0.02924 * this.vue.getHeight());
 
         // La fleche a toujours la même coordonnée x.
         this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
@@ -101,14 +101,15 @@ public class MenuFin extends Etat {
 
         // Affichage du titre.
         int x = (9 * this.vue.getWidth() / 100), y = (12 * this.vue.getHeight() / 100);
-        int w = 30, h = 30, espacement = 15, ecart = 20;
+        int w = (int) 0.046875 * this.vue.getWidth(), h = (int) 0.02924 * this.vue.getHeight(),
+                espacement = (int) 0.0234375 * this.vue.getWidth(), ecart = (int) 0.03125 * this.vue.getWidth();
         afficheMot(g2, this.vue.getTitreStatut(), x, y, w, h, ecart, espacement);
 
         // Affichage des scores (entre () l'adaptation pour les parties à 2 joueurs):
         // Affichage du score à cette partie (score du joueur 1).
         y += this.vue.getSautLigne() * 2;
         x = afficheMot(g2, this.vue.getScoreFinalView().get(0), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
         x += espacement;
         x = afficheMot(g2, this.vue.getScoreFinalView().get(1), x, y, w, h, ecart, espacement);
 
@@ -116,7 +117,7 @@ public class MenuFin extends Etat {
         y += this.vue.getSautLigne();
         x = (9 * this.vue.getWidth() / 100);
         x = afficheMot(g2, this.vue.getHightScoreView().get(0), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
         x += espacement;
         x = afficheMot(g2, this.vue.getHightScoreView().get(1), x, y, w, h, ecart, espacement);
 
@@ -124,7 +125,7 @@ public class MenuFin extends Etat {
         y += this.vue.getSautLigne();
         x = (9 * this.vue.getWidth() / 100);
         x = afficheMot(g2, this.vue.getHightScoreView().get(2), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
         x += espacement;
         x = afficheMot(g2, this.vue.getHightScoreView().get(3), x, y, w, h, ecart, espacement);
 
@@ -155,7 +156,7 @@ public class MenuFin extends Etat {
         removelistners();
         this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
-        this.vue.setSautLigne(50); // Distance entre 2 lignes.
+        this.vue.setSautLigne((int) 0.04873 * this.vue.getHeight()); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
 
         while (Vue.isMenuFin) { // Tant que l'on est au niveau du menu FIN :
@@ -199,22 +200,23 @@ public class MenuFin extends Etat {
     public void keyControlReleased(KeyEvent e) {
     }
 
-    public void mouseClicked(MouseEvent e) {        
-        int y = (12 * this.vue.getHeight() / 100)+7*this.vue.getSautLigne();
-        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :   
+    public void mouseClicked(MouseEvent e) {
+        int y = (12 * this.vue.getHeight() / 100) + 7 * this.vue.getSautLigne();
+        int h = (int) 0.02924 * this.vue.getHeight();
+        if (e.getY() > y && e.getY() < y + h) { // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :
             Vue.isMenuFin = false; // On quitte le menu FIN.
             Vue.isMenuDemarrer = true; // On entre dans le menu DEMARRER.
             return;
         }
         y += this.vue.getSautLigne();
-        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Quitter" :
+        if (e.getY() > y && e.getY() < y + h) { // Si la flèche pointe sur le bouton "Quitter" :
             System.out.println("À la prochaine !");
             Vue.isQuitte = true; // On quitte l'application.
             System.exit(0); // On ferme toutes les fenêtres & le programme.
         }
         y += this.vue.getSautLigne();
-        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Quitter" :
-            Vue.isMenuFin = false;    
+        if (e.getY() > y && e.getY() < y + h) { // Si la flèche pointe sur le bouton "Quitter" :
+            Vue.isMenuFin = false;
             this.vue.geteGame().createPartie(); // On crée une partie.
             Vue.isRunningGame = true;
             return;

@@ -9,7 +9,7 @@ import java.awt.event.*;
 import javax.imageio.*;
 
 // Classe abstraite représentant un état du jeu.
-public abstract class Etat implements MouseListener{
+public abstract class Etat implements MouseListener {
 
     protected Vue vue; // Ne possède qu'un champs vue, pour gérer ses attributs.
 
@@ -97,10 +97,10 @@ public abstract class Etat implements MouseListener{
         return x + w;
     }
 
-    
     @Override
     public void mousePressed(MouseEvent e) {
     }
+
     @Override
     public void mouseReleased(MouseEvent e) {
     }
@@ -112,10 +112,11 @@ public abstract class Etat implements MouseListener{
     @Override
     public void mouseExited(MouseEvent e) {
     }
-    public void removelistners(){
-        for(MouseListener l: vue.getMouseListeners())
-        vue.removeMouseListener(l);
-        for(MouseMotionListener l: vue.getMouseMotionListeners())
-        vue.removeMouseMotionListener(l);
+
+    public void removelistners() {
+        for (MouseListener l : vue.getMouseListeners())
+            vue.removeMouseListener(l);
+        for (MouseMotionListener l : vue.getMouseMotionListeners())
+            vue.removeMouseMotionListener(l);
     }
 }

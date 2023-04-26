@@ -42,8 +42,8 @@ public class MenuLancement extends Etat {
     @Override
     public void update() {
         // Dimensions de la fleche.
-        this.vue.setWfleche(30);
-        this.vue.setHfleche(30);
+        this.vue.setWfleche((int) 0.046875 * this.vue.getWidth());
+        this.vue.setHfleche((int) 0.02924 * this.vue.getHeight());
 
         // La fleche a toujours la même coordonnée x.
         this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
@@ -74,9 +74,11 @@ public class MenuLancement extends Etat {
 
         // Affichage des boutons.
         int x = (9 * this.vue.getWidth() / 100), y = (12 * this.vue.getHeight() / 100);
-        int w = 30, h = 30, espacement = 15, ecart = 20;
+        int w = (int) 0.046875 * this.vue.getWidth(), h = (int) 0.02924 * this.vue.getHeight(),
+                espacement = (int) 0.0234375 * this.vue.getWidth(), ecart = (int) 0.03125 * this.vue.getWidth();
         x = afficheMot(g2, this.vue.getMessageNom(), x, y, w, h, ecart, espacement);
-        afficheDoublepoint(g2, x, y, 7, 7);
+        afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
+
         x = (15 * this.vue.getWidth() / 100);
         y += this.vue.getSautLigne();
         afficheMot(g2, this.vue.getNomJ1(), x, y, w, h, ecart, espacement);
@@ -84,7 +86,7 @@ public class MenuLancement extends Etat {
             x = (9 * this.vue.getWidth() / 100);
             y += this.vue.getSautLigne();
             x = afficheMot(g2, this.vue.getMessageNom(), x, y, w, h, ecart, espacement);
-            afficheDoublepoint(g2, x, y, 7, 7);
+            afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
             x = (15 * this.vue.getWidth() / 100);
             y += this.vue.getSautLigne();
             afficheMot(g2, this.vue.getNomJ2(), x, y, w, h, ecart, espacement);
@@ -115,7 +117,7 @@ public class MenuLancement extends Etat {
         removelistners();
         this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
-        this.vue.setSautLigne(50); // Distance entre 2 lignes.
+        this.vue.setSautLigne((int) 0.04873 * this.vue.getHeight()); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
 
         while (Vue.isMenuLancement) { // Tant que l'on est dans le menu LANCEMENT :
@@ -266,11 +268,13 @@ public class MenuLancement extends Etat {
     }
 
     public void mouseClicked(MouseEvent e) {
-        int y = (12 * this.vue.getHeight() / 100) +3*this.vue.getSautLigne();
+        int y = (12 * this.vue.getHeight() / 100) + 3 * this.vue.getSautLigne();
+        int h = (int) 0.02924 * this.vue.getHeight();
+
         if (this.vue.getNbJoueur() == 2) {
-            y=+this.vue.getSautLigne();
+            y = +this.vue.getSautLigne();
         }
-        if (e.getY()>y &&e.getY()<y+30 ) { 
+        if (e.getY() > y && e.getY() < y + h) {
             this.vue.geteGame().createPartie(); // On crée une partie.
             Vue.isMenuLancement = false; // On quitte le menu LANCEMENT.
             Vue.isRunningGame = true; // On passe à la GAME.
@@ -278,13 +282,13 @@ public class MenuLancement extends Etat {
         }
         y += this.vue.getSautLigne();
         // Si la flèche pointe sur le bouton "Retour au menu DEMARRER" :
-        if (e.getY()>y &&e.getY()<y+30) {
+        if (e.getY() > y && e.getY() < y + h) {
             Vue.isMenuLancement = false; // On quitte le menu LANCEMENT.
             Vue.isMenuDemarrer = true; // On passe dans le menu DEMARRER.
             return;
         }
         y += this.vue.getSautLigne();
-        if (e.getY()>y &&e.getY()<y+30) { // Si la flèche pointe sur le bouton "Quitter" :
+        if (e.getY() > y && e.getY() < y + h) { // Si la flèche pointe sur le bouton "Quitter" :
             System.out.println("À la prochaine !");
             Vue.isQuitte = true; // On quitte le jeu.
             System.exit(0); // On ferme toutes les fenêtres & le programme.

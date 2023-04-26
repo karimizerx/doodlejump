@@ -51,8 +51,6 @@ public class Game extends Etat implements MouseInputListener {
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/items/projectile.png")));
                 this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getChemin() + "/items/monstre1.png")));
                 this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getChemin() + "/items/monstre2.png")));
-                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getChemin() +
-                // "monstre3.png")));
                 this.vue.setcoinView(ImageIO.read(new File(this.vue.getChemin() + "/items/coin.png")));
 
             } catch (Exception e) {
@@ -70,9 +68,6 @@ public class Game extends Etat implements MouseInputListener {
                 this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getWinchemin() + "/items/monstre1.png")));
                 this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getWinchemin() + "/items/monstre2.png")));
                 this.vue.setcoinView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/coin.png")));
-
-                // this.vue.setMonstre3View(ImageIO.read(new File(this.vue.getWinchemin() +
-                // "/monstre3.png")));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -119,7 +114,8 @@ public class Game extends Etat implements MouseInputListener {
         for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
             Personnage p = this.vue.getTerrain().getListeJoueurs().get(i).getPerso();
             // Gère les boutons flèches, avec inertie.
-            // Quand on appuie, on set la vitesse à ± 4, et on avance de cette distance.
+            // Quand on appuie, on set la vitesse à ± vitesse, et on avance de cette
+            // distance.
             double vitesse = 0.0078125 * vue.getTerrain().getWidth();
             p.setInertie(this.vue.isInertie() ? this.vue : null);
             if (p.isRight()) {
@@ -191,7 +187,7 @@ public class Game extends Etat implements MouseInputListener {
             }
         }
 
-        // Affichage du Score : seulement s'il n'y a qu'un joueur.
+        // Affichage du Score & de la monnaie : seulement s'il n'y a qu'un joueur.
         if (this.vue.getTerrain().getListeJoueurs().size() == 1) {
             Joueur j = this.vue.getTerrain().getListeJoueurs().get(0);
             String score = String.valueOf(j.getScore());
@@ -201,7 +197,7 @@ public class Game extends Etat implements MouseInputListener {
             int x = (int) (tw * 0.0078125); // Variable pour adapter en fonction de la résolution
             afficheMot(g2, scoreView, x, 5, x * 10, x * 10, 5 * x, 0);
 
-            //
+            // Affichage de la monnaie.
             String argent = String.valueOf(j.getMonnaie());
             g2.drawImage(this.vue.getcoinView(), tw - 50, 2, 50, 50, null);
             ArrayList<BufferedImage> argentView = createImageOfMot(argent);
@@ -230,6 +226,8 @@ public class Game extends Etat implements MouseInputListener {
                         (int) pro.getHeight(), null);
             }
         }
+
+        // Affichage des monstres.
         for (Monstre m : this.vue.getTerrain().getMontresArrayList()) {
             switch (m.getId()) {
                 case 1:
@@ -249,6 +247,8 @@ public class Game extends Etat implements MouseInputListener {
                     break;
             }
         }
+
+        // Affichage des coins.
         for (Coins c : this.vue.getTerrain().getCoins()) {
             g2.drawImage(this.vue.getcoinView(), (int) c.getX(), (int) c.getY(), (int) c.getWidth(),
                     (int) c.getHeight(), null);
@@ -268,6 +268,7 @@ public class Game extends Etat implements MouseInputListener {
             vue.addMouseListener(this);
             vue.addMouseMotionListener(this);
         }
+
         // Gestion de l'ups constant
         this.vue.setDeltaTime(10); // Le temps nécessaire pour update une GAME.
         double cnt = 0.0; // Compteur du nombre d'updates.
@@ -295,12 +296,14 @@ public class Game extends Etat implements MouseInputListener {
     // Gestion des boutons.
     @Override
     public void keyControlPressed(KeyEvent e) { // KeyEvent e de la vue.
+        if (mouseControls)
+            return;
+
         /// Gestion de la pause :
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) { // Si on appuie sur ECHAP :
             this.pause(); // On met le jeu en pause.
         }
-        if (mouseControls)
-            return;
+
         Personnage p1, p2;
         if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
             p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du 1er joueur.
@@ -352,6 +355,7 @@ public class Game extends Etat implements MouseInputListener {
     public void keyControlReleased(KeyEvent e) {
         if (mouseControls)
             return;
+
         Personnage p1, p2;
         if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
             p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du 1er joueur.
@@ -418,7 +422,7 @@ public class Game extends Etat implements MouseInputListener {
         double lvl = (this.vue.getNiveau() == 1) ? 0.0001
                 : (this.vue.getNiveau() == 2 ? 0.0003 : (this.vue.getNiveau() == 3 ? 0.0006 : 0.002));
         this.vue.setTerrain(new Terrain(ljou, this.vue.getHeight(), this.vue.getWidth(), this.vue.isHost(),
-                this.vue.isMultijoueur(), i, lvl)); // On crée le
+                this.vue.isMultijoueur(), i, lvl));
         this.vue.getTerrain().setClient(this.vue.getJconnect());
         this.vue.getTerrain().setHost(this.vue.getServeur());
     }
@@ -434,14 +438,13 @@ public class Game extends Etat implements MouseInputListener {
         return isFin;
     }
 
-    // A REFAIRE !s
+    // Met le jeu en pause.
     private void pause() {
         if (this.vue.getTerrain().isPause()) {
             this.vue.getTerrain().setPause(false);
         } else {
             this.vue.getTerrain().setPause(true);
         }
-
     }
 
     @Override
@@ -472,6 +475,7 @@ public class Game extends Etat implements MouseInputListener {
     public void mouseMoved(MouseEvent e) {
         if (!mouseControls)
             return;
+
         Personnage p = this.vue.getTerrain().getMyPlayer().getPerso();
         if (e.getX() >= p.getX() && e.getX() <= p.getX() + p.getWidth() * 0.78) { // Si on relâche pendant que l'on se
                                                                                   // déplace vers la droite :
@@ -502,6 +506,5 @@ public class Game extends Etat implements MouseInputListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
     }
 }

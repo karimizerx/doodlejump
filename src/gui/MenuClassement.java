@@ -71,8 +71,8 @@ public class MenuClassement extends Etat {
     @Override
     public void update() {
         // Dimensions de la fleche.
-        this.vue.setWfleche(30);
-        this.vue.setHfleche(30);
+        this.vue.setWfleche((int) 0.046875 * this.vue.getWidth());
+        this.vue.setHfleche((int) 0.02924 * this.vue.getHeight());
 
         // La fleche a toujours la même coordonnée x.
         this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
@@ -92,9 +92,10 @@ public class MenuClassement extends Etat {
 
         // Affichage du titre.
         int x = (9 * this.vue.getWidth() / 100), y = (12 * this.vue.getHeight() / 100);
-        int w = 30, h = 30, espacement = 15, ecart = 20;
+        int w = (int) 0.046875 * this.vue.getWidth(), h = (int) 0.02924 * this.vue.getHeight(),
+                espacement = (int) 0.0234375 * this.vue.getWidth(), ecart = (int) 0.03125 * this.vue.getWidth();
         x = afficheMot(g2, this.vue.getTitreStatut(), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
 
         // Affichage du classement.
         y += this.vue.getSautLigne() * 2;
@@ -107,10 +108,12 @@ public class MenuClassement extends Etat {
             g2.drawImage(this.vue.getBackgroundClView(), x * 85 / 100, y - h / 6, this.vue.getWidth(), h * 3 / 2, null);
             x = afficheMot(g2, this.vue.getLbView().get(z), x, y, w, h, ecart, espacement);
             x += espacement / 2;
-            affichePoint(g2, x, y + h - 7, 7, 7);
+            affichePoint(g2, x, y + h - (int) 0.00682 * this.vue.getHeight(), (int) 0.0109375 * this.vue.getWidth(),
+                    (int) 0.00682 * this.vue.getHeight());
             x += espacement * 2;
             x = afficheMot(g2, this.vue.getLbView().get(z + 1), x, y, w, h, ecart, espacement);
-            x = afficheDoublepoint(g2, x, y, 7, 7);
+            x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(),
+                    (int) 0.00682 * this.vue.getHeight());
             x += espacement * 2;
             x = afficheMot(g2, this.vue.getLbView().get(z + 2), x, y, w, h, ecart, espacement);
             x = (11 * this.vue.getWidth() / 100);
@@ -141,7 +144,7 @@ public class MenuClassement extends Etat {
         removelistners();
         this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
-        this.vue.setSautLigne(50); // Distance entre 2 lignes.
+        this.vue.setSautLigne((int) 0.04873 * this.vue.getHeight()); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
 
         // On récupère les données du classement que l'on va afficher.
@@ -197,14 +200,14 @@ public class MenuClassement extends Etat {
     }
 
     public void mouseClicked(MouseEvent e) {
-        int y = (12 * this.vue.getHeight() / 100)+(this.vue.getLbView().size()+2)*this.vue.getSautLigne();
-        if(e.getY()>y && e.getY()<y+30){
+        int y = (12 * this.vue.getHeight() / 100) + (this.vue.getLbView().size() + 2) * this.vue.getSautLigne();
+        if (e.getY() > y && e.getY() < y + (int) 0.02924 * this.vue.getHeight()) {
             Vue.isMenuClassement = false; // On quitte le menu CLASSEMENT.
             Vue.isMenuDemarrer = true; // On passe dans le menu DEMARRER.
             return;
-        } 
-        y=+this.vue.getSautLigne();
-        if(e.getY()>y && e.getY()<y+30){
+        }
+        y = +this.vue.getSautLigne();
+        if (e.getY() > y && e.getY() < y + (int) 0.02924 * this.vue.getHeight()) {
             System.out.println("À la prochaine !");
             Vue.isQuitte = true; // On quitte le jeu.
             System.exit(0); // On ferme toutes les fenêtres & le programme.

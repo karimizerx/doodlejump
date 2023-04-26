@@ -17,7 +17,6 @@ public class MenuSetting extends Etat {
 
     @Override
     public void initFixe() {
-
         this.vue.setMessNiveau(createImageOfMot(String.valueOf(this.vue.getNiveau())));
         this.vue.setMessSkin(createImageOfMot(this.vue.getSkin()));
         this.vue.setMessInertie(createImageOfMot("OUI"));
@@ -30,8 +29,8 @@ public class MenuSetting extends Etat {
     @Override
     void update() {
         // Dimensions de la fleche.
-        this.vue.setWfleche(30);
-        this.vue.setHfleche(30);
+        this.vue.setWfleche((int) 0.046875 * this.vue.getWidth());
+        this.vue.setHfleche((int) 0.02924 * this.vue.getHeight());
 
         // La fleche a toujours la même coordonnée x.
         this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
@@ -49,12 +48,14 @@ public class MenuSetting extends Etat {
 
         // Affichage des boutons.
         int x = (9 * this.vue.getWidth() / 100), y = (10 * this.vue.getHeight() / 100);
-        int w = 30, h = 30, espacement = 15, ecart = 20;
+
+        int w = (int) 0.046875 * this.vue.getWidth(), h = (int) 0.02924 * this.vue.getHeight(),
+                espacement = (int) 0.0234375 * this.vue.getWidth(), ecart = (int) 0.03125 * this.vue.getWidth();
 
         // Affichage des scores (entre () l'adaptation pour les parties à 2 joueurs):
         // Affichage du score à cette partie (score du joueur 1).
         x = afficheMot(g2, this.vue.getButtonNiveau(), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
         x += espacement;
         x = afficheMot(g2, this.vue.getMessNiveau(), x, y, w, h, ecart, espacement);
 
@@ -62,7 +63,7 @@ public class MenuSetting extends Etat {
         y += this.vue.getSautLigne();
         x = (9 * this.vue.getWidth() / 100);
         x = afficheMot(g2, this.vue.getButtonSkin(), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
         x += espacement;
         x = afficheMot(g2, this.vue.getMessSkin(), x, y, w, h, ecart, espacement);
 
@@ -70,7 +71,7 @@ public class MenuSetting extends Etat {
         y += this.vue.getSautLigne();
         x = (9 * this.vue.getWidth() / 100);
         x = afficheMot(g2, this.vue.getButtonInertie(), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, 7, 7);
+        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
         x += espacement;
         x = afficheMot(g2, this.vue.getMessInertie(), x, y, w, h, ecart, espacement);
 
@@ -98,7 +99,7 @@ public class MenuSetting extends Etat {
         removelistners();
         this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
-        this.vue.setSautLigne(50); // Distance entre 2 lignes.
+        this.vue.setSautLigne((int) 0.04873 * this.vue.getHeight()); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
 
         while (Vue.isSetting) { // Tant que l'on est dans le menu DEMARRER :
@@ -170,38 +171,39 @@ public class MenuSetting extends Etat {
 
     public void mouseClicked(MouseEvent e) {
         int y = (10 * this.vue.getHeight() / 100);
-        if (e.getY()>y &&e.getY()<y+30) { 
-            this.vue.setNiveau((this.vue.getNiveau()+1)%4);
+        int h = (int) 0.02924 * this.vue.getHeight();
+
+        if (e.getY() > y && e.getY() < y + h) {
+            this.vue.setNiveau((this.vue.getNiveau() + 1) % 4);
             this.vue.setMessNiveau(createImageOfMot(String.valueOf(this.vue.getNiveau())));
             return;
         }
         y += this.vue.getSautLigne();
 
-        if (e.getY()>y &&e.getY()<y+30) { 
+        if (e.getY() > y && e.getY() < y + h) {
             this.pack = (this.pack == this.vue.getListPackSkin().size() - 1) ? 0 : this.pack + 1;
             this.vue.setSkin(this.vue.getListPackSkin().get(this.pack));
             this.vue.setMessSkin(createImageOfMot(this.vue.getSkin()));
             return;
         }
         y += this.vue.getSautLigne();
-        if (e.getY()>y &&e.getY()<y+30) { 
+        if (e.getY() > y && e.getY() < y + h) {
             String iner = (this.vue.isInertie()) ? "NON" : "OUI";
             this.vue.setInertie(!this.vue.isInertie());
             this.vue.setMessInertie(createImageOfMot(String.valueOf(iner)));
             return;
         }
         y += this.vue.getSautLigne();
-        if (e.getY()>y &&e.getY()<y+30) { 
+        if (e.getY() > y && e.getY() < y + h) {
             Vue.isSetting = false;
             Vue.isMenuDemarrer = true;
             return;
         }
         y += this.vue.getSautLigne();
-        if (e.getY()>y &&e.getY()<y+30) { 
+        if (e.getY() > y && e.getY() < y + h) {
             System.out.println("À la prochaine !");
             Vue.isQuitte = true; // On quitte le jeu.
             System.exit(0); // On ferme toutes les fenêtres & le programme.
         }
-
     }
 }
