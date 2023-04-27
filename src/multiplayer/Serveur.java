@@ -62,20 +62,16 @@ public class Serveur implements Runnable {
         return serveur;
     }
 
-    public Joueur getJoueurB() {
-        ObjectInputStream in;
+    public void getJoueurB(Joueur i) {
+        DataInputStream in;
         try {
-            in = new ObjectInputStream(serveur.client.getInputStream());
-            Joueur i = (Joueur) in.readObject();
-            return i;
+            in = new DataInputStream(serveur.client.getInputStream());
+            i.getPerso().setLeft(in.readBoolean());
+            i.getPerso().setRight(in.readBoolean());
         } catch (IOException e) {
             e.printStackTrace();
-            return new Joueur(new Personnage(50, 50, 100, 100, -10), "erreur");
-        } catch (ClassNotFoundException c) {
-            c.printStackTrace();
-        }
-        System.exit(-1);
-        return null;
+            System.exit(-1);
+        } 
     }
 
 }

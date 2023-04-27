@@ -18,7 +18,7 @@ public class ThreadMouvement implements Runnable {
         while (true) {
             if (terrain.isHost) {
                 serveur.sendTerrain(terrain);
-                terrain.getListeJoueurs().set(1, (serveur.getJoueurB()));// recevoir ce que le mvt du client
+                serveur.getJoueurB(terrain.getListeJoueurs().get(1));// recevoir ce que le mvt du client
                 System.out.println("ThreadMouvement.run() done");
             } else {
                 client.receiveTerrain(terrain);
