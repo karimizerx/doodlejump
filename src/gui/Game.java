@@ -116,7 +116,7 @@ public class Game extends Etat implements MouseInputListener {
             // Gère les boutons flèches, avec inertie.
             // Quand on appuie, on set la vitesse à ± vitesse, et on avance de cette
             // distance.
-            double vitesse = 0.0078125 * vue.getTerrain().getWidth();
+            double vitesse = this.vue.getTerrain().getWidth() * 5 / 640;
             p.setInertie(this.vue.isInertie() ? this.vue : null);
             if (p.isRight()) {
                 p.setDx(+vitesse);
