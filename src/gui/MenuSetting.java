@@ -29,8 +29,8 @@ public class MenuSetting extends Etat {
     @Override
     void update() {
         // Dimensions de la fleche.
-        this.vue.setWfleche((int) 0.046875 * this.vue.getWidth());
-        this.vue.setHfleche((int) 0.02924 * this.vue.getHeight());
+        this.vue.setWfleche(this.vue.getWidth() * 30 / 640);
+        this.vue.setHfleche(this.vue.getHeight() * 30 / 1026);
 
         // La fleche a toujours la même coordonnée x.
         this.vue.setXfleche((7 * this.vue.getWidth() / 100) - this.vue.getWfleche());
@@ -49,13 +49,13 @@ public class MenuSetting extends Etat {
         // Affichage des boutons.
         int x = (9 * this.vue.getWidth() / 100), y = (10 * this.vue.getHeight() / 100);
 
-        int w = (int) 0.046875 * this.vue.getWidth(), h = (int) 0.02924 * this.vue.getHeight(),
-                espacement = (int) 0.0234375 * this.vue.getWidth(), ecart = (int) 0.03125 * this.vue.getWidth();
+        int w = this.vue.getWidth() * 30 / 640, h = this.vue.getHeight() * 30 / 1026,
+                espacement = this.vue.getWidth() * 15 / 640, ecart = this.vue.getWidth() * 20 / 640;
 
         // Affichage des scores (entre () l'adaptation pour les parties à 2 joueurs):
         // Affichage du score à cette partie (score du joueur 1).
         x = afficheMot(g2, this.vue.getButtonNiveau(), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
+        x = afficheDoublepoint(g2, x, y, this.vue.getWidth() * 7 / 640, this.vue.getHeight() * 7 / 1026);
         x += espacement;
         x = afficheMot(g2, this.vue.getMessNiveau(), x, y, w, h, ecart, espacement);
 
@@ -63,7 +63,7 @@ public class MenuSetting extends Etat {
         y += this.vue.getSautLigne();
         x = (9 * this.vue.getWidth() / 100);
         x = afficheMot(g2, this.vue.getButtonSkin(), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
+        x = afficheDoublepoint(g2, x, y, this.vue.getWidth() * 7 / 640, this.vue.getHeight() * 7 / 1026);
         x += espacement;
         x = afficheMot(g2, this.vue.getMessSkin(), x, y, w, h, ecart, espacement);
 
@@ -71,7 +71,7 @@ public class MenuSetting extends Etat {
         y += this.vue.getSautLigne();
         x = (9 * this.vue.getWidth() / 100);
         x = afficheMot(g2, this.vue.getButtonInertie(), x, y, w, h, ecart, espacement);
-        x = afficheDoublepoint(g2, x, y, (int) 0.0109375 * this.vue.getWidth(), (int) 0.00682 * this.vue.getHeight());
+        x = afficheDoublepoint(g2, x, y, this.vue.getWidth() * 7 / 640, this.vue.getHeight() * 7 / 1026);
         x += espacement;
         x = afficheMot(g2, this.vue.getMessInertie(), x, y, w, h, ecart, espacement);
 
@@ -99,7 +99,7 @@ public class MenuSetting extends Etat {
         removelistners();
         this.vue.addMouseListener(this);
         // Initialisation des valeurs initiales des variables avant lancement.
-        this.vue.setSautLigne((int) 0.04873 * this.vue.getHeight()); // Distance entre 2 lignes.
+        this.vue.setSautLigne(this.vue.getHeight() * 50 / 1026); // Distance entre 2 lignes.
         this.vue.setFleche(0); // On pointe le premier bouton.
 
         while (Vue.isSetting) { // Tant que l'on est dans le menu DEMARRER :
@@ -171,7 +171,7 @@ public class MenuSetting extends Etat {
 
     public void mouseClicked(MouseEvent e) {
         int y = (10 * this.vue.getHeight() / 100);
-        int h = (int) 0.02924 * this.vue.getHeight();
+        int h = this.vue.getHeight() * 30 / 1026;
 
         if (e.getY() > y && e.getY() < y + h) {
             this.vue.setNiveau((this.vue.getNiveau() + 1) % 4);
