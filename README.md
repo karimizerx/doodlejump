@@ -3,7 +3,14 @@
 Jeu du DoodleJump
 
 ## Usage
-Pour compiler et lancer l'application (dans doodlejump/src/):
+
+Pour compiler et lancer l'application (dans doodlejump/):
+
 ```bash
-javac gui/Game.java && java gui/Game
+make run
+```
+
+En cas de problème, (dans doodlejump/src/):
+```bash
+javac gui/App.java && java gui/App
 ```
