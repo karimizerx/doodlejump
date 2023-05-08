@@ -175,7 +175,7 @@ public class Game extends Etat implements MouseInputListener {
             if (pf.getItem() != null) {
                 Items it = pf.getItem();
                 BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
-                        : this.vue.getProjectileView();
+                        : (it instanceof Helicoptere) ? this.vue.getHelicoView() : this.vue.getProjectileView();
                 g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
             }
         }
