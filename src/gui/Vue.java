@@ -28,7 +28,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     // Variables représentant différentes images.
     private BufferedImage view, backgroundView, backgroundClView, backgroundClView1, backgroundClView2, flecheView,
             terrainView, platformeBaseView, platformeMobileView, scoreBackgroundView, projectileView, monstre1View,
-            monstre2View, monstre3View, coinView, fuseeView;
+            monstre2View, monstre3View, coinView, fuseeView, helicoView;
 
     private ArrayList<BufferedImage> buttonJouer, buttonJouerSolo, button2joueur, buttonMultiJoueur, buttonLb,
             buttonQuitter, buttonRejouer, buttonRetourMenu, buttonSetting, buttonNiveau, buttonSkin, buttonInertie,
@@ -733,6 +733,14 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     public String getSkin() {
         return skin;
+    }
+
+    public BufferedImage getHelicoView() {
+        return this.helicoView;
+    }
+
+    public void setHelicoView(BufferedImage helicoView) {
+        this.helicoView = helicoView;
     }
 
     public void setSkin(String skin) {

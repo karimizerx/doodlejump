@@ -48,6 +48,7 @@ public class Game extends Etat implements MouseInputListener {
                         ImageIO.read(new File(this.vue.getChemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/items/projectile.png")));
                 this.vue.setFuseeView(ImageIO.read(new File(this.vue.getChemin() + "/items/fusee.png")));
+                this.vue.setHelicoView(ImageIO.read(new File(this.vue.getChemin() + "/items/helico.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getChemin() + "/items/projectile.png")));
                 this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getChemin() + "/items/monstre1.png")));
                 this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getChemin() + "/items/monstre2.png")));
@@ -64,6 +65,7 @@ public class Game extends Etat implements MouseInputListener {
                         ImageIO.read(new File(this.vue.getWinchemin() + "/background/scoreBackground1.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/projectile.png")));
                 this.vue.setFuseeView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/fusee.png")));
+                this.vue.setHelicoView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/helico.png")));
                 this.vue.setProjectileView(ImageIO.read(new File(this.vue.getWinchemin() + "/items/projectile.png")));
                 this.vue.setMonstre1View(ImageIO.read(new File(this.vue.getWinchemin() + "/items/monstre1.png")));
                 this.vue.setMonstre2View(ImageIO.read(new File(this.vue.getWinchemin() + "/items/monstre2.png")));
@@ -177,12 +179,13 @@ public class Game extends Etat implements MouseInputListener {
                 g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
             }
         }
+
         for (Joueur j : this.vue.getTerrain().getListeJoueurs()) {
             Personnage p = j.getPerso();
             if (p.getItem() != null) {
                 Items it = p.getItem();
                 BufferedImage itv = (it instanceof Fusee) ? this.vue.getFuseeView()
-                        : this.vue.getProjectileView();
+                        : (it instanceof Helicoptere) ? this.vue.getHelicoView() : this.vue.getProjectileView();
                 g2.drawImage(itv, (int) it.getX(), (int) it.getY(), (int) it.getWidth(), (int) it.getHeight(), null);
             }
         }
