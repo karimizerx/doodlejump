@@ -25,7 +25,8 @@ public class Terrain {
     public Serveur host = null;
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
-    public static int intervalle = 1;
+    public static double intervalle_jetpack = 1;
+    public static double intervalle_helico = 1;
     private double difficulty_level;// coefficient de variation de la difficulté, permet de choisir à quelle vitesse
                                     // la difficuté augmente.
     // Facile = 0.0001
@@ -102,9 +103,13 @@ public class Terrain {
             p.setX(-(p.getWidth() * 0.43));
     }
 
-    // Indique ?????????????????????????????????????????????
-    private boolean jetpack(Joueur j, int intervalle) {
-        return j.getScore() >= (100000 * intervalle) + (new Random().nextInt(500));
+    // Le jetpack n'apparaît que tous les 100000 de score afin de le rendre assez rare.
+    private boolean jetpack(Joueur j, double intervalle) {
+        return j.getScore() >= (100000 * intervalle) + (new Random().nextInt(10000));
+    }
+
+    private boolean helico(Joueur j, double intervalle) {
+        return j.getScore() >= (40000 * intervalle) + (new Random().nextInt(10000));
     }
 
     // Mises à jour du jeu.
@@ -170,11 +175,17 @@ public class Terrain {
                         plateformesListe.get(plateformesListe.size() - 1)
                                 .setDx((0.003125 * this.width) * difficulty / 3.5);
 
-                        if (jetpack(j, intervalle)) {
-                            intervalle++;
+                        if (jetpack(j, intervalle_jetpack)) {
+                            intervalle_jetpack+=intervalle_jetpack+1.1;
                             Items it = new Fusee(pf_mobile.getX(), pf_mobile.getY(), 50, 50,
-                                    -(this.height * 0.013645224), 0.5);
+                                    -0.5*(this.height * 0.013645224), 0.5);
                             pf_mobile.setItem(it);
+                        }
+                        else if (helico(j, intervalle_helico)) {
+                            intervalle_helico+=intervalle_helico+3;
+                            Items helicopter = new Helicoptere(pf_mobile.getX(), pf_mobile.getY(), 50, 50,
+                                    -0.3*(this.height * 0.013645224), 0.5);
+                            pf_mobile.setItem(helicopter);
                         }
 
                     } else {
@@ -184,11 +195,17 @@ public class Terrain {
                         plateformesListe.add(pf_statique);
                         plateformesListe.get(plateformesListe.size() - 1).setSaut(-(this.height * 0.0009746589));
 
-                        if (jetpack(j, intervalle)) {
-                            intervalle++;
+                        if (jetpack(j, intervalle_jetpack)) {
+                            intervalle_jetpack+=intervalle_jetpack+1.1;
                             Items it = new Fusee(pf_statique.getX(), pf_statique.getY(), 50, 50,
-                                    -(this.height * 0.013645224), 0.5);
+                                    -0.5*(this.height * 0.013645224), 0.5);
                             pf_statique.setItem(it);
+                        }
+                        else if (helico(j, intervalle_helico)) {
+                            intervalle_helico+=intervalle_helico+3;
+                            Items helicopter = new Helicoptere(pf_statique.getX(), pf_statique.getY(), 50, 50,
+                                    -0.3*(this.height * 0.013645224), 0.5);
+                            pf_statique.setItem(helicopter);
                         }
 
                     }
