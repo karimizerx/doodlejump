@@ -423,8 +423,6 @@ public class Game extends Etat implements MouseInputListener {
                 : (this.vue.getNiveau() == 2 ? 0.0003 : (this.vue.getNiveau() == 3 ? 0.0006 : 0.002));
         this.vue.setTerrain(new Terrain(ljou, this.vue.getHeight(), this.vue.getWidth(), this.vue.isHost(),
                 this.vue.isMultijoueur(), i, lvl));
-        this.vue.getTerrain().setClient(this.vue.getJconnect());
-        this.vue.getTerrain().setHost(this.vue.getServeur());
     }
 
     // Gère le cas de fin de la GAME.

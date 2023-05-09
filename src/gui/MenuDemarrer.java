@@ -142,8 +142,13 @@ public class MenuDemarrer extends Etat {
             }
 
             if (this.vue.getFleche() == 2) { // Si la flèche pointe sur le bouton "Mode multijoueur" :
+                this.vue.setNom1("Player 1");
+                this.vue.setNom2("Player 2");
                 this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
                 this.vue.setMultijoueur(true); // On indique qu'on est en mode multijoueurs.
+                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
+                Vue.isConnecting=true;
+
 
                 // Boîte de dialogue pour savoir si le joueur accueille (host) la partie.
                 int option = JOptionPane.showConfirmDialog(this.vue, "Voulez-vous accueillir la partie ?",
@@ -152,7 +157,8 @@ public class MenuDemarrer extends Etat {
                     this.vue.setHost(true); // On indique que le joueur est host.
                     try { // On tente la connexion.
                         this.vue.setServeur(new Serveur());
-                        this.vue.getServeur().run();
+                        this.vue.getServeur().connect();
+                        this.vue.getTerrain().setHost(this.vue.getServeur());
                     } catch (IOException io) {
                         JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
                                 JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
@@ -162,11 +168,16 @@ public class MenuDemarrer extends Etat {
                     this.vue.setHost(false); // On indique qu'il n'est pas host.
                     this.vue.setJconnect(new JoueurConnecte()); // ???
                     this.vue.getJconnect().connecter();
+                    this.vue.getTerrain().setClient(this.vue.getJconnect());
+                    System.out.println(this.vue.getTerrain().client==null);
                 }
+                Vue.isConnecting=false;
+                Vue.isRunningGame=true;
 
-                Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
-                Vue.isMenuLancement = true; // On passe au menu LANCEMENT.
-                this.vue.setFleche(-1); // Pour éviter une erreur avec le KeyControl de LANCEMENT (voir doc).
+                // Vue.isMenuLancement = true; // On passe au menu LANCEMENT.
+                // this.vue.setFleche(-1); // Pour éviter une erreur avec le KeyControl de LANCEMENT (voir doc).
+
+
             }
 
             if (this.vue.getFleche() == 3) { // Si la flèche pointe sur le bouton "Classement" :
@@ -223,6 +234,8 @@ public class MenuDemarrer extends Etat {
         if (e.getY() > y && e.getY() < y + h) {
             this.vue.setNbJoueur(2); // On initialise le nombre de joueurs.
             this.vue.setMultijoueur(true); // On indique qu'on est en mode multijoueurs.
+            Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
+            this.vue.geteGame().createPartie(); // On crée une partie.
 
             // Boîte de dialogue pour savoir si le joueur accueille (host) la partie.
             int option = JOptionPane.showConfirmDialog(this.vue, "Voulez-vous accueillir la partie ?",
@@ -231,7 +244,8 @@ public class MenuDemarrer extends Etat {
                 this.vue.setHost(true); // On indique que le joueur est host.
                 try { // On tente la connexion.
                     this.vue.setServeur(new Serveur());
-                    this.vue.getServeur().run();
+                    this.vue.getServeur().connect();
+                    Vue.isRunningGame=true;
                 } catch (IOException io) {
                     JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé de se connecter !", "Erreur !",
                             JOptionPane.ERROR_MESSAGE); // A implementer sur l'interface
@@ -241,10 +255,10 @@ public class MenuDemarrer extends Etat {
                 this.vue.setHost(false); // On indique qu'il n'est pas host.
                 this.vue.setJconnect(new JoueurConnecte()); // ???
                 this.vue.getJconnect().connecter();
+                Vue.isRunningGame=true;
             }
 
             Vue.isMenuDemarrer = false; // On quitte le menu DEMARRER.
-            Vue.isMenuLancement = true; // On passe au menu LANCEMENT.
             return;
         }
         x = (9 * this.vue.getWidth() / 100);

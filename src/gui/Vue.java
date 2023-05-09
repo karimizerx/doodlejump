@@ -17,7 +17,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique l'état actuel du panel.
     public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement,
-            isSetting;
+            isSetting,isConnecting;
     private final int width, height; // Dimensions du panel.
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
     private int fleche, xfleche, yfleche, wfleche, hfleche, sautLigne, nbJoueur, niveau;
@@ -138,15 +138,22 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     this.eMenuLancement.init();
                     this.eMenuLancement.running();
                 }
+                ThreadMouvement thrmvt=new ThreadMouvement();
+                if(isConnecting){
+                    this.eGame.createPartie(); // On crée une partie.
+                    this.eGame=new Game(this);
+                    this.eGame.init();
+                }
 
                 if (isRunningGame) { // Si on a lancé une GAME :
-                    this.eGame = new Game(this);
-                    this.eGame.init();
-                    this.eGame.running();
                     if (this.terrain.multiplayer) { // Si on est en mode multijoueur :
-                        Thread t = new Thread(new ThreadMouvement(terrain)); // ???
-                        t.start();
+                        thrmvt.hasStarted=true;
+                        System.out.println("diz");
+                    }else{
+                        this.eGame = new Game(this);
+                        this.eGame.init();
                     }
+                    this.eGame.running();
                 }
 
                 if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin

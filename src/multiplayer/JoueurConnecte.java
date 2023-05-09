@@ -32,19 +32,16 @@ public class JoueurConnecte {
      * @param port       port au quelle le socket va se connecter
      * @true Si le joueur est connecté
      */
-    public boolean connecter() {
+    public void connecter() {
         try {
             String ServerName = JOptionPane.showInputDialog("Nom du Serveur");
             int port = Integer.parseInt(JOptionPane.showInputDialog("Port"));
-
             this.client = new Socket(ServerName, port);
-            return true;
-
+            System.out.println(client==null);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Echec de connexion", "Erreur", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(-1);
-            return false;
         }
     }
 

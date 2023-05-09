@@ -8,7 +8,7 @@ import javax.swing.*;
 // Import d'autres dossiers :
 import gameobjects.*;
 
-public class Serveur implements Runnable {
+public class Serveur {
 
     private ServerSocket serveurSocket;
     private JoueurConnecte serveur;
@@ -43,18 +43,18 @@ public class Serveur implements Runnable {
         this.serveurSocket.close();
     }
 
-    public void run() {
+    public void connect() {
         try {
             JOptionPane.showMessageDialog(null, "Nom du serveur :"+InetAddress.getLocalHost()+ "\n"+ "Le numero du port est :" + serveurSocket.getLocalPort(),"Important",JOptionPane.INFORMATION_MESSAGE); 
             serveur = new JoueurConnecte();
             serveur.setClient(serveurSocket.accept());
-            JOptionPane.showMessageDialog(null,
-                    "Le joueur " + serveur.client.getRemoteSocketAddress() + " est connecté", "Succes",
-                    JOptionPane.DEFAULT_OPTION);
+            System.out.println(serveurSocket==null);
+            System.out.println(serveur==null);
+            // JOptionPane.showMessageDialog(null,"Le joueur " + serveur.client.getRemoteSocketAddress() + " est connecté", "Succes",JOptionPane.DEFAULT_OPTION);
         } catch (IOException e) {
             this.serveur = null;
-            JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé pas de se connecter", "Erreur",
-                    JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
+            System.out.println("Serveur.connect() failed");
+            // JOptionPane.showMessageDialog(null, "Aucun joueur n'a essayé pas de se connecter", "Erreur",JOptionPane.ERROR_MESSAGE);// A implementer sur l'interface
         }
     }
 
