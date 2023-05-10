@@ -1,0 +1,217 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{wrapfig}
+\graphicspath{ {./images_rapport/} }
+
+\title{Projet de PI4 2023}
+\author{Groupe ED1A :\\Laïdouni Mohamed, Boudelaa Fares, Khemakhem Ayman,\\ Friedmann Eliot, Ben Atia Necerine}
+\date{Janvier - Mai 2023}
+
+\begin{document}
+
+\maketitle
+
+\begin{enumerate}
+  \item Présentation du sujet
+  \item Parties du cahier des charges traitées
+  \item Représentation du projet
+  \item Problèmes rencontrés
+  \item Pistes d'amélioration
+  \item Conclusion
+\end{enumerate}
+
+\section{Présentation du sujet}
+
+Le sujet, proposé par Enrica Duchi, consiste à réaliser un jeu inspiré du DoodleJump. Le DoodleJump est un jeu vidéo à un joueur, où le but est de monter le plus haut possible en sautant de plate-forme en plate-forme et en collectant des points.
+
+\section{Parties du cahier des charges traitées}
+Nous avons traité tout le contenu du cahier des charges minimal, c'est-à-dire implémenter les principales fonctions du DoodleJump :
+\begin{itemize}
+    \item Le fait de sauter d'une plate-forme à l'autre.
+    \item Le fait de pouvoir prendre un jetpack ou un hélicoptère pour se faire transporter plus haut.
+    \item Le fait de pouvoir cumuler des points.
+    \item L'utilisation de la bibliothèque Swing pour l'interface graphique.\\
+\end{itemize}
+
+\section{Généralisations}
+Comme suggéré dans le sujet, nous avons ajouté nombreux éléments à ce jeu :
+\begin{enumerate}
+    \item Ajout de différents types de plate-formes :
+    \begin{itemize}
+        \item Plate-formes de base, fixes.
+        \item Plate-formes mobiles, qui bougent à l'horizontale et offrent un saut plus haut.
+    \end{itemize}
+    \item Ajout de divers items :
+    \begin{enumerate}
+        \item Des monstres :
+        \begin{itemize}
+            \item Toucher un monstre nous fait mourrir.
+            \item En revanche, sauter sur un monstre le tue et nous fait rebondir.
+            \item Tirer sur un monstre le tue.
+            \item Il existe différents types de monstres.
+        \end{itemize}
+        \item Des projectiles :
+        \begin{itemize}
+            \item On peut tirer des projetctiles depuis notre personnage.
+            \item Les projectiles servent à tuer les monstres.
+        \end{itemize}
+        \item Des pièces :
+        \begin{itemize}
+            \item Toucher une pièce augmente notre nombre de pièces.
+            \item Les pièces sont récoltées pour augmenter le score. 
+        \end{itemize}        
+    \end{enumerate}
+    \item Possibilité de passer d'un côté à l'autre de l'écran.
+    \item Possibilité de mettre le jeu en pause.
+    \item Possibilité de jouer avec de l'inertie.
+    \item Ajout d'une difficulté et de différents niveaux :
+    \begin{itemize}
+        \item Une difficulté croissante qui intervient sur le type des plate-formes, sur l'écart entre celles-ci, sur la vitesse des plate-formes mobiles et sur le nombre de monstres.
+        \item Quatres niveaux de jeu, qui interviennent sur l'accroissement de la difficulté (au niveau 4, le jeu devient rapidement difficile).
+    \end{itemize}
+    \item Possibilité de jouer avec différents "skins", créés avec des thèmes.
+    \item Un système de paramétrage :
+    \begin{itemize}
+        \item Choix du niveau.
+        \item Choix du skin.
+        \item Choix du jeu avec ou sans inertie.
+    \end{itemize}
+    \item Possibilité de jouer à deux :
+    \begin{itemize}
+        \item C'est un mode course qui se termine dès que l'un des joueurs à perdu.
+        \item Dans ce mode de jeu, le score et les pièces ne sont pas comptées.
+        \begin{itemize}
+            \item Soit sur le même ordinateur.
+            \item Soit en réseaux (mode multi-joueurs).
+        \end{itemize}
+    \end{itemize}
+    \item Ajout d'un identifiant pour le joueur :
+    \begin{itemize}
+        \item Cet identifiant est local.
+        \item Il est créé si le joueur n'a jamais joué de parties, sinon on reprend le même.
+        \item Chaque joueur possède donc un unique identifiant.
+    \end{itemize}
+    \item Ajout d'un nom pour le joueur :
+    \begin{itemize}
+        \item Le nom peut-être changé à chaque partie.
+        \item Le nom n'influe pas sur l'identifiant du joueur.
+        \item Le nom par défaut est celui utilisé lors de la dernière partie, ou "Mizer".
+        \item Le nom apparaît au-dessus du personnage pendant la partie, permettant de différencier les joueurs lors des parties à deux.
+    \end{itemize}
+    \item Un système de classement et d'historique de parties :
+    \begin{enumerate}
+        \item L'historique de parties :
+        \begin{itemize}
+            \item L'historique est local.
+            \item Il sauvegarde l'identifiant, le nom et le score du joueur à chaque parties dans un fichier "history.csv".
+            \item Il est utilisé pour connaître les données du joueur à la dernière partie, ainsi que son meilleur score.
+        \end{itemize}
+        \item Le classement :
+        \begin{itemize}
+            \item Le classement est global.
+            \item Il sauvegarde l'identifiant, le nom et le score de tous les joueurs pour chacunes de leur parties dans un fichier "classement.csv".
+            \item Il permet d'afficher les 10 meilleurs scores historiques, tout joueur confondu.
+        \end{itemize}
+    \end{enumerate}
+\end{enumerate}
+
+
+\section{Représentation du projet}
+\subsection{Représentation des fichiers}
+
+Le code constituant notre projet est divisé entre 4 répertoires :
+\begin{itemize}
+    \item gameobjects/: contenant tous les fichiers responsables des parties.
+    \begin{itemize}
+        \item GameObject : (Abstraite) Représente les différents types d'objets d'une partie, par des coordonnées et des dimensions.
+        \item Personnage : Représente un personnage. C'est l'objet principal du jeu, un GameObjet avec une vitesse en x et en y.
+        \item Plateforme : (Abstraite) Représente une plate-forme. C'est un GameObjet avec un saut.
+        \item PlateformeBase.
+        \item MovingPlateforme : C'est une plate-forme avec un vitesse en x et un saut plus important.
+        \item Projectile : Représente un projectile. C'est un GameObject avec une vitesse en x et en y.
+        \item Monstre : Représente un monstre. C'est un GameObject avec une vitesse en x, une santé et un identifiant.
+        \item Items : (Abstraite) Représente un item. C'est un GameObjet avec un saut.
+        \item Fusee et Helicoptere : Représente des items qui apportent un saut plus haut.
+        \item Coins : Représente une pièce. C'est un item.
+        \item Joueur : Représente un joueur avec comme attributs son identifiant, son nom, son score et son personnnage.
+        \item Terrain : Représente le terrain d'une partie dans son intégralité. Cette classe fait le lien entre les différents composants d'une partie.
+    \end{itemize}    
+    \item gui/ : contenant les fichiers responsables de l'affichage, ainsi que les images et le fichier App.
+    \begin{itemize}
+        \item App : Lance le jeu.
+        \item Vue : Composant (JPanel) qui se charge de l'affichage des éléments.
+        \item Etat : Représente un état du jeu.
+        \begin{itemize}
+            \item MenuDemarrer : Représente l'accueil.
+            \item MenuSetting : Représente le menu de paramétrage.
+            \item MenuClassement : Représente le classement (graphiquement).
+            \item MenuLancement : Représente le menu de paramétrage de début de partie.
+            \item Game : Représente une partie.
+            \item MenuFin : Représente l'écran de fin de partie.
+        \end{itemize}
+        \item images/ : Contient toutes les ressources images du jeu.
+    \end{itemize}
+    \item leaderboard/ : contentant les fichiers responsables de la sauvegarde des scores.
+    \begin{itemize}
+        \item leaderboard : (Abstraite) Représente un gestionnaire de fichier ".csv" pour le classement ou l'historique, avec une méthode pour lire et ajouter une ligne à un fichier.
+        \item classement : Un LeaderBoard qui gère le fichier "classement.csv".
+        \item history : Un LeaderBoard qui gère le fichier "history.csv".
+        \item classement.csv
+        \item history.csv
+    \end{itemize}
+    \item multiplayer/ : contenant les fichiers responsables du jeu en réseaux.
+    \begin{itemize}
+        \item JoueurConnecte.
+        \item Serveur.
+        \item ThreadMouvement.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Représentation graphique du projet}
+\begin{figure}[h]
+        \centerline{\includegraphics[scale = 0.4]{images/diagramme.png}}
+        \caption{Liens d'héritage entre les différentes classes}
+\end{figure}
+
+\section{Problèmes rencontrés}
+\begin{itemize}
+    \item Les principaux problèmes sont liés au mode multi-joueur ou mode réseau, notamment un problème au niveau des threads. 
+\end{itemize}
+
+\section{Pistes d'amélioration}
+Voici plusieurs idées pour améliorer notre jeu. Celles marquées par (*) sont des idées que l'on a essayé de mettre en place mais qui nous ont posé problème :
+\begin{itemize}
+    \item Ajout d'un magasin : (*)
+    \begin{itemize}
+        \item Le magasin serait une interface où l'on pourrait acheter et personnaliser les skins de son personnage, pour chaque pack de skin disponible.
+        \item À la base, les pièces (Coins.java) devaient servir à s'acheter des skins dans le magasin.
+        \item Par manque de temps, et à cause de la complexité de ce système d'achat, nous avons changer l'utilisation des pièces (comme dit en section 3.2).
+    \end{itemize}
+    \item Ajout d'une sauvegarde des paramètres :
+    \begin{itemize}
+        \item Les paramètres (niveau, skin, inertie) seraient sauvegardés dans un fichier, comme l'historique.
+        \item Idée que nous avons eu trop tardivement pour pouvoir la mettre en place.
+    \end{itemize}
+    \item Ajout d'autres items de type "booster" :
+    \begin{itemize}
+        \item ressorts
+        \item trampoline...
+    \end{itemize}
+    \item Ajout d'autres types de plate-formes :
+    \begin{itemize}
+        \item plate-formes qui se cassent lorsqu'on saute dessus et qui ne font pas rebondir.
+        \item plate-formes qui disparaissent après une utilisation.
+        \item plate-formes mobiles dans le sens vertical.
+        \item plate-formes qui, lorsque l'on saute sur l'une d'entre-elles, fait bouger toutes les plate-formes du même type.
+    \end{itemize}
+    \item Possibilité d'avoir plusieurs vies :
+    \begin{itemize}
+        \item Idée proposée par le sujet, mais non retenue pour garder une certaine difficultée du jeu.
+    \end{itemize}
+    \item Ajout d'un (vrai) mode multi-joueurs en réseau : (*)
+    \begin{itemize}
+        \item Le mode multi-joueurs actuellement disponible ne fonctionne qu'avec 2 joueurs. L'idée de base était de le faire fonctionner pour plusieurs joueurs. Mais suite à des problèmes (section 5), nous n'avons pas pu le mettre en place.
+    \end{itemize}
+\end{itemize}
+\end{document}
