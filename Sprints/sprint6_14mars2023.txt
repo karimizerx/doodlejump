@@ -4,8 +4,7 @@ Objectifs du sprint précédent :
 - changement de la génération des plateformes, apprition & disparition : Elyo [OK]
 - ajouter les items et des monstres : Fares [OK]
 - ajout du système de skin : Ayman [NON]
-- Changement de calcul du score : Necerine [NON]
-  -> le score n'est pas un incrément de +1, mais la distance parcourue.
+
 
 Objectifs pour le prochain sprint :
 - ajouter les items et des monstres :
