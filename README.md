@@ -1,6 +1,6 @@
 # Projet de programmation 2023
 
-Jeu du DoodleJump
+Groupe ED1A - Jeu du DoodleJump
 
 ## Usage
 
