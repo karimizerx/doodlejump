@@ -2,6 +2,7 @@ Sprint du 6 avril 2023 :
 - ajout de la fonction pause : Ayman & Mohamed [OK]
 - ajout du bouton rejouer : Ayman [OK]
 - ajout des niveaux : Elyo [OK]
+- ajout des controle avec la souris : Fares [OK] 
 - ajout du menu paramétrage skin & inertie & niveau : Mohamed [OK]
 - ajout des items :
     -> fréquence d'apparition : Elyo [OK]
