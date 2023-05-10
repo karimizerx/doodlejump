@@ -55,6 +55,11 @@ public class JoueurConnecte {
             in = new ObjectInputStream(client.getInputStream());
             terrain.setPlateformesListe((ArrayList<Plateforme>) in.readObject());
             terrain.setListeJoueurs((ArrayList<Joueur> )in.readObject());
+            terrain.setMonstres((ArrayList<Monstre> )in.readObject());
+            terrain.setDiff_plateformes((double)in.readObject());
+            terrain.setDifficulty((double)in.readObject());
+            terrain.setCoins((ArrayList<Coins> )in.readObject());
+            terrain.setPause((boolean)in.readObject());
         } catch (ClassNotFoundException c) {
             c.printStackTrace();
             System.out.println("classe perdu");
@@ -74,7 +79,7 @@ public class JoueurConnecte {
             DataOutputStream output = new DataOutputStream(client.getOutputStream());
             output.writeBoolean(joueurB.getPerso().isLeft());
             output.writeBoolean(joueurB.getPerso().isRight());
-            System.out.println("JoueurConnecte.sendJoueurB() reussi");
+            // System.out.println("JoueurConnecte.sendJoueurB() reussi");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("JoueurConnecte.sendJoueurB() echoue");

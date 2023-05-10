@@ -48,9 +48,10 @@ public class Terrain {
         this.difficulty_level = diff_l;
         if (!multiplayer)
             isHost = false;
-
+            
         // Création des plateformes
-        generateObstacles();
+        if ((isHost && multiplayer)||!multiplayer)
+            generateObstacles();
     }
 
     // Génèrent une probabilité croissante selon la difficultée.
@@ -77,7 +78,7 @@ public class Terrain {
             // On définit la largeur/hauteur des plateformes de base.
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
-            plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
+            plateformesListe.add(new PlateformeBase(x, y, 1000, h, -(this.height * 0.0009746589)));
         }
     }
 
@@ -109,12 +110,12 @@ public class Terrain {
 
     // Mises à jour du jeu.
     public void update(double deltaTime) {
-        if ((isHost && multiplayer))
-            update(ListeJoueurs.get(0), deltaTime);
-        else if ((!isHost && multiplayer) || !multiplayer) {
+        if ((isHost && multiplayer)||!multiplayer)
+            // update(ListeJoueurs.get(0), deltaTime);
+        // else if ((!isHost && multiplayer) || !multiplayer) {
             for (Joueur j : ListeJoueurs)
                 update(j, deltaTime);
-        }
+        // }
     }
 
     private void update(Joueur j, double deltaTime) {
@@ -144,8 +145,8 @@ public class Terrain {
             }
         }
 
-        // Si la tête du personnage dépasse la moitié de l'écran.
-        if (p.getY() < this.height / 2 && (((isHost && multiplayer) || !multiplayer))) {
+        // Si la tête du personnage dépasse la moitié de l'écran.  && (((isHost && multiplayer) || !multiplayer)
+        if (p.getY() < this.height / 2) {
             // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
             // certain seuil qu'on a défini préalablement (la moitié de la taille).
             this.difficulty = (this.difficulty > 5) ? 5 : this.difficulty + this.difficulty_level;
@@ -396,6 +397,10 @@ public class Terrain {
 
     public ArrayList<Coins> getCoins() {
         return this.coins;
+    }
+
+    public void setCoins(ArrayList<Coins> readObject) {
+        coins=readObject;
     }
 
 }

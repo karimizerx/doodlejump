@@ -33,7 +33,12 @@ public class Serveur {
         try {
             in = new ObjectOutputStream(serveur.client.getOutputStream());
             in.writeObject(terrain.getPlateformesListe());
-            in.writeObject(terrain.getListeJoueurs().get(0));
+            in.writeObject(terrain.getListeJoueurs());
+            in.writeObject(terrain.getMontresArrayList());
+            in.writeObject(terrain.getDiff_plateformes());
+            in.writeObject(terrain.getDifficulty());;
+            in.writeObject(terrain.getCoins());
+            in.writeObject(terrain.isPause());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -138,7 +138,6 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     this.eMenuLancement.init();
                     this.eMenuLancement.running();
                 }
-                ThreadMouvement thrmvt=new ThreadMouvement();
                 if(isConnecting){
                     this.eGame.createPartie(); // On crée une partie.
                     this.eGame=new Game(this);
@@ -147,7 +146,8 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
                 if (isRunningGame) { // Si on a lancé une GAME :
                     if (this.terrain.multiplayer) { // Si on est en mode multijoueur :
-                        thrmvt.hasStarted=true;
+                        ThreadMouvement thrmvt=new ThreadMouvement(this.terrain);
+                        new Thread(thrmvt).start();                        
                         System.out.println("diz");
                     }else{
                         this.eGame = new Game(this);

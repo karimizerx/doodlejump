@@ -111,6 +111,13 @@ public class Game extends Etat implements MouseInputListener {
     // Update les images & autres variables.
     @Override
     public void update() {
+        if(!((this.vue.getTerrain().multiplayer && this.vue.getTerrain().isHost)||!this.vue.getTerrain().multiplayer)) 
+        {           
+            // this.vue.getTerrain().update(this.vue.getDeltaTime()); // On update du terrain.
+            System.out.println("Game.update()");
+            return;
+        }
+
         for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
             Personnage p = this.vue.getTerrain().getListeJoueurs().get(i).getPerso();
             // Gère les boutons flèches, avec inertie.
@@ -308,7 +315,7 @@ public class Game extends Etat implements MouseInputListener {
         if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
             p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du 1er joueur.
         else
-            p1 = this.vue.getTerrain().getListeJoueurs().get(this.vue.getTerrain().playerID).getPerso();
+            p1 = this.vue.getTerrain().getListeJoueurs().get(this.vue.isHost()? 0 :1).getPerso();
 
         /// Gestion des déplacements horizontales des personnages :
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on clique sur la flèche droite :
@@ -428,6 +435,7 @@ public class Game extends Etat implements MouseInputListener {
     // Gère le cas de fin de la GAME.
     public boolean endGame() {
         boolean isFin = false;
+        if(this.vue.getTerrain()==null) return false;
         // Si un joueur a perdu, c'est fini !
         for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
             Joueur j = this.vue.getTerrain().getListeJoueurs().get(i);
