@@ -53,6 +53,11 @@ public class MenuClassement extends Etat {
 
     // Met à jour les données du CLASSEMENT.
     public void updateClassement() throws IOException {
+        // on prend en compte les pieces de chaque Joueur
+        for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
+            Joueur j = this.vue.getTerrain().getListeJoueurs().get(i);
+            j.setScore(j.getScore()+j.getMonnaie()*10000);
+        }
         if (this.vue.getNbJoueur() == 1) { // On update le classement que s'il n'y a qu'un joueur.
             Joueur j = this.vue.getTerrain().getListeJoueurs().get(0);
             String score = String.valueOf(j.getScore());
