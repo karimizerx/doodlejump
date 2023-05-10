@@ -162,9 +162,9 @@ Le code constituant notre projet est divisé entre 4 répertoires :
     \end{itemize}
     \item multiplayer/ : contenant les fichiers responsables du jeu en réseaux.
     \begin{itemize}
-        \item JoueurConnecte.
-        \item Serveur.
-        \item ThreadMouvement.
+        \item JoueurConnecte : classe qui gere le coté du client, contient un socket et les methodes pour envoyer et recevoir les données.
+        \item Serveur: classe qui gere le coté du "host", contient un serveursocket les methodes pour envoyer et recevoir les données.
+        \item ThreadMouvement : un Runnable pour gere le thread du multijoueur.
     \end{itemize}
 \end{itemize}
 
@@ -176,7 +176,7 @@ Le code constituant notre projet est divisé entre 4 répertoires :
 
 \section{Problèmes rencontrés}
 \begin{itemize}
-    \item Les principaux problèmes sont liés au mode multi-joueur ou mode réseau, notamment un problème au niveau des threads. 
+    \item  Les principaux problèmes sont liés au mode multijoueur ou réseau, notamment un problème au niveau des threads. En effet, avec le système actuel, nous utilisons des JOptionPane pour "bloquer" le thread de Java Swing afin de nous assurer que le joueur client se connecte. Pour éviter cela, il serait possible de rajouter une variable booléenne volatile hasStarted dans la méthode run de la classe ThreadMouvement. De plus, il y a des problèmes de latence avec le jeu en cross-plateforme, par exemple, lorsque l'hôte est sur Linux et que le client est sur Windows. Cela entraîne une augmentation significative de la latence, rendant le jeu pratiquement injouable.
 \end{itemize}
 
 \section{Pistes d'amélioration}
