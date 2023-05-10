@@ -71,15 +71,17 @@ public class Terrain {
 
     // Crée la liste des plateformes.
     private void generateObstacles() {
+        plateformesListe.add(new PlateformeBase(0, 750, 1000, 30, -(this.height * 0.0009746589)));
+
         // Taille des plateformes en fonction de la taille de la fenêtre.
         double w = this.width * 0.09375, h = 0.0194931774 * this.height;
         // Génère des plateformes à coord aléatoires pour la liste des plateformes.
-        for (int i = (int) height; i > 0; i -= diff_plateformes) {
+        /*for (int i = (int) height; i > 0; i -= diff_plateformes) {
             // On définit la largeur/hauteur des plateformes de base.
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
             plateformesListe.add(new PlateformeBase(x, y, 1000, h, -(this.height * 0.0009746589)));
-        }
+        }*/
     }
 
     // Renvoie la plateforme la plus haute sur le terrain.
@@ -110,11 +112,12 @@ public class Terrain {
 
     // Mises à jour du jeu.
     public void update(double deltaTime) {
-        if ((isHost && multiplayer)||!multiplayer)
+        if ((isHost && multiplayer)||!multiplayer){
             // update(ListeJoueurs.get(0), deltaTime);
         // else if ((!isHost && multiplayer) || !multiplayer) {
             for (Joueur j : ListeJoueurs)
                 update(j, deltaTime);
+        }
         // }
     }
 
@@ -146,7 +149,7 @@ public class Terrain {
         }
 
         // Si la tête du personnage dépasse la moitié de l'écran.  && (((isHost && multiplayer) || !multiplayer)
-        if (p.getY() < this.height / 2) {
+        if (false) {
             // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
             // certain seuil qu'on a défini préalablement (la moitié de la taille).
             this.difficulty = (this.difficulty > 5) ? 5 : this.difficulty + this.difficulty_level;
@@ -161,7 +164,7 @@ public class Terrain {
                 if (pf.getY() + pf.getHeight() >= this.height) { // Si la plateforme baissée déborde de l'écran.
                     pf.setY(highestPlateforme().getY() - (diff_plateformes * difficulty)
                             + (((new Random().nextInt(10) + 1) * (new Random().nextInt(3) - 1)) * difficulty / 2));
-                    pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
+                    // pf.setX(new Random().nextInt((int) (this.width - pf.getWidth())));
 
                     if (willMove(difficulty)) {
                         plateformesListe.remove(pf);

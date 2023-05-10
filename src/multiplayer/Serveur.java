@@ -72,10 +72,15 @@ public class Serveur {
         try {
             in = new DataInputStream(serveur.client.getInputStream());
             i.getPerso().setLeft(in.readBoolean());
+            i.getPerso().setInertLeft(in.readBoolean());
             i.getPerso().setRight(in.readBoolean());
+            i.getPerso().setInertRight(in.readBoolean());
         } catch (IOException e) {
             e.printStackTrace();
-            System.exit(-1);
+            i.getPerso().setLeft(false);
+            i.getPerso().setInertLeft(false);
+            i.getPerso().setRight(false);
+            i.getPerso().setInertRight(false);
         } 
     }
 

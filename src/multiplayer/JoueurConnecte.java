@@ -78,7 +78,9 @@ public class JoueurConnecte {
         try {
             DataOutputStream output = new DataOutputStream(client.getOutputStream());
             output.writeBoolean(joueurB.getPerso().isLeft());
+            output.writeBoolean(joueurB.getPerso().isInertLeft());
             output.writeBoolean(joueurB.getPerso().isRight());
+            output.writeBoolean(joueurB.getPerso().isInertRight());
             // System.out.println("JoueurConnecte.sendJoueurB() reussi");
         } catch (IOException e) {
             e.printStackTrace();
