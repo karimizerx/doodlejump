@@ -193,14 +193,16 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     }
 
     private void endThrMvt(){
-        try {
-            thrmvt.running=false;
-            if(serveur!=null)
-                serveur.fermerLeServeur();
-            if(jconnect!=null)
-                jconnect.deconnecter();
-        } catch (Exception e) {
-            e.printStackTrace();;
+        if(multijoueur){
+            try {
+                thrmvt.running=false;
+                if(serveur!=null)
+                    serveur.fermerLeServeur();
+                if(jconnect!=null)
+                    jconnect.deconnecter();
+            } catch (Exception e) {
+                e.printStackTrace();;
+            }
         }
     }
     /// KeyListener qui gèrent les boutons.

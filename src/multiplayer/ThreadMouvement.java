@@ -30,9 +30,11 @@ public class ThreadMouvement implements Runnable {
             if (terrain.isHost) {
                 serveur.sendTerrain(terrain);
                 serveur.getJoueurB(terrain);// recevoir ce que le mvt du client
+                running=!terrain.isMultiDone();
             } else {
                 client.receiveTerrain(terrain);
                 client.sendJoueurB(terrain.getListeJoueurs().get(1));// le client envoi le mvt de son joueur
+                running=!terrain.isMultiDone();
             }
         }
         System.out.println("ThreadMouvement.run() end");

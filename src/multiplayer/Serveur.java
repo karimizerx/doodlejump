@@ -32,6 +32,7 @@ public class Serveur {
         ObjectOutputStream in;
         try {
             in = new ObjectOutputStream(serveur.client.getOutputStream());
+            in.writeObject(terrain.isMultiDone());
             in.writeObject(terrain.getPlateformesListe());
             in.writeObject(terrain.getListeJoueurs().get(0));
             in.writeObject(terrain.getMontresArrayList());
@@ -41,6 +42,7 @@ public class Serveur {
             in.writeObject(terrain.isPause());
         } catch (Exception e) {
             e.printStackTrace();
+            terrain.setMultiDone(true);
         }
     }
 

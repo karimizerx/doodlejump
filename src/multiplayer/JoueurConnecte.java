@@ -53,6 +53,7 @@ public class JoueurConnecte {
         ObjectInputStream in;
         try {
             in = new ObjectInputStream(client.getInputStream());
+            terrain.setMultiDone((boolean)in.readObject());
             terrain.setPlateformesListe((ArrayList<Plateforme>) in.readObject());
             terrain.getListeJoueurs().set(0,(Joueur)in.readObject());
             terrain.setMonstres((ArrayList<Monstre> )in.readObject());
@@ -66,7 +67,7 @@ public class JoueurConnecte {
         } catch (IOException e) {
             System.out.println("bug2");
             e.printStackTrace();
-            System.exit(-1);
+            terrain.setMultiDone(true);
         }
     }
 

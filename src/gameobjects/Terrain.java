@@ -21,7 +21,7 @@ public class Terrain {
     // Affecte la proba qu'un item bonus ou malus apparaisse.
     private ArrayList<Monstre> monstres; // Liste des monstres présents.
     private boolean pause; // Si le jeu est en pause.
-    public boolean multiplayer, isHost;
+    public boolean multiplayer, isHost,multiDone=false;
     public Serveur host = null;
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
@@ -408,6 +408,14 @@ public class Terrain {
 
     public void setCoins(ArrayList<Coins> readObject) {
         coins=readObject;
+    }
+
+    public boolean isMultiDone() {
+        return multiDone;
+    }
+
+    public void setMultiDone(boolean multiDone) {
+        this.multiDone = multiDone;
     }
 
 }
