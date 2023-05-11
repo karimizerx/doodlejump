@@ -44,6 +44,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private Serveur serveur;
     private JoueurConnecte jconnect;
     private boolean multijoueur, host, isInertie;
+    private ThreadMouvement thrmvt;
 
     // Ces variables représentent les différents états du jeu.
     private Game eGame;
@@ -146,7 +147,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
 
                 if (isRunningGame) { // Si on a lancé une GAME :
                     if (this.terrain.multiplayer) { // Si on est en mode multijoueur :
-                        ThreadMouvement thrmvt=new ThreadMouvement(this.terrain);
+                        thrmvt=new ThreadMouvement(this.terrain);
                         new Thread(thrmvt).start();                        
                         System.out.println("diz");
                     }else{
@@ -161,6 +162,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     // On met à jour toutes les variables boolean.
                     isRunningGame = false;
                     isMenuFin = true;
+                    endThrMvt();
                     this.eMenuClassement.updateClassement(); // On met à jour le classement et l'historique.
                 }
 
@@ -190,6 +192,17 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    private void endThrMvt(){
+        try {
+            thrmvt.running=false;
+            if(serveur!=null)
+                serveur.fermerLeServeur();
+            if(jconnect!=null)
+                jconnect.deconnecter();
+        } catch (Exception e) {
+            e.printStackTrace();;
+        }
+    }
     /// KeyListener qui gèrent les boutons.
     @Override
     public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons.

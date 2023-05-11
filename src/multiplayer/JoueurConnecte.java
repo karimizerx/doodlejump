@@ -54,7 +54,7 @@ public class JoueurConnecte {
         try {
             in = new ObjectInputStream(client.getInputStream());
             terrain.setPlateformesListe((ArrayList<Plateforme>) in.readObject());
-            terrain.setListeJoueurs((ArrayList<Joueur> )in.readObject());
+            terrain.getListeJoueurs().set(0,(Joueur)in.readObject());
             terrain.setMonstres((ArrayList<Monstre> )in.readObject());
             terrain.setDiff_plateformes((double)in.readObject());
             terrain.setDifficulty((double)in.readObject());
@@ -70,17 +70,14 @@ public class JoueurConnecte {
         }
     }
 
-    protected void deconnecter() throws IOException {
+    public void deconnecter() throws IOException {
         client.close();
     }
 
     public void sendJoueurB(Joueur joueurB) {
         try {
-            DataOutputStream output = new DataOutputStream(client.getOutputStream());
-            output.writeBoolean(joueurB.getPerso().isLeft());
-            output.writeBoolean(joueurB.getPerso().isInertLeft());
-            output.writeBoolean(joueurB.getPerso().isRight());
-            output.writeBoolean(joueurB.getPerso().isInertRight());
+            ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
+            output.writeObject(joueurB);
             // System.out.println("JoueurConnecte.sendJoueurB() reussi");
         } catch (IOException e) {
             e.printStackTrace();

@@ -33,7 +33,7 @@ public class Serveur {
         try {
             in = new ObjectOutputStream(serveur.client.getOutputStream());
             in.writeObject(terrain.getPlateformesListe());
-            in.writeObject(terrain.getListeJoueurs());
+            in.writeObject(terrain.getListeJoueurs().get(0));
             in.writeObject(terrain.getMontresArrayList());
             in.writeObject(terrain.getDiff_plateformes());
             in.writeObject(terrain.getDifficulty());;
@@ -44,7 +44,7 @@ public class Serveur {
         }
     }
 
-    protected void fermerLeServeur() throws IOException {
+    public void fermerLeServeur() throws IOException {
         this.serveurSocket.close();
     }
 
@@ -67,21 +67,16 @@ public class Serveur {
         return serveur;
     }
 
-    public void getJoueurB(Joueur i) {
-        DataInputStream in;
+    public void getJoueurB(Terrain i) {
+        ObjectInputStream in;
         try {
-            in = new DataInputStream(serveur.client.getInputStream());
-            i.getPerso().setLeft(in.readBoolean());
-            i.getPerso().setInertLeft(in.readBoolean());
-            i.getPerso().setRight(in.readBoolean());
-            i.getPerso().setInertRight(in.readBoolean());
+            in = new ObjectInputStream(serveur.client.getInputStream());
+            i.getListeJoueurs().set(1,(Joueur)in.readObject());
         } catch (IOException e) {
             e.printStackTrace();
-            i.getPerso().setLeft(false);
-            i.getPerso().setInertLeft(false);
-            i.getPerso().setRight(false);
-            i.getPerso().setInertRight(false);
-        } 
+        } catch (ClassNotFoundException c) {
+            c.printStackTrace();
+            System.out.println("classe perdu");
+        }
     }
-
 }

@@ -111,13 +111,6 @@ public class Game extends Etat implements MouseInputListener {
     // Update les images & autres variables.
     @Override
     public void update() {
-        if(!((this.vue.getTerrain().multiplayer && this.vue.getTerrain().isHost)||!this.vue.getTerrain().multiplayer)) 
-        {           
-            // this.vue.getTerrain().update(this.vue.getDeltaTime()); // On update du terrain.
-            System.out.println("Game.update()");
-            return;
-        }
-
         for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
             Personnage p = this.vue.getTerrain().getListeJoueurs().get(i).getPerso();
             // Gère les boutons flèches, avec inertie.

@@ -71,17 +71,16 @@ public class Terrain {
 
     // Crée la liste des plateformes.
     private void generateObstacles() {
-        plateformesListe.add(new PlateformeBase(0, 750, 1000, 30, -(this.height * 0.0009746589)));
 
         // Taille des plateformes en fonction de la taille de la fenêtre.
         double w = this.width * 0.09375, h = 0.0194931774 * this.height;
         // Génère des plateformes à coord aléatoires pour la liste des plateformes.
-        /*for (int i = (int) height; i > 0; i -= diff_plateformes) {
+        for (int i = (int) height; i > 0; i -= diff_plateformes) {
             // On définit la largeur/hauteur des plateformes de base.
             int x = new Random().nextInt((int) (this.width - w));
             int y = i;
-            plateformesListe.add(new PlateformeBase(x, y, 1000, h, -(this.height * 0.0009746589)));
-        }*/
+            plateformesListe.add(new PlateformeBase(x, y, w, h, -(this.height * 0.0009746589)));
+        }
     }
 
     // Renvoie la plateforme la plus haute sur le terrain.
@@ -112,14 +111,19 @@ public class Terrain {
 
     // Mises à jour du jeu.
     public void update(double deltaTime) {
-        if ((isHost && multiplayer)||!multiplayer){
-            // update(ListeJoueurs.get(0), deltaTime);
+        if ((multiplayer))
+        {    if(isHost)
+                update(ListeJoueurs.get(0), deltaTime);
+            else 
+                update(ListeJoueurs.get(1), deltaTime);
+        }else{
         // else if ((!isHost && multiplayer) || !multiplayer) {
             for (Joueur j : ListeJoueurs)
                 update(j, deltaTime);
-        }
         // }
+        }
     }
+
 
     private void update(Joueur j, double deltaTime) {
         // On effectue une mise à jour pour tous les joueurs.
@@ -149,7 +153,7 @@ public class Terrain {
         }
 
         // Si la tête du personnage dépasse la moitié de l'écran.  && (((isHost && multiplayer) || !multiplayer)
-        if (false) {
+        if (p.getY() < this.height / 2 && (((isHost && multiplayer) || !multiplayer))) {
             // plus la difficulté augmente plus les plateformes sont écarté jusqu'à un
             // certain seuil qu'on a défini préalablement (la moitié de la taille).
             this.difficulty = (this.difficulty > 5) ? 5 : this.difficulty + this.difficulty_level;
