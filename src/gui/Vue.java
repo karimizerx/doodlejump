@@ -16,7 +16,7 @@ import javax.swing.*;
 public class Vue extends JPanel implements Runnable, KeyListener {
 
     // Ces variables static boolean indique l'état actuel du panel.
-    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement, isMenuFin, isMenuClassement,
+    public static boolean isQuitte, isRunningGame, isMenuDemarrer, isMenuLancement,isConnecting, isMenuFin, isMenuClassement,
             isSetting;
     private final int width, height; // Dimensions du panel.
     // La fleche est un curseur qui indique sur quel boutton on agit actuellement.
@@ -44,6 +44,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
     private Serveur serveur;
     private JoueurConnecte jconnect;
     private boolean multijoueur, host, isInertie;
+    private ThreadMouvement thrmvt;
 
     // Ces variables représentent les différents états du jeu.
     private Game eGame;
@@ -138,15 +139,22 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     this.eMenuLancement.init();
                     this.eMenuLancement.running();
                 }
+                if(isConnecting){
+                    this.eGame.createPartie(); // On crée une partie.
+                    this.eGame=new Game(this);
+                    this.eGame.init();
+                }
 
                 if (isRunningGame) { // Si on a lancé une GAME :
-                    this.eGame = new Game(this);
-                    this.eGame.init();
-                    this.eGame.running();
                     if (this.terrain.multiplayer) { // Si on est en mode multijoueur :
-                        Thread t = new Thread(new ThreadMouvement(terrain)); // ???
-                        t.start();
+                        thrmvt=new ThreadMouvement(this.terrain);
+                        new Thread(thrmvt).start();                        
+                        System.out.println("diz");
+                    }else{
+                        this.eGame = new Game(this);
+                        this.eGame.init();
                     }
+                    this.eGame.running();
                 }
 
                 if (!isMenuDemarrer && !isMenuClassement && !isMenuLancement && !isRunningGame && !isMenuFin
@@ -154,6 +162,7 @@ public class Vue extends JPanel implements Runnable, KeyListener {
                     // On met à jour toutes les variables boolean.
                     isRunningGame = false;
                     isMenuFin = true;
+                    endThrMvt();
                     this.eMenuClassement.updateClassement(); // On met à jour le classement et l'historique.
                 }
 
@@ -183,6 +192,19 @@ public class Vue extends JPanel implements Runnable, KeyListener {
         }
     }
 
+    private void endThrMvt(){
+        if(multijoueur){
+            try {
+                thrmvt.running=false;
+                if(serveur!=null)
+                    serveur.fermerLeServeur();
+                if(jconnect!=null)
+                    jconnect.deconnecter();
+            } catch (Exception e) {
+                e.printStackTrace();;
+            }
+        }
+    }
     /// KeyListener qui gèrent les boutons.
     @Override
     public void keyPressed(KeyEvent e) { // On est actuellement entrain d'appuyer sur des boutons.

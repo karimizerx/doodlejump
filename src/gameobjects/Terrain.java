@@ -21,7 +21,7 @@ public class Terrain {
     // Affecte la proba qu'un item bonus ou malus apparaisse.
     private ArrayList<Monstre> monstres; // Liste des monstres présents.
     private boolean pause; // Si le jeu est en pause.
-    public boolean multiplayer, isHost;
+    public boolean multiplayer, isHost,multiDone=false;
     public Serveur host = null;
     public JoueurConnecte client = null;
     public final int playerID;// si c'est 0, il est host ou il est pas multijoueur.
@@ -51,7 +51,8 @@ public class Terrain {
             isHost = false;
 
         // Création des plateformes
-        generateObstacles();
+        if ((isHost && multiplayer)||!multiplayer)
+            generateObstacles();
     }
 
     // Génèrent une probabilité croissante selon la difficultée.
@@ -114,9 +115,12 @@ public class Terrain {
 
     // Mises à jour du jeu.
     public void update(double deltaTime) {
-        if ((isHost && multiplayer))
-            update(ListeJoueurs.get(0), deltaTime);
-        else if ((!isHost && multiplayer) || !multiplayer) {
+        if ((multiplayer))
+        {    if(isHost)
+                update(ListeJoueurs.get(0), deltaTime);
+            else 
+                update(ListeJoueurs.get(1), deltaTime);
+        }else{
             for (Joueur j : ListeJoueurs)
                 update(j, deltaTime);
         }
@@ -281,7 +285,7 @@ public class Terrain {
             pf.move(this);
 
             // On met à jour la position de l'item (s'il existe).
-            if (pf.getItem() != null) {
+            if (pf.getItem() != null && !multiplayer) {
                 Items it = pf.getItem();
                 it.setY(pf.getY() - it.getHeight());
                 it.setX(pf.getX() + it.getPlacement() * pf.getWidth());
@@ -294,7 +298,7 @@ public class Terrain {
         }
 
         // On met à jour la position de l'item (s'il existe)
-        if (p.getItem() != null) {
+        if (p.getItem() != null && !multiplayer) {
             Items it = p.getItem();
             it.setY(p.getY());
             it.setX(p.getX());
@@ -413,6 +417,18 @@ public class Terrain {
 
     public ArrayList<Coins> getCoins() {
         return this.coins;
+    }
+
+    public void setCoins(ArrayList<Coins> readObject) {
+        coins=readObject;
+    }
+
+    public boolean isMultiDone() {
+        return multiDone;
+    }
+
+    public void setMultiDone(boolean multiDone) {
+        this.multiDone = multiDone;
     }
 
 }

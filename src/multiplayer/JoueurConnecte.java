@@ -32,19 +32,16 @@ public class JoueurConnecte {
      * @param port       port au quelle le socket va se connecter
      * @true Si le joueur est connecté
      */
-    public boolean connecter() {
+    public void connecter() {
         try {
             String ServerName = JOptionPane.showInputDialog("Nom du Serveur");
             int port = Integer.parseInt(JOptionPane.showInputDialog("Port"));
-
             this.client = new Socket(ServerName, port);
-            return true;
-
+            System.out.println(client==null);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Echec de connexion", "Erreur", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             System.exit(-1);
-            return false;
         }
     }
 
@@ -56,19 +53,25 @@ public class JoueurConnecte {
         ObjectInputStream in;
         try {
             in = new ObjectInputStream(client.getInputStream());
+            terrain.setMultiDone((boolean)in.readObject());
             terrain.setPlateformesListe((ArrayList<Plateforme>) in.readObject());
-            terrain.getListeJoueurs().set(0, ((Joueur) in.readObject()));
+            terrain.getListeJoueurs().set(0,(Joueur)in.readObject());
+            terrain.setMonstres((ArrayList<Monstre> )in.readObject());
+            terrain.setDiff_plateformes((double)in.readObject());
+            terrain.setDifficulty((double)in.readObject());
+            terrain.setCoins((ArrayList<Coins> )in.readObject());
+            terrain.setPause((boolean)in.readObject());
         } catch (ClassNotFoundException c) {
             c.printStackTrace();
             System.out.println("classe perdu");
         } catch (IOException e) {
             System.out.println("bug2");
             e.printStackTrace();
-            System.exit(-1);
+            terrain.setMultiDone(true);
         }
     }
 
-    protected void deconnecter() throws IOException {
+    public void deconnecter() throws IOException {
         client.close();
     }
 
@@ -76,7 +79,7 @@ public class JoueurConnecte {
         try {
             ObjectOutputStream output = new ObjectOutputStream(client.getOutputStream());
             output.writeObject(joueurB);
-            System.out.println("JoueurConnecte.sendJoueurB() reussi");
+            // System.out.println("JoueurConnecte.sendJoueurB() reussi");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("JoueurConnecte.sendJoueurB() echoue");
