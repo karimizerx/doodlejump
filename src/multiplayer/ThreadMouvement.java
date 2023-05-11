@@ -13,19 +13,31 @@ public class ThreadMouvement implements Runnable {
         this.serveur = court.host;
         this.client = court.client;
     }
+    
+    public ThreadMouvement() {
+        this.terrain =null;
+        this.serveur =null;
+        this.client =null;
+    }
+
+    public volatile boolean running=true; 
 
     public void run() {
-        while (true) {
+        // while(!hasStarted){
+        //     System.out.println("wait wait ");
+        // }
+        while (running) {
             if (terrain.isHost) {
                 serveur.sendTerrain(terrain);
-                terrain.getListeJoueurs().set(1, (serveur.getJoueurB()));// recevoir ce que le mvt du client
-                System.out.println("ThreadMouvement.run() done");
+                serveur.getJoueurB(terrain);// recevoir ce que le mvt du client
+                running=!terrain.isMultiDone();
             } else {
                 client.receiveTerrain(terrain);
                 client.sendJoueurB(terrain.getListeJoueurs().get(1));// le client envoi le mvt de son joueur
-                System.out.println("ThreadMouvement.run() done");
+                running=!terrain.isMultiDone();
             }
         }
+        System.out.println("ThreadMouvement.run() end");
     }
 
 }

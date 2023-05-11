@@ -293,6 +293,7 @@ public class Game extends Etat implements MouseInputListener {
                 cnt += this.vue.getDeltaTime(); // On accumule le nombre d'update.
             }
             affiche(this.vue.getGraphics()); // On affiche les images une fois les données update.
+            if(this.vue.getTerrain().isMultiDone()) Vue.isRunningGame=false;
         }
     }
 
@@ -308,10 +309,10 @@ public class Game extends Etat implements MouseInputListener {
         }
 
         Personnage p1, p2;
-        if (!this.vue.getTerrain().multiplayer) // Si on ne joue pas en multijoueur :
+        if (!this.vue.getTerrain().multiplayer || (this.vue.getTerrain().multiplayer && this.vue.getTerrain().isHost)) // Si on ne joue pas en multijoueur :
             p1 = this.vue.getTerrain().getListeJoueurs().get(0).getPerso(); // On récupère le personnage du 1er joueur.
-        else
-            p1 = this.vue.getTerrain().getListeJoueurs().get(this.vue.getTerrain().playerID).getPerso();
+        else 
+            p1 = this.vue.getTerrain().getListeJoueurs().get(1).getPerso();
 
         /// Gestion des déplacements horizontales des personnages :
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) { // Si on clique sur la flèche droite :
@@ -325,7 +326,7 @@ public class Game extends Etat implements MouseInputListener {
         }
 
         // On fait la même chose avec "Q" & "D" s'il y a 2 joueurs.
-        if (this.vue.getTerrain().getListeJoueurs().size() == 2) {
+        if (this.vue.getTerrain().getListeJoueurs().size() == 2 && !this.vue.getTerrain().multiplayer) {
             p2 = this.vue.getTerrain().getListeJoueurs().get(1).getPerso();
             if (e.getKeyCode() == KeyEvent.VK_D) {
                 p2.setRight(true);
@@ -433,6 +434,7 @@ public class Game extends Etat implements MouseInputListener {
     // Gère le cas de fin de la GAME.
     public boolean endGame() {
         boolean isFin = false;
+        if(this.vue.getTerrain()==null) return false;
         // Si un joueur a perdu, c'est fini !
         for (int i = 0; i < this.vue.getTerrain().getListeJoueurs().size(); ++i) {
             Joueur j = this.vue.getTerrain().getListeJoueurs().get(i);
